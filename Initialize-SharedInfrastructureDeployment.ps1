@@ -110,7 +110,7 @@ try {
             }
             if ($UpdateTags) {
                 Write-Host "    - Updating existing tags [$($UpdatedTags.Keys -join ',')]"
-                $null = Set-AzureRmResourceGroup -Name $ResourceGroup.ResourceGroupName -Tag $UpdatedTags
+                $null = Set-AzResourceGroup -Name $ResourceGroup.ResourceGroupName -Tag $UpdatedTags
             }
         }
     }
