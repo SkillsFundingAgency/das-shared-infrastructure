@@ -37,7 +37,7 @@ Default: West Europe
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $false)]
-    [ValidateSet("DTA", "DEV", "PP", "PRD", "MO")]
+    [ValidateSet("DTA", " DEV", "PP", "PRD", "MO")]
     [string]$SubscriptionAbbreviation = "DEV",
     [Parameter(Mandatory = $false)]
     [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
@@ -162,7 +162,7 @@ try {
         parameters     = @{ }
     }
 
-    $TemplateParameters = (Get-Content -Path $PSScriptRoot/templates/subscription.template.json -Raw | ConvertFrom-Json).parameters
+    [PSCustomObject]$TemplateParameters = (Get-Content -Path $PSScriptRoot/templates/subscription.template.json -Raw | ConvertFrom-Json).parameters
     foreach ($Property in $TemplateParameters.PSObject.Properties.Name) {
         $ParameterEnvironmentVariableName = $TemplateParameters.$Property.metadata.environmentVariable
         $ParameterEnvironmentVariableType = $TemplateParameters.$Property.type
@@ -179,12 +179,12 @@ try {
         if (!$ParameterVariableValue) {
             # --- If not in the context of the build agent...
             if (!$ENV:TF_BUILD) {
-                if (($TemplateParameters.$Property.defaultValue -or ($TemplateParameters.$Property.defaultValue -ge 0)) -and $AcceptDefaults.IsPresent ) {
-                    $ParameterVariableValue = $TemplateParameters.$Property.defaultValue
-                }
-                else {
-                    $ParameterVariableValue = Read-Host -Prompt "   -> [$($ParameterEnvironmentVariableType)] $($ParameterEnvironmentVariableName)"
-                }
+                # if (($TemplateParameters.$Property.defaultValue -or ($TemplateParameters.$Property.defaultValue -ge 0)) -and $AcceptDefaults.IsPresent ) {
+                #     $ParameterVariableValue = $TemplateParameters.$Property.defaultValue
+                # }
+                # else {
+                #     $ParameterVariableValue = Read-Host -Prompt "   -> [$($ParameterEnvironmentVariableType)] $($ParameterEnvironmentVariableName)"
+                # }
             }
             elseif ($ParameterEnvironmentVariableType -ne "securestring") {
                 throw "Could not find environment variable value for template parameter $Property"
@@ -215,7 +215,7 @@ try {
     $null = Set-Content -Path $TemplateParametersFilePath -Value ([Regex]::Unescape(($ParametersFile | ConvertTo-Json -Depth 10))) -Force
     Write-Host "- Parameter file content saved to $TemplateParametersFilePath"
 
-    if (!$ENV:TF_BUILD ) {
+    if (!$ENV:TF_BUILD -and !$ENV:isTest) {
         Write-Host "- Deploying $TemplateFilePath"
         $DeploymentParameters = @{
             ResourceGroupName       = $ManagementResourceGroupName
