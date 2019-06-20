@@ -4,10 +4,10 @@ trigger:
     include:
       - "*"
   paths:
-    include:
-      - templates/*
-      - utilities/*
-      - Initialize-SharedInfrastructureDeployment.ps1
+    - tests/*
+    - templates/*
+    - utilities/*
+    - Initialize-SharedInfrastructureDeployment.ps1
 
 pr: none
 
