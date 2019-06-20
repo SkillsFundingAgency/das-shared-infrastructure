@@ -1,5 +1,4 @@
 .vscode/
 node_modules/
 package-lock.json
-**/subscription.parameters.json
-**/envs.ps1
+templates/subscription.parameters.json
