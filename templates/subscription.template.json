@@ -77,7 +77,7 @@
     },
     "aseHostingEnvironmentName": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "null",
       "metadata": {
         "description": "Optional ASE to deploy ASP to",
         "environmentVariable": "aseHostingEnvironmentName"
@@ -85,7 +85,7 @@
     },
     "aseResourceGroup": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "null",
       "metadata": {
         "description": "Resource group where the optional ASE resides",
         "environmentVariable": "aseResourceGroup"

@@ -13,5 +13,4 @@ $ENV:internalAppSubnetCount = 1
 $ENV:externalAppSubnetCount = 1
 $ENV:sqlAdminPasswordSeed = "test seed"
 
-
-. ..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose
+. ..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference
