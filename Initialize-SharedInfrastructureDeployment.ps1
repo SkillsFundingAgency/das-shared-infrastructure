@@ -116,9 +116,9 @@ try {
     }
 
     $DatabaseConfiguration = @{ }
-    Write-Host "- Setting up failover group config"
     # --- Get environment databases for failover group
     foreach ($Environment in $EnvironmentNames) {
+        Write-Host "- Setting up failover group config for environment $Environment"
         $DatabaseConfiguration.Add(
             $Environment, @{"DatabaseResourceIds" = @() }
         )
