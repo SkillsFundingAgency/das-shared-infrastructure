@@ -22,6 +22,15 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
         }
     }
 
+    Mock Get-AzResource {
+        Write-Verbose -Message "Using mock Get-AzResource"
+        return @{}
+    }
+
+    Mock Get-AzDatabase {
+        Write-Verbose -Message "Using mock Get-AzDatabase"
+    }
+
     Context "Pre deployment against an existing Resource Group" {
 
         Mock Get-AzResourceGroup {
@@ -39,6 +48,8 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
             {. $PSScriptRoot\..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
             Assert-MockCalled -Command Get-AzContext
             Assert-MockCalled -Command Get-AzResourceGroup
+            Assert-MockCalled -Command Get-AzResource
+            Assert-MockCalled -CommandName Get-AzDatabase
         }
     }
 }
