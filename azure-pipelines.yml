@@ -15,7 +15,7 @@ pr: none
 stages:
   - stage: Test
     jobs:
-      - job: "EditorConfigValidation"
+      - job: "TestAndLint"
         pool:
           name: "DAS - Continuous Deployment"
           demands:
