@@ -405,10 +405,10 @@
             "value": "[variables('sharedAppServicePlanName')]"
           },
           "aseHostingEnvironmentName": {
-            "value": "[parameters('aseHostingEnvironmentName')]"
+            "value": "[variables('aseHostingEnvironmentName')]"
           },
           "aseResourceGroup": {
-            "value": "[parameters('aseResourceGroup')]"
+            "value": "[variables('aseResourceGroup')]"
           },
           "aspSize": {
             "value": "[if(variables('deployToASE'), variables('appServicePlanSKUs').isolated.size, variables('appServicePlanSKUs').standard.size)]"
