@@ -126,11 +126,11 @@ try {
         $ParameterEnvironmentVariableName = $TemplateParameters.$Property.metadata.environmentVariable
         $ParameterEnvironmentVariableType = $TemplateParameters.$Property.type
 
-        if (!$ParameterEnvironmentVariableName -and ($ParameterEnvironmentVariableType -ne "securestring")) {
+        $ParameterVariableValue = Get-Item -Path "ENV:$ParameterEnvironmentVariableName" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Value
+
+        if (!$ParameterVariableValue -and ($ParameterEnvironmentVariableType -ne "securestring")) {
             throw "Could not find environment variable for template parameter $Property"
         }
-
-        $ParameterVariableValue = Get-Item -Path "ENV:$ParameterEnvironmentVariableName" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Value
 
         if (!$ParameterVariableValue) {
             if (!$ENV:TF_BUILD) {
