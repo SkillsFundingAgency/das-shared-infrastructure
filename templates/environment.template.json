@@ -115,6 +115,8 @@
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'config')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
+    "aseHostingEnvironmentName": "[if(equals(parameters('aseHostingEnvironmentName'),'null'), json('null'), parameters('aseHostingEnvironmentName'))]",
+    "aseResourceGroupName": "[if(equals(parameters('aseResourceGroup'),'null'), json('null'), parameters('aseResourceGroup'))]",
     "deployToAsE": "[not(equals(parameters('aseHostingEnvironmentName'), 'null'))]",
     "appServicePlanSKUs": {
       "standard": {
