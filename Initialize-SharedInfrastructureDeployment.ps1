@@ -59,7 +59,7 @@ try {
         throw "You are not logged in. Run Add-AzAccount to continue"
     }
 
-    if (!$EnvironmentNames){
+    if (!$EnvironmentNames) {
         throw "No environment names found"
     }
 
@@ -126,13 +126,17 @@ try {
         $ParameterEnvironmentVariableName = $TemplateParameters.$Property.metadata.environmentVariable
         $ParameterEnvironmentVariableType = $TemplateParameters.$Property.type
 
+        # --- First look for an environment variable
         $ParameterVariableValue = Get-Item -Path "ENV:$ParameterEnvironmentVariableName" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Value
 
-        if (!$ParameterVariableValue -and ($ParameterEnvironmentVariableType -ne "securestring")) {
-            throw "Could not find environment variable for template parameter $Property"
+        # --- If !$ParameterVariableValue attempt to use the default value property
+        if (!$ParameterVariableValue) {
+            $ParameterVariableValue = $TemplateParameters.$Property.defaultValue
         }
 
+        # --- If !$ParameterVariableValue and it is not a securestring throw
         if (!$ParameterVariableValue) {
+            # --- If not in the context of the build agent...
             if (!$ENV:TF_BUILD) {
                 if (($TemplateParameters.$Property.defaultValue -or ($TemplateParameters.$Property.defaultValue -ge 0)) -and $AcceptDefaults.IsPresent ) {
                     $ParameterVariableValue = $TemplateParameters.$Property.defaultValue
