@@ -27,8 +27,9 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
         return @{}
     }
 
-    Mock Get-AzDatabase {
-        Write-Verbose -Message "Using mock Get-AzDatabase"
+    Mock Get-AzSqlDatabase {
+        Write-Verbose -Message "Using mock Get-AzSqlDatabase"
+        return @{}
     }
 
     Context "Pre deployment against an existing Resource Group" {
@@ -49,7 +50,6 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
             Assert-MockCalled -Command Get-AzContext
             Assert-MockCalled -Command Get-AzResourceGroup
             Assert-MockCalled -Command Get-AzResource
-            Assert-MockCalled -CommandName Get-AzDatabase
         }
     }
 }
