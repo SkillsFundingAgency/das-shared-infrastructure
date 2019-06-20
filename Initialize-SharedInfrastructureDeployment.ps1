@@ -40,7 +40,7 @@ param(
     [ValidateSet("DEV", "PP", "PRD", "MO")]
     [string]$SubscriptionAbbreviation = "DEV",
     [Parameter(Mandatory = $false)]
-    [ValidateSet("DTA, ""AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
+    [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
     [string[]]$EnvironmentNames = ($ENV:EnvironmentNames | ConvertFrom-Json),
     [Parameter(Mandatory = $false)]
     [ValidateSet("West Europe", "North Europe")]
