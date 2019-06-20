@@ -3,9 +3,13 @@ trigger:
   branches:
     include:
       - "*"
+  paths:
+    include:
+      - templates/*
+      - utilities/*
+      - Initialize-SharedInfrastructureDeployment.ps1
 
 pr: none
-
 
 stages:
   - stage: Lint
