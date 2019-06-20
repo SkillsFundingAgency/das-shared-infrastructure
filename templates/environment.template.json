@@ -52,14 +52,14 @@
     },
     "aseHostingEnvironmentName": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "null",
       "metadata": {
         "description": "Optional ASE to deploy ASP to"
       }
     },
     "aseResourceGroup": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "null",
       "metadata": {
         "description": "Resource group where the optional ASE resides"
       }
@@ -115,7 +115,7 @@
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'config')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
-    "deployToASE": "[greater(length(parameters('aseHostingEnvironmentName')), 0)]",
+    "deployToAsE": "[not(equals(parameters('aseHostingEnvironmentName'), 'null'))]",
     "appServicePlanSKUs": {
       "standard": {
         "size": "2",
