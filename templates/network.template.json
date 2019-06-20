@@ -1,0 +1,235 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the virtual network."
+      }
+    },
+    "virtualNetworkAddressSpacePrefix": {
+      "type": "string",
+      "defaultValue": "10.0",
+      "metadata": {
+        "description": "Prefix address space of the Vnet"
+      }
+    },
+    "virtualNetworkAddressSpaceCIDR": {
+      "type": "string",
+      "defaultValue": "/16",
+      "metadata": {
+        "description": "The CIDR notation of the Vnet address space"
+      }
+    },
+    "subnetAddressSpaceCIDR": {
+      "type": "string",
+      "defaultValue": "/24",
+      "metadata": {
+        "description": "The CIDR notation of the subnet address space"
+      }
+    },
+    "gatewaySubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "gw-sn",
+      "metadata": {
+        "description": "The prefix used for naming new gateway subnets."
+      }
+    },
+    "gatewaySubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of gateway subnets to provision"
+      }
+    },
+    "managementSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "mgmt-sn",
+      "metadata": {
+        "description": "The prefix used for naming new management subnets."
+      }
+    },
+    "managementSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of management subnets to provision"
+      }
+    },
+    "externalSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "ext-app-sn",
+      "metadata": {
+        "description": "The prefix used for naming new external app subnets."
+      }
+    },
+    "externalAppSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 10,
+      "metadata": {
+        "description": "The number of external subnets to provision"
+      }
+    },
+    "internalSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "int-app-sn",
+      "metadata": {
+        "description": "The prefix used for naming new internal app subnets."
+      }
+    },
+    "internalAppSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 10,
+      "metadata": {
+        "description": "The number of internal subnets to provision."
+      }
+    },
+    "serviceEndpointList": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "A list of service endpoints to configure on the subnets provisioned in the vnet."
+      }
+    }
+  },
+  "variables": {
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "subnetDelegations": [
+      {
+        "name": "webapp",
+        "properties": {
+          "serviceName": "Microsoft.Web/serverFarms",
+          "actions": [
+            "Microsoft.Network/virtualNetworks/subnets/action"
+          ]
+        }
+      }
+    ],
+    "serviceEndpointsEmpty": [],
+    "copy": [
+      {
+        "name": "serviceEndpoints",
+        "count": "[if(greater(length(parameters('serviceEndpointList')), 0), length(parameters('serviceEndpointList')), 1)]",
+        "input": {
+          "service": "[if(greater(length(parameters('serviceEndpointList')), 0), parameters('serviceEndpointList')[copyIndex('serviceEndPoints')], json('null'))]"
+        }
+      },
+      {
+        "name": "gatewaySubnetCopy",
+        "count": "[if(greater(parameters('gatewaySubnetCount'), 0), parameters('gatewaySubnetCount'), 1)]",
+        "input": {
+          "name": "[concat(parameters('gatewaySubnetNamePrefix'), '-', copyIndex('gatewaySubnetCopy'))]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, copyIndex('gatewaySubnetCopy'), parameters('subnetAddressSpaceCIDR'))]"
+          }
+        }
+      },
+      {
+        "name": "managementSubnetCopy",
+        "count": "[parameters('managementSubnetCount')]",
+        "input": {
+          "name": "[concat(parameters('managementSubnetNamePrefix'), '-', copyIndex('managementSubnetCopy'))]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 50, copyIndex('managementSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]"
+          }
+        }
+      },
+      {
+        "name": "externalSubnetCopy",
+        "count": "[if(greater(parameters('externalAppSubnetCount'), 0), parameters('externalAppSubnetCount'), 1)]",
+        "input": {
+          "name": "[concat(parameters('externalSubnetNamePrefix'), '-', copyIndex('externalSubnetCopy'))]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 100, copyIndex('externalSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
+            "delegations": "[variables('subnetDelegations')]"
+          }
+        }
+      },
+      {
+        "name": "internalSubnetCopy",
+        "count": "[if(greater(parameters('internalAppSubnetCount'), 0), parameters('internalAppSubnetCount'), 1)]",
+        "input": {
+          "name": "[concat(parameters('internalSubnetNamePrefix'), '-', copyIndex('internalSubnetCopy'))]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 200, copyIndex('internalSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
+            "delegations": "[variables('subnetDelegations')]"
+          }
+        }
+      }
+    ],
+    "emptyArray": [],
+    "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
+    "externalSubnet": "[if(greater(parameters('externalAppSubnetCount'), 0), variables('externalSubnetCopy'), variables('emptyArray'))]",
+    "internalSubnet": "[if(greater(parameters('internalAppSubnetCount'), 0), variables('internalSubnetCopy'), variables('emptyArray'))]",
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('externalSubnet'), variables('internalSubnet'))]"
+  },
+  "functions": [
+    {
+      "namespace": "blocks",
+      "members": {
+        "getNextAddressRange": {
+          "parameters": [
+            {
+              "name": "networkPrefix",
+              "type": "string"
+            },
+            {
+              "name": "networkStartingAddress",
+              "type": "int"
+            },
+            {
+              "name": "index",
+              "type": "int"
+            },
+            {
+              "name": "mask",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[concat(parameters('networkPrefix'), '.' , add(parameters('networkStartingAddress'), parameters('index')) ,'.0', parameters('mask'))]"
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "virtual-network",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'virtual-network.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "armVnetName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
+          "armVnetAddressSpaceCIDR": {
+            "value": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, 0, parameters('virtualNetworkAddressSpaceCIDR'))]"
+          },
+          "subnetConfiguration": {
+            "value": "[variables('subnetConfiguration')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "subnetConfiguration": {
+      "type": "array",
+      "value": "[skip(variables('subnetConfiguration'),1)]"
+    }
+  }
+}

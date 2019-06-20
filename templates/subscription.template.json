@@ -1,0 +1,404 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceEnvironmentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Base environment name. E.g. DEV. PP, PRD, MO. ",
+        "environmentVariable": "resourceEnvironmentName"
+      }
+    },
+    "serviceName": {
+      "type": "string",
+      "defaultValue": "shared",
+      "metadata": {
+        "description": "Service name of the service. E.g shared infrastructure = shared.",
+        "environmentVariable": "serviceName"
+      }
+    },
+    "keyVaultAccessObjectIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault access to",
+        "environmentVariable": "keyVaultAccessObjectIds"
+      }
+    },
+    "microsoftAzureWebsitesRPObjectId": {
+      "type": "string",
+      "defaultValue": "7fa23fd6-537e-4d28-b0ca-54d075cce842",
+      "metadata": {
+        "description": "Object Id of the Azure Websites RP",
+        "environmentVariable": "microsoftAzureWebsitesRPObjectId"
+      }
+    },
+    "backupManagementServiceObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object Id for the backup management service",
+        "environmentVariable": "backupManagementServiceObjectId"
+      }
+    },
+    "diskEncryptionAppRegistrationObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object Id for the disk Encryption App Registration",
+        "environmentVariable": "diskEncryptionAppRegistrationObjectId"
+      }
+    },
+    "environments": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "String array of all environments in this subscription",
+        "environmentVariable": "environmentNames"
+      }
+    },
+    "sqlServerActiveDirectoryAdminLogin": {
+      "type": "string",
+      "metadata": {
+        "description": "The active directory admin that will be assigned to the sql server",
+        "environmentVariable": "sqlServerActiveDirectoryAdminLogin"
+      }
+    },
+    "sqlServerActiveDirectoryAdminObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "The object id of the active directory admin that will be assigned to the sql server",
+        "environmentVariable": "sqlServerActiveDirectoryAdminObjectId"
+      }
+    },
+    "threatDetectionEmailAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The email address that threat alerts will be sent to",
+        "environmentVariable": "threatDetectionEmailAddress"
+      }
+    },
+    "aseHostingEnvironmentName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Optional ASE to deploy ASP to",
+        "environmentVariable": "aseHostingEnvironmentName"
+      }
+    },
+    "aseResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Resource group where the optional ASE resides",
+        "environmentVariable": "aseResourceGroup"
+      }
+    },
+    "databaseConfiguration": {
+      "type": "object",
+      "metadata": {
+        "description": "Configuration object which describes the structure of failover groups",
+        "environmentVariable": "databaseConfiguration"
+      }
+    },
+    "gatewaySubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of gateway subnets to provision",
+        "environmentVariable": "gatewaySubnetCount"
+      }
+    },
+    "managementSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of management subnets to provision",
+        "environmentVariable": "managementSubnetCount"
+      }
+    },
+    "externalAppSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 10,
+      "metadata": {
+        "description": "The number of external subnets to provision",
+        "environmentVariable": "externalAppSubnetCount"
+      }
+    },
+    "internalAppSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 10,
+      "metadata": {
+        "description": "The number of internal subnets to provision.",
+        "environmentVariable": "internalAppSubnetCount"
+      }
+    },
+    "sqlAdminPasswordSeed": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The seed used to generate passwords for sql server deployments.",
+        "environmentVariable": "sqlAdminPasswordSeed"
+      }
+    }
+  },
+  "variables": {
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-automation/shared_infrastructure/Shared-Infrastructure/",
+    "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+    "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
+    "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
+    "mgmtManagementSubnetCount": 1,
+    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet-we')]",
+    "keyVaultAccessPolicies": [
+      {
+        "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
+        "tenantId": "[subscription().tenantId]",
+        "permissions": {
+          "secrets": [
+            "Get"
+          ]
+        }
+      },
+      {
+        "objectId": "[parameters('backupManagementServiceObjectId')]",
+        "tenantId": "[subscription().tenantId]",
+        "permissions": {
+          "keys": [
+            "Get",
+            "List",
+            "Backup"
+          ],
+          "secrets": [
+            "Get",
+            "List",
+            "Backup"
+          ]
+        }
+      },
+      {
+        "objectId": "[parameters('diskEncryptionAppRegistrationObjectId')]",
+        "tenantId": "[subscription().tenantId]",
+        "permissions": {
+          "keys": [
+            "WrapKey"
+          ],
+          "secrets": [
+            "Set"
+          ]
+        }
+      }
+    ],
+    "copy": [
+      {
+        "name": "parameterKeyVaultAccessPolicies",
+        "count": "[length(parameters('keyVaultAccessObjectIds'))]",
+        "input": {
+          "objectId": "[parameters('keyVaultAccessObjectIds')[copyIndex('parameterKeyVaultAccessPolicies')]]",
+          "tenantId": "[subscription().tenantId]",
+          "permissions": {
+            "secrets": [
+              "Get",
+              "List",
+              "Set"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "functions": [
+    {
+      "namespace": "blocks",
+      "members": {
+        "getPasswordFromSeed": {
+          "parameters": [
+            {
+              "name": "seed",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "environment",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[concat(toUpper(substring(parameters('environment'),0,1)), uniqueString(resourceGroup().id, parameters('name'), parameters('seed')), toLower(parameters('environment')), '!')]"
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('virtual-network-west-europe-', variables('resourceNamePrefix'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('sharedDeploymentUrlBase'),'templates/network.template.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "virtualNetworkName": {
+            "value": "[variables('virtualNetworkName')]"
+          },
+          "managementSubnetCount": {
+            "value": "[variables('mgmtManagementSubnetCount')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "key-vault",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'keyvault.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
+          },
+          "keyVaultAccessPolicies": {
+            "value": "[concat(variables('KeyVaultAccessPolicies'), variables('parameterKeyVaultAccessPolicies'))]"
+          },
+          "enabledForDiskEncryption": {
+            "value": true
+          },
+          "enabledForTemplateDeployment": {
+            "value": true
+          },
+          "enableSoftDelete": {
+            "value": true
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('sql-server-key-vault-secrets-', parameters('environments')[copyIndex()])]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'keyvault-secret.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
+          },
+          "secretName": {
+            "value": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql'))]"
+          },
+          "secretValue": {
+            "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql')), uniqueString(parameters('environments')[copyIndex()]))]"
+          }
+        }
+      },
+      "copy": {
+        "name": "secretsCopy",
+        "count": "[length(parameters('environments'))]"
+      },
+      "dependsOn": [
+        "key-vault"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))]",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('sharedDeploymentUrlBase'), 'templates/environment.template.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "environmentName": {
+            "value": "[toUpper(parameters('environments')[copyIndex()])]"
+          },
+          "sharedKeyVaultResourceGroup": {
+            "value": "[resourceGroup().name]"
+          },
+          "sharedKeyVaultName": {
+            "value": "[variables('keyVaultName')]"
+          },
+          "sharedKeyVaultId": {
+            "value": "[reference('key-vault').outputs.KeyVaultResourceId.value]"
+          },
+          "sqlServerAdminPasswordSecretName": {
+            "value": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql'))]"
+          },
+          "sqlServerActiveDirectoryAdminLogin": {
+            "value": "[parameters('sqlServerActiveDirectoryAdminLogin')]"
+          },
+          "sqlServerActiveDirectoryAdminObjectId": {
+            "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
+          },
+          "threatDetectionEmailAddress": {
+            "value": "[parameters('threatDetectionEmailAddress')]"
+          },
+          "aseHostingEnvironmentName": {
+            "value": "[parameters('aseHostingEnvironmentName')]"
+          },
+          "aseResourceGroup": {
+            "value": "[parameters('aseResourceGroup')]"
+          },
+          "databaseConfiguration": {
+            "value": "[parameters('databaseConfiguration')]"
+          },
+          "gatewaySubnetCount": {
+            "value": "[parameters('gatewaySubnetCount')]"
+          },
+          "managementSubnetCount": {
+            "value": "[parameters('managementSubnetCount')]"
+          },
+          "externalAppSubnetCount": {
+            "value": "[parameters('externalAppSubnetCount')]"
+          },
+          "internalAppSubnetCount": {
+            "value": "[parameters('internalAppSubnetCount')]"
+          }
+        }
+      },
+      "copy": {
+        "name": "environmentCopy",
+        "count": "[length(parameters('environments'))]"
+      },
+      "dependsOn": [
+        "key-vault",
+        "secretsCopy"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "azure-automation",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'automation-account.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "automationAccountName": {
+            "value": "[variables('automationAccountName')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

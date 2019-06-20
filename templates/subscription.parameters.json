@@ -1,0 +1,53 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "threatDetectionEmailAddress": {
+      "value": "prick@craigg.co.uk "
+    },
+    "sqlServerActiveDirectoryAdminLogin": {
+      "value": "prick@craigg.co.uk "
+    },
+    "keyVaultAccessObjectIds": {
+      "value": [
+        "610d4225-9016-47a1-8f92-8d34d61c3c5b"
+      ]
+    },
+    "sqlServerActiveDirectoryAdminObjectId": {
+      "value": "610d4225-9016-47a1-8f92-8d34d61c3c5b"
+    },
+    "diskEncryptionAppRegistrationObjectId": {
+      "value": "610d4225-9016-47a1-8f92-8d34d61c3c5b"
+    },
+    "aseResourceGroup": {
+      "value": "xx"
+    },
+    "resourceEnvironmentName": {
+      "value": "cgshared"
+    },
+    "sqlAdminPasswordSeed": {
+      "value": "myhorse1"
+    },
+    "microsoftAzureWebsitesRPObjectId": {
+      "value": "7fa23fd6-537e-4d28-b0ca-54d075cce842"
+    },
+    "serviceName": {
+      "value": "shared"
+    },
+    "environments": {
+      "value": [
+        "CG"
+      ]
+    },
+    "databaseConfiguration": {
+      "value": {
+        "CG": {
+          "DatabaseResourceIds": []
+        }
+      }
+    },
+    "backupManagementServiceObjectId": {
+      "value": "610d4225-9016-47a1-8f92-8d34d61c3c5b"
+    }
+  }
+}

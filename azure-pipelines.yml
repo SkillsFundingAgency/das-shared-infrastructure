@@ -1,0 +1,49 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - "*"
+
+pr: none
+
+stages:
+  - stage: Lint
+    jobs:
+      - job: "Linux_PSCore_Build_DAS_Continuous_Integration"
+        pool:
+          name: "DAS - Continuous Integration"
+          demands:
+            - npm
+            - node.js
+        workspace:
+          clean: all
+        steps:
+          - script: |
+              npm install eclint
+              node $(npm root)/eclint/bin/eclint.js check $(System.DefaultWorkingDirectory)
+            displayName: "Validate editorconfig"
+            workingDirectory: $(System.DefaultWorkingDirectory)
+
+  - stage: Release
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    jobs:
+    - deployment: "GitHubRelease"
+      displayName: "Create Release in GitHub"
+      pool:
+        name: "DAS - Continuous Deployment"
+      environment: GitHub
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - task: GitVersion@4
+                displayName: GitVersion
+              - task: GitHubRelease@0
+                inputs:
+                  gitHubConnection: "SFA"
+                  repositoryName: "$(Build.Repository.Name)"
+                  action: "create"
+                  target: "$(Build.SourceVersion)"
+                  tagSource: "manual"
+                  tag: "$(Build.BuildNumber)"
+                  addChangeLog: true
