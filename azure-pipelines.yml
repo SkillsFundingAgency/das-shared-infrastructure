@@ -29,7 +29,7 @@ stages:
               node ./node_modules/eclint/bin/eclint.js check
             displayName: "Validate editorconfig"
             workingDirectory: $(System.DefaultWorkingDirectory)
-          - task: Pester
+          - task: Pester@8
             inputs:
               scriptFolder: $(System.DefaultWorkingDirectory)\tests\*
               resultsFile: $(System.DefaultWorkingDirectory)\Test-Pester.XML
