@@ -15,6 +15,13 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
     $ENV:externalAppSubnetCount = 1
     $ENV:sqlAdminPasswordSeed = "test seed"
 
+    Mock Get-AzContext {
+        Write-Verbose -Message "Using mock Get-AzContext"
+        return @{
+            "Account" = "test@test.com"
+        }
+    }
+
     Context "Pre deployment against an existing Resource Group" {
 
         Mock Get-AzResourceGroup {
@@ -30,6 +37,7 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
 
         It "Should consume environment variables and default variables where applicable and now throw an error" {
             {. $PSScriptRoot\..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
+            Assert-MockCalled -Command Get-AzContext
             Assert-MockCalled -Command Get-AzResourceGroup
         }
     }
