@@ -29,7 +29,7 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
         }
 
         It "Should consume environment variables and default variables where applicable and now throw an error" {
-            {. ..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
+            {. $PSScriptRoot\..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
             Assert-MockCalled -Command Get-AzResourceGroup
         }
     }
