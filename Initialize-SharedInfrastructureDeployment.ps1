@@ -64,6 +64,9 @@ try {
     if (!$EnvironmentNames) {
         throw "No environment names found"
     }
+    else {
+        $ENV:EnvironmentNames = $EnvironmentNames
+    }
 
     # --- Create resource groups
     $Tags = @{
