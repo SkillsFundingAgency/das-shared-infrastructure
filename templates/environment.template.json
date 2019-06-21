@@ -236,9 +236,6 @@
         "parameters": {
           "storageAccountName": {
             "value": "[variables('sharedARMStorageName')]"
-          },
-          "subnetResourceIdList": {
-            "value": "[reference('get-subnet-resourceid-list').outputs.subnetResourceIdList.value]"
           }
         }
       }
