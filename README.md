@@ -58,3 +58,13 @@ For example:
     }
 }
 ```
+
+## Testing
+
+Use Pester to invoke tests locally.
+
+```PowerShell
+Invoke-Pester -Path tests\*
+```
+
+New tests are automatically invoked at build time and the run will produce a test report which is published back to azure-pipelines in the context of the build.
