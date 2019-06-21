@@ -73,9 +73,9 @@ try {
         'Parent Business'  = $ENV:ParentBusinessTag
         'Service Offering' = $ENV:ServiceOfferingTag
     }
-
+    Write-Host "- Creating Resource Groups ->"
     $ResourceGroupList | ForEach-Object {
-        Write-Host "- Creating Resource Group: $_"
+        Write-Host "    - $_"
         $ResourceGroup = Get-AzResourceGroup -Name $_ -Location $Location -ErrorAction SilentlyContinue
         if (!$ResourceGroup) {
             $null = New-AzResourceGroup -Name $_ -Location $Location -Tag $Tags -Confirm:$false
@@ -117,8 +117,9 @@ try {
 
     $DatabaseConfiguration = @{ }
     # --- Get environment databases for failover group
+    Write-Host "- Setting up failover group config ->"
     foreach ($Environment in $EnvironmentNames) {
-        Write-Host "- Setting up failover group config for environment $Environment"
+        Write-Host "    -  Environment $Environment"
         $DatabaseConfiguration.Add(
             $Environment, @{"DatabaseResourceIds" = @() }
         )
