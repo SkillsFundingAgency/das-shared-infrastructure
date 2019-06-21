@@ -75,7 +75,7 @@ try {
     }
     Write-Host "- Creating Resource Groups ->"
     $ResourceGroupList | ForEach-Object {
-        Write0Host "    - $_"
+        Write-Host "    - $_"
         $ResourceGroup = Get-AzResourceGroup -Name $_ -Location $Location -ErrorAction SilentlyContinue
         if (!$ResourceGroup) {
             $null = New-AzResourceGroup -Name $_ -Location $Location -Tag $Tags -Confirm:$false
