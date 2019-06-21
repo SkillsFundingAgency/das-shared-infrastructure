@@ -3,14 +3,19 @@ trigger:
   branches:
     include:
       - "*"
+  paths:
+    include:
+      - tests/*
+      - templates/*
+      - utilities/*
+      - Initialize-SharedInfrastructureDeployment.ps1
 
 pr: none
 
-
 stages:
-  - stage: Lint
+  - stage: Test
     jobs:
-      - job: "EditorConfigValidation"
+      - job: "TestAndLint"
         pool:
           name: "DAS - Continuous Deployment"
           demands:
@@ -24,6 +29,15 @@ stages:
               node ./node_modules/eclint/bin/eclint.js check
             displayName: "Validate editorconfig"
             workingDirectory: $(System.DefaultWorkingDirectory)
+          - task: Pester@8
+            inputs:
+              scriptFolder: $(System.DefaultWorkingDirectory)\tests\*
+              resultsFile: $(System.DefaultWorkingDirectory)\Test-Pester.XML
+              run32Bit: False
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: $(System.DefaultWorkingDirectory)\Test-Pester.XML
 
   - stage: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

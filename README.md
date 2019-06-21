@@ -1,5 +1,14 @@
 # Apprenticeship Service Shared Infrastructure
 
+|  | Status |
+|-------------|--------|
+| Build (Master) | [![Build Status](https://dev.azure.com/sfa-gov-uk/Apprenticeships%20Service%20Cloud%20Platform/_apis/build/status/das-shared-infrastructure?branchName=master)](https://dev.azure.com/sfa-gov-uk/Apprenticeships%20Service%20Cloud%20Platform/_build/latest?definitionId=1662&branchName=master)
+| DTA | ![](https://vsrm.dev.azure.com/sfa-gov-uk/_apis/public/Release/badge/0a565315-11ec-47f9-8417-657a130ce42a/43/100) |
+| Dev/Test | ![](https://vsrm.dev.azure.com/sfa-gov-uk/_apis/public/Release/badge/0a565315-11ec-47f9-8417-657a130ce42a/43/96) |
+| PP | ![](https://vsrm.dev.azure.com/sfa-gov-uk/_apis/public/Release/badge/0a565315-11ec-47f9-8417-657a130ce42a/43/97) |
+| PRD | ![](https://vsrm.dev.azure.com/sfa-gov-uk/_apis/public/Release/badge/0a565315-11ec-47f9-8417-657a130ce42a/43/98) |
+| MO | ![](https://vsrm.dev.azure.com/sfa-gov-uk/_apis/public/Release/badge/0a565315-11ec-47f9-8417-657a130ce42a/43/99) |
+
 The templates hosted in this repository facilitate the deployment of the shared infrastructure for the Apprenticeships Service.
 
 The deployment consists of two layers.
@@ -49,3 +58,13 @@ For example:
     }
 }
 ```
+
+## Testing
+
+Use Pester to invoke tests locally.
+
+```PowerShell
+Invoke-Pester -Path tests\*
+```
+
+New tests are automatically invoked at build time and the run will produce a test report which is published back to azure-pipelines in the context of the build.

@@ -229,7 +229,7 @@
   "outputs": {
     "subnetConfiguration": {
       "type": "array",
-      "value": "[skip(variables('subnetConfiguration'),1)]"
+      "value": "[skip(variables('subnetConfiguration'),2)]"
     }
   }
 }

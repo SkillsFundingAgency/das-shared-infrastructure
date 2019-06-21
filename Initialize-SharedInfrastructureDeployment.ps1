@@ -37,10 +37,10 @@ Default: West Europe
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $false)]
-    [ValidateSet("DEV", "PP", "PRD", "MO")]
+    [ValidateSet("DTA", "DEV", "PP", "PRD", "MO")]
     [string]$SubscriptionAbbreviation = "DEV",
     [Parameter(Mandatory = $false)]
-    [ValidateSet("AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
+    [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
     [string[]]$EnvironmentNames = ($ENV:EnvironmentNames | ConvertFrom-Json),
     [Parameter(Mandatory = $false)]
     [ValidateSet("West Europe", "North Europe")]
@@ -59,7 +59,7 @@ try {
         throw "You are not logged in. Run Add-AzAccount to continue"
     }
 
-    if (!$EnvironmentNames){
+    if (!$EnvironmentNames) {
         throw "No environment names found"
     }
 
@@ -68,18 +68,57 @@ try {
     $ResourceGroupList = [System.Collections.ArrayList]::new(@($ManagementResourceGroupName))
     $ResourceGroupList.AddRange(@($EnvironmentNames | ForEach-Object { "das-$_-shared-rg".ToLower() }))
 
+    $Tags = @{
+        Environment        = $ENV:EnvironmentTag
+        'Parent Business'  = $ENV:ParentBusinessTag
+        'Service Offering' = $ENV:ServiceOfferingTag
+    }
+
     $ResourceGroupList | ForEach-Object {
         Write-Host "- Creating Resource Group: $_"
         $ResourceGroup = Get-AzResourceGroup -Name $_ -Location $Location -ErrorAction SilentlyContinue
         if (!$ResourceGroup) {
-            $null = New-AzResourceGroup -Name $_ -Location $Location -Confirm:$false
+            $null = New-AzResourceGroup -Name $_ -Location $Location -Tag $Tags -Confirm:$false
+        }
+        else {
+            Write-Verbose -Message "Resource group $($ResourceGroup.ResourceGroupName) exists, validating tags"
+            $UpdateTags = $false
+            if ($ResourceGroup.Tags) {
+                # Check existing tags and update if necessary
+                $UpdatedTags = $ResourceGroup.Tags
+                foreach ($Key in $Tags.Keys) {
+                    Write-Verbose "Current value of Resource Group Tag $Key is $($ResourceGroup.Tags[$Key])"
+                    if ($($ResourceGroup.Tags[$Key]) -eq $($Tags[$Key])) {
+                        Write-Verbose -Message "Current value of tag ($($ResourceGroup.Tags[$Key])) matches parameter ($($Tags[$Key]))"
+                    }
+                    elseif ($null -eq $($ResourceGroup.Tags[$Key])) {
+                        Write-Verbose -Message ("Tag value is not set, adding tag {0} with value {1}" -f $Key, $Tags[$Key])
+                        $UpdatedTags[$Key] = $Tags[$Key]
+                        $UpdateTags = $true
+                    }
+                    else {
+                        Write-Verbose -Message ("Tag value is incorrect, setting tag {0} with value {1}" -f $Key, $Tags[$Key])
+                        $UpdatedTags[$Key] = $Tags[$Key]
+                        $UpdateTags = $true
+                    }
+                }
+            }
+            else {
+                # No tags to check, just update with the passed in tags
+                $UpdatedTags = $Tags
+                $UpdateTags = $true
+            }
+            if ($UpdateTags) {
+                Write-Host "    - Updating existing tags [$($UpdatedTags.Keys -join ',')]"
+                $null = Set-AzResourceGroup -Name $ResourceGroup.ResourceGroupName -Tag $UpdatedTags
+            }
         }
     }
 
     $DatabaseConfiguration = @{ }
-    Write-Host "- Setting up failover group config"
     # --- Get environment databases for failover group
     foreach ($Environment in $EnvironmentNames) {
+        Write-Host "- Setting up failover group config for environment $Environment"
         $DatabaseConfiguration.Add(
             $Environment, @{"DatabaseResourceIds" = @() }
         )
@@ -114,36 +153,42 @@ try {
     $ENV:DatabaseConfiguration = $DatabaseConfiguration | ConvertTo-Json
 
     # --- Set Template parameters
-    Write-Host "- Building deployment parameters file"
+    Write-Host "- Building deployment parameters file ->"
     $ParametersFile = [PSCustomObject]@{
         "`$schema"     = "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
         contentVersion = "1.0.0.0"
         parameters     = @{ }
     }
 
-    $TemplateParameters = (Get-Content -Path $PSScriptRoot/templates/subscription.template.json -Raw | ConvertFrom-Json).parameters
+    [PSCustomObject]$TemplateParameters = (Get-Content -Path $PSScriptRoot/templates/subscription.template.json -Raw | ConvertFrom-Json).parameters
     foreach ($Property in $TemplateParameters.PSObject.Properties.Name) {
         $ParameterEnvironmentVariableName = $TemplateParameters.$Property.metadata.environmentVariable
         $ParameterEnvironmentVariableType = $TemplateParameters.$Property.type
 
-        if (!$ParameterEnvironmentVariableName -and ($ParameterEnvironmentVariableType -ne "securestring")) {
-            throw "Could not find environment variable for template parameter $Property"
-        }
+        Write-Host "    - [$ParameterEnvironmentVariableType]$ParameterEnvironmentVariableName"
 
+
+        # --- First look for an environment variable
+        Write-Verbose -Message "Attempting to resolve environment variable for $ParameterEnvironmentVariableName"
         $ParameterVariableValue = Get-Item -Path "ENV:$ParameterEnvironmentVariableName" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Value
 
+        # --- If !$ParameterVariableValue attempt to use the default value property
         if (!$ParameterVariableValue) {
-            if (!$ENV:TF_BUILD) {
-                if (($TemplateParameters.$Property.defaultValue -or ($TemplateParameters.$Property.defaultValue -ge 0)) -and $AcceptDefaults.IsPresent ) {
-                    $ParameterVariableValue = $TemplateParameters.$Property.defaultValue
-                }
-                else {
-                    $ParameterVariableValue = Read-Host -Prompt "   -> [$($ParameterEnvironmentVariableType)] $($ParameterEnvironmentVariableName)"
-                }
+            Write-Verbose -Message "Environment variable for $Property was not found, attempting default value"
+            $ParameterVariableValue = $TemplateParameters.$Property.defaultValue
+
+            if ($ParameterVariableValue){
+                Write-Verbose -Message "Using default value for $Property"
             }
-            elseif ($ParameterEnvironmentVariableType -ne "securestring") {
-                throw "Could not find environment variable value for template parameter $Property"
-            }
+        }
+        else {
+            Write-Verbose -Message "Using environment variable value for $Property"
+        }
+
+        # --- If !$ParameterVariableValue and it is not a securestring throw
+        if (!$ParameterVariableValue -and ($ParameterEnvironmentVariableType -ne "securestring")) {
+            Write-Verbose -Message "Default value for $Property was not found. Process will terminate"
+            throw "Could not find environment variable or default value for template parameter $Property"
         }
 
         switch ($ParameterEnvironmentVariableType) {
@@ -170,7 +215,7 @@ try {
     $null = Set-Content -Path $TemplateParametersFilePath -Value ([Regex]::Unescape(($ParametersFile | ConvertTo-Json -Depth 10))) -Force
     Write-Host "- Parameter file content saved to $TemplateParametersFilePath"
 
-    if (!$ENV:TF_BUILD ) {
+    if (!$ENV:TF_BUILD -and !$ENV:isTest) {
         Write-Host "- Deploying $TemplateFilePath"
         $DeploymentParameters = @{
             ResourceGroupName       = $ManagementResourceGroupName

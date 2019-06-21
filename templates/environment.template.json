@@ -52,14 +52,14 @@
     },
     "aseHostingEnvironmentName": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "null",
       "metadata": {
         "description": "Optional ASE to deploy ASP to"
       }
     },
     "aseResourceGroup": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "null",
       "metadata": {
         "description": "Resource group where the optional ASE resides"
       }
@@ -115,7 +115,9 @@
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'config')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
-    "deployToASE": "[greater(length(parameters('aseHostingEnvironmentName')), 0)]",
+    "aseHostingEnvironmentName": "[if(equals(parameters('aseHostingEnvironmentName'),'null'), '', parameters('aseHostingEnvironmentName'))]",
+    "aseResourceGroup": "[if(equals(parameters('aseResourceGroup'),'null'), '', parameters('aseResourceGroup'))]",
+    "deployToAsE": "[not(equals(parameters('aseHostingEnvironmentName'), 'null'))]",
     "appServicePlanSKUs": {
       "standard": {
         "size": "2",
@@ -403,10 +405,10 @@
             "value": "[variables('sharedAppServicePlanName')]"
           },
           "aseHostingEnvironmentName": {
-            "value": "[parameters('aseHostingEnvironmentName')]"
+            "value": "[variables('aseHostingEnvironmentName')]"
           },
           "aseResourceGroup": {
-            "value": "[parameters('aseResourceGroup')]"
+            "value": "[variables('aseResourceGroup')]"
           },
           "aspSize": {
             "value": "[if(variables('deployToASE'), variables('appServicePlanSKUs').isolated.size, variables('appServicePlanSKUs').standard.size)]"
