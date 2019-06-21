@@ -1,3 +1,8 @@
+using module '.\modules\AzureContextHelper.psm1'
+using module '.\modules\ResourceGroupBuilder.psm1'
+using module '.\modules\FailoverGroupBuilder.psm1'
+using module '.\modules\ParametersFileBuilder.psm1'
+
 <#
 .SYNOPSIS
 Shared infrastructure deployment helper
@@ -54,167 +59,30 @@ $TemplateParametersFilePath = "$PSScriptRoot/templates/subscription.parameters.j
 
 try {
     # --- Are We Logged in?
-    $IsLoggedIn = (Get-AzContext -ErrorAction SilentlyContinue).Account
-    if (!$IsLoggedIn) {
-        throw "You are not logged in. Run Add-AzAccount to continue"
-    }
+    [AzureContextHelper]::IsSessionLoggedIn()
 
     if (!$EnvironmentNames) {
         throw "No environment names found"
     }
 
-    # --- Create Resource Groups
-    $ManagementResourceGroupName = "das-$SubscriptionAbbreviation-mgmt-rg".ToLower()
-    $ResourceGroupList = [System.Collections.ArrayList]::new(@($ManagementResourceGroupName))
-    $ResourceGroupList.AddRange(@($EnvironmentNames | ForEach-Object { "das-$_-shared-rg".ToLower() }))
-
+    # --- Create resource groups
     $Tags = @{
         Environment        = $ENV:EnvironmentTag
         'Parent Business'  = $ENV:ParentBusinessTag
         'Service Offering' = $ENV:ServiceOfferingTag
     }
-    Write-Host "- Creating Resource Groups ->"
-    $ResourceGroupList | ForEach-Object {
-        Write-Host "    - $_"
-        $ResourceGroup = Get-AzResourceGroup -Name $_ -Location $Location -ErrorAction SilentlyContinue
-        if (!$ResourceGroup) {
-            $null = New-AzResourceGroup -Name $_ -Location $Location -Tag $Tags -Confirm:$false
-        }
-        else {
-            Write-Verbose -Message "Resource group $($ResourceGroup.ResourceGroupName) exists, validating tags"
-            $UpdateTags = $false
-            if ($ResourceGroup.Tags) {
-                # Check existing tags and update if necessary
-                $UpdatedTags = $ResourceGroup.Tags
-                foreach ($Key in $Tags.Keys) {
-                    Write-Verbose "Current value of Resource Group Tag $Key is $($ResourceGroup.Tags[$Key])"
-                    if ($($ResourceGroup.Tags[$Key]) -eq $($Tags[$Key])) {
-                        Write-Verbose -Message "Current value of tag ($($ResourceGroup.Tags[$Key])) matches parameter ($($Tags[$Key]))"
-                    }
-                    elseif ($null -eq $($ResourceGroup.Tags[$Key])) {
-                        Write-Verbose -Message ("Tag value is not set, adding tag {0} with value {1}" -f $Key, $Tags[$Key])
-                        $UpdatedTags[$Key] = $Tags[$Key]
-                        $UpdateTags = $true
-                    }
-                    else {
-                        Write-Verbose -Message ("Tag value is incorrect, setting tag {0} with value {1}" -f $Key, $Tags[$Key])
-                        $UpdatedTags[$Key] = $Tags[$Key]
-                        $UpdateTags = $true
-                    }
-                }
-            }
-            else {
-                # No tags to check, just update with the passed in tags
-                $UpdatedTags = $Tags
-                $UpdateTags = $true
-            }
-            if ($UpdateTags) {
-                Write-Host "    - Updating existing tags [$($UpdatedTags.Keys -join ',')]"
-                $null = Set-AzResourceGroup -Name $ResourceGroup.ResourceGroupName -Tag $UpdatedTags
-            }
-        }
-    }
+    $ResourceGroupBuilder = [ResourceGroupBuilder]::New()
+    $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $EnvironmentNames, $Location, $Tags)
 
-    $DatabaseConfiguration = @{ }
-    # --- Get environment databases for failover group
-    Write-Host "- Setting up failover group config ->"
-    foreach ($Environment in $EnvironmentNames) {
-        Write-Host "    -  Environment $Environment"
-        $DatabaseConfiguration.Add(
-            $Environment, @{"DatabaseResourceIds" = @() }
-        )
+    # --- Create failover group configuration
+    $FailoverGroupBuilder = [FailoverGroupBuilder]::New()
+    $FailoverGroupBuilder
+    $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($EnvironmentNames)
 
-        # --- Get all shared SQL Servers in environment
-        $SqlServerResources = @(Get-AzResource -Name "das-$($Environment.ToLower())-shared-sql*" -ResourceType "Microsoft.Sql/servers")
-
-        # --- If there is more than one then find the primary
-        if ($SqlServerResources.Count -gt 1) {
-            $SqlServer = $SqlServerResources | Where-Object {
-                $FailoverGroup = Get-AzSqlDatabaseFailoverGroup -ServerName $_.Name -ResourceGroupName $_.ResourceGroupName
-                if ($FailoverGroup -and $FailoverGroup.ReplicationRole -eq "Primary") {
-                    return $_
-                }
-            }
-        }
-        elseif ($SqlServerResources -eq 1) {
-            # --- If there is only one, use that
-            $SqlServer = $SqlServerResources[0]
-        }
-        else {
-            continue
-        }
-
-        # --- Get all the databases in the server that aren't master
-        $Databases = Get-AzSqlDatabase -ServerName $SqlServer.Name -ResourceGroupName $SqlServer.ResourceGroupName | Where-Object { $_.DatabaseName -ne "master" }
-
-        $DatabaseConfiguration.$Environment.DatabaseResourceIds = @($Databases.ResourceId)
-        Write-Host "    - Adding $($Databases.Count) databases to $Environment failover group"
-    }
-
-    $ENV:DatabaseConfiguration = $DatabaseConfiguration | ConvertTo-Json
-
-    # --- Set Template parameters
-    Write-Host "- Building deployment parameters file ->"
-    $ParametersFile = [PSCustomObject]@{
-        "`$schema"     = "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#"
-        contentVersion = "1.0.0.0"
-        parameters     = @{ }
-    }
-
-    [PSCustomObject]$TemplateParameters = (Get-Content -Path $PSScriptRoot/templates/subscription.template.json -Raw | ConvertFrom-Json).parameters
-    foreach ($Property in $TemplateParameters.PSObject.Properties.Name) {
-        $ParameterEnvironmentVariableName = $TemplateParameters.$Property.metadata.environmentVariable
-        $ParameterEnvironmentVariableType = $TemplateParameters.$Property.type
-
-        Write-Host "    - [$ParameterEnvironmentVariableType]$ParameterEnvironmentVariableName"
-
-
-        # --- First look for an environment variable
-        Write-Verbose -Message "Attempting to resolve environment variable for $ParameterEnvironmentVariableName"
-        $ParameterVariableValue = Get-Item -Path "ENV:$ParameterEnvironmentVariableName" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Value
-
-        # --- If !$ParameterVariableValue attempt to use the default value property
-        if (!$ParameterVariableValue) {
-            Write-Verbose -Message "Environment variable for $Property was not found, attempting default value"
-            $ParameterVariableValue = $TemplateParameters.$Property.defaultValue
-
-            if ($ParameterVariableValue){
-                Write-Verbose -Message "Using default value for $Property"
-            }
-        }
-        else {
-            Write-Verbose -Message "Using environment variable value for $Property"
-        }
-
-        # --- If !$ParameterVariableValue and it is not a securestring throw
-        if (!$ParameterVariableValue -and ($ParameterEnvironmentVariableType -ne "securestring")) {
-            Write-Verbose -Message "Default value for $Property was not found. Process will terminate"
-            throw "Could not find environment variable or default value for template parameter $Property"
-        }
-
-        switch ($ParameterEnvironmentVariableType) {
-            'array' {
-                $ParameterVariableValue = [String[]]($ParameterVariableValue | ConvertFrom-Json)
-                break
-            }
-            'int' {
-                $ParameterVariableValue = [Int]$ParameterVariableValue
-                break
-            }
-            'object' {
-                $ParameterVariableValue = $ParameterVariableValue | ConvertFrom-Json
-                break
-            }
-            "default" {
-                Write-Warning -Message "Unknown type $ParameterEnvironmentVariableType"
-            }
-        }
-
-        $ParametersFile.parameters.Add($Property, @{ value = $ParameterVariableValue })
-    }
-
-    $null = Set-Content -Path $TemplateParametersFilePath -Value ([Regex]::Unescape(($ParametersFile | ConvertTo-Json -Depth 10))) -Force
-    Write-Host "- Parameter file content saved to $TemplateParametersFilePath"
+    # --- Create parameters file
+    $ParametersFileBuilder = [ParametersFileBuilder]::New()
+    $ParametersFileConfig = $ParametersFileBuilder.CreateParametersFileConfig($TemplateFilePath)
+    $ParametersFileBuilder.Save($ParametersFileConfig, $TemplateParametersFilePath)
 
     if (!$ENV:TF_BUILD -and !$ENV:isTest) {
         Write-Host "- Deploying $TemplateFilePath"

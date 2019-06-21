@@ -1,3 +1,7 @@
+using module '.\..\modules\AzureContextHelper.psm1'
+using module '.\..\modules\ResourceGroupBuilder.psm1'
+using module '.\..\modules\FailoverGroupBuilder.psm1'
+using module '.\..\modules\ParametersFileBuilder.psm1'
 Describe "Initialize-SharedInfrastructureDeployment tests" {
 
     $ENV:isTest = $true
@@ -20,17 +24,12 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
         return @{
             "Account" = "test@test.com"
         }
-    }
+    } -ModuleName 'AzureContextHelper' -Verifiable
 
     Mock Get-AzResource {
         Write-Verbose -Message "Using mock Get-AzResource"
-        return @{}
-    }
-
-    Mock Get-AzSqlDatabase {
-        Write-Verbose -Message "Using mock Get-AzSqlDatabase"
-        return @{}
-    }
+        return @{ }
+    } -ModuleName 'FailoverGroupBuilder' -Verifiable
 
     Context "Pre deployment against an existing Resource Group" {
 
@@ -40,16 +39,14 @@ Describe "Initialize-SharedInfrastructureDeployment tests" {
                 "ResourceGroupName" = "test-resource-group"
                 "Location"          = "westeurope"
                 "ProvisioningState" = "Succeeded"
-                "Tags"              = @{}
+                "Tags"              = @{ }
                 "ResourceId"        = "/subscriptions/7db81549-e1e7-467b-9c24-04b81630eeaa/resourceGroups/test-resource-group"
             }
-        }
+        } -ModuleName 'ResourceGroupBuilder' -Verifiable
 
         It "Should consume environment variables and default variables where applicable and now throw an error" {
-            {. $PSScriptRoot\..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
-            Assert-MockCalled -Command Get-AzContext
-            Assert-MockCalled -Command Get-AzResourceGroup
-            Assert-MockCalled -Command Get-AzResource
+            { . $PSScriptRoot\..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
+            Assert-VerifiableMocks
         }
     }
 }
