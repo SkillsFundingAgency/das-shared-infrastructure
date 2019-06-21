@@ -37,7 +37,7 @@ Default: West Europe
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $false)]
-    [ValidateSet("DTA", " DEV", "PP", "PRD", "MO")]
+    [ValidateSet("DTA", "DEV", "PP", "PRD", "MO")]
     [string]$SubscriptionAbbreviation = "DEV",
     [Parameter(Mandatory = $false)]
     [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
