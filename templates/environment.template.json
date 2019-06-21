@@ -116,7 +116,7 @@
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'config')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
     "aseHostingEnvironmentName": "[if(equals(parameters('aseHostingEnvironmentName'),'null'), '', parameters('aseHostingEnvironmentName'))]",
-    "aseResourceGroupName": "[if(equals(parameters('aseResourceGroup'),'null'), '', parameters('aseResourceGroup'))]",
+    "aseResourceGroup": "[if(equals(parameters('aseResourceGroup'),'null'), '', parameters('aseResourceGroup'))]",
     "deployToAsE": "[not(equals(parameters('aseHostingEnvironmentName'), 'null'))]",
     "appServicePlanSKUs": {
       "standard": {
