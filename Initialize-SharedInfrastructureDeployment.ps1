@@ -1,4 +1,4 @@
-using module '.\modules\AzureContextHelper.psm1'
+using module '.\modules\InitializationHelper.psm1'
 using module '.\modules\ResourceGroupBuilder.psm1'
 using module '.\modules\FailoverGroupBuilder.psm1'
 using module '.\modules\ParametersFileBuilder.psm1'
@@ -46,7 +46,7 @@ param(
     [string]$SubscriptionAbbreviation = "DEV",
     [Parameter(Mandatory = $false)]
     [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
-    [string[]]$EnvironmentNames = ($ENV:EnvironmentNames | ConvertFrom-Json),
+    [string[]]$EnvironmentNames,
     [Parameter(Mandatory = $false)]
     [ValidateSet("West Europe", "North Europe")]
     [string]$Location = "West Europe",
@@ -59,14 +59,9 @@ $TemplateParametersFilePath = "$PSScriptRoot/templates/subscription.parameters.j
 
 try {
     # --- Are We Logged in?
-    [AzureContextHelper]::IsSessionLoggedIn()
+    [InitializationHelper]::IsLoggedIn()
 
-    if (!$EnvironmentNames) {
-        throw "No environment names found"
-    }
-    else {
-        $ENV:EnvironmentNames = $EnvironmentNames
-    }
+    $ParsedEnvironmentNames = [InitializationHelper]::ParseEnvironmentNames($PSBoundParameters)
 
     # --- Create resource groups
     $Tags = @{
@@ -75,28 +70,20 @@ try {
         'Service Offering' = $ENV:ServiceOfferingTag
     }
     $ResourceGroupBuilder = [ResourceGroupBuilder]::New()
-    $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $EnvironmentNames, $Location, $Tags)
+    $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $ParsedEnvironmentNames, $Location, $Tags)
 
     # --- Create failover group configuration
     $FailoverGroupBuilder = [FailoverGroupBuilder]::New()
-    $FailoverGroupBuilder
-    $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($EnvironmentNames)
+    $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
 
     # --- Create parameters file
     $ParametersFileBuilder = [ParametersFileBuilder]::New()
     $ParametersFileConfig = $ParametersFileBuilder.CreateParametersFileConfig($TemplateFilePath)
     $ParametersFileBuilder.Save($ParametersFileConfig, $TemplateParametersFilePath)
 
-    if (!$ENV:TF_BUILD -and !$ENV:isTest) {
-        Write-Host "- Deploying $TemplateFilePath"
-        $DeploymentParameters = @{
-            ResourceGroupName       = $ManagementResourceGroupName
-            TemplateParameterFile   = $TemplateParametersFilePath
-            TemplateFile            = $TemplateFilePath
-            DeploymentDebugLogLevel = "All"
-        }
-        New-AzResourceGroupDeployment @DeploymentParameters
-    }
+    # --- Deploy if local and !testing
+    [InitializationHelper]::DeployTemplate($ManagementResourceGroupName, $TemplateFilePath, $TemplateParametersFilePath)
+
 }
 catch {
     $PSCmdlet.ThrowTerminatingError($_)
