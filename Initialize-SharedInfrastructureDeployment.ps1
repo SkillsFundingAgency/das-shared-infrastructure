@@ -70,7 +70,7 @@ try {
         'Service Offering' = $ENV:ServiceOfferingTag
     }
     $ResourceGroupBuilder = [ResourceGroupBuilder]::New()
-    $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $ParsedEnvironmentNames, $Location, $Tags)
+    $null = $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $ParsedEnvironmentNames, $Location, $Tags)
 
     # --- Create failover group configuration
     $FailoverGroupBuilder = [FailoverGroupBuilder]::New()
