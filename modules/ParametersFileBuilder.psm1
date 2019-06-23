@@ -12,7 +12,7 @@ class ParametersFileBuilder {
             parameters     = @{ }
         }
 
-        [PSCustomObject]$TemplateParameters = (Get-Content -Path $TemplateFilePath -Raw | ConvertFrom-Json).parameters
+        [PSCustomObject]$TemplateParameters = (Get-Content -Path $TemplateFilePath -Raw | ConvertFrom-Json -ErrorAction Stop).parameters
         foreach ($Property in $TemplateParameters.PSObject.Properties.Name) {
             $ParameterEnvironmentVariableName = $TemplateParameters.$Property.metadata.environmentVariable
             $ParameterEnvironmentVariableType = $TemplateParameters.$Property.type
@@ -62,7 +62,6 @@ class ParametersFileBuilder {
 
             $ParametersFile.parameters.Add($Property, @{ value = $ParameterVariableValue })
         }
-
         return $ParametersFile
 
     }
