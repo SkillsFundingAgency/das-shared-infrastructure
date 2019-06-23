@@ -1,25 +1,50 @@
 Param(
-    [System.IO.FileInfo]$Path = $PSScriptRoot
+    [System.IO.FileInfo]$Path = $PSScriptRoot,
+    [Switch]$LocalExecution
 )
 
-Clear-Host
+if ($LocalExecution.IsPresent) {
 
-$Header = @"
-#######################################################################
-#   Test Execution Mangaer                                            #
-#   Run tests in the context of a new process to avoid poluting the   #
-#   current runspace                                                  #
-#   [For local execution only]                                        #
-#######################################################################
+    Clear-Host
+
+    $Header = @"
+    #######################################################################
+    #   Test Execution Mangaer                                            #
+    #   Run tests in the context of a new process to avoid poluting the   #
+    #   current runspace                                                  #
+    #   [For local execution only]                                        #
+    #######################################################################
 "@
 
-Write-Host $Header -ForegroundColor Green
+    Write-Host $Header -ForegroundColor Green
 
-$ArgumentList = @(
-    "-NoExit"
-    "-NoLogo"
-    "-NoProfile"
-    "-Command & {Invoke-Pester $Path -ExcludeTag e2e; exit}"
-)
+    $ArgumentList = @(
+        "-NoExit"
+        "-NoLogo"
+        "-NoProfile"
+        "-Command & {Invoke-Pester $Path -ExcludeTag e2e; exit}"
+    )
 
-Start-Process PowerShell -NoNewWindow -ArgumentList $ArgumentList
+    Start-Process PowerShell -NoNewWindow -ArgumentList $ArgumentList
+
+}
+else {
+    $Parameters = @{
+        PassThru = $true
+        OutputFormat = 'NUnitXml'
+        OutputFile = "$PSScriptRoot\Test-Pester.XML"
+    }
+
+    Push-Location
+    Set-Location -Path $PSScriptRoot
+    $TestResults = Invoke-Pester @Parameters
+    Pop-Location
+
+    if ($TestResults.FailedCount -gt 0) {
+        Write-Error "Failed '$($TestResults.FailedCount)' tests, build failed"
+    }
+}
+
+
+
+
