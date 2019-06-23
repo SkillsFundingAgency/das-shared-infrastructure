@@ -3,7 +3,7 @@ class ResourceGroupBuilder {
     ResourceGroupBuilder() {
     }
 
-    [void] CreateResourceGroups([String]$SubscriptionAbbreviation, [String[]]$EnvironmentNames, [String]$Location, [Hashtable]$Tags) {
+    [String[]] CreateResourceGroups([String]$SubscriptionAbbreviation, [String[]]$EnvironmentNames, [String]$Location, [Hashtable]$Tags) {
 
         # --- Create Resource Groups
         $ManagementResourceGroupName = "das-$($SubscriptionAbbreviation)-mgmt-rg".ToLower()
@@ -51,5 +51,6 @@ class ResourceGroupBuilder {
                 }
             }
         }
+        return $ResourceGroupList
     }
 }
