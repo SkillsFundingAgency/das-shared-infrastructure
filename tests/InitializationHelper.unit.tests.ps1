@@ -57,8 +57,8 @@ InModuleScope InitializationHelper {
 
             It "Should return a json string that represents an array of EnvironmentNames" {
                 $MockParsedEnvironmentNames = [InitializationHelper]::ParseEnvironmentNames($MockInputObject)
-                ($MockParsedEnvironmentNames | ConvertFrom-Json) | Should Contain "AT"
-                ($MockParsedEnvironmentNames | ConvertFrom-Json) | Should Contain "TEST"
+                $MockParsedEnvironmentNames | Should Contain "AT"
+                $MockParsedEnvironmentNames | Should Contain "TEST"
             }
 
             It "Should create an environment called ENV:EnvironmentNames" {
