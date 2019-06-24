@@ -40,7 +40,7 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: $(System.DefaultWorkingDirectory)\tests\Test-Pester.XML
-            condition: succeededOrFailed()#
+            condition: succeededOrFailed()
           - task: CopyFiles@2
             displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
             inputs:
