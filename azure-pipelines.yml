@@ -13,9 +13,9 @@ trigger:
 pr: none
 
 stages:
-  - stage: Test
+  - stage: Build
     jobs:
-      - job: "TestAndLint"
+      - job: "LintAndTest"
         pool:
           name: "DAS - Continuous Deployment"
           demands:
@@ -24,20 +24,23 @@ stages:
         workspace:
           clean: all
         steps:
+          - task: GitVersion@4
+            displayName: GitVersion
           - script: |
               npm install eclint
               node ./node_modules/eclint/bin/eclint.js check
             displayName: "Validate editorconfig"
             workingDirectory: $(System.DefaultWorkingDirectory)
-          - task: Pester@8
-            inputs:
-              scriptFolder: $(System.DefaultWorkingDirectory)\tests\*
-              resultsFile: $(System.DefaultWorkingDirectory)\Test-Pester.XML
-              run32Bit: False
+          - powershell: |
+              ./tests/Start-UnitTest.ps1
+            displayName: "Execute unit tests"
+            failOnStderr: "true"
+            workingDirectory:  $(System.DefaultWorkingDirectory)
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
-              testResultsFiles: $(System.DefaultWorkingDirectory)\Test-Pester.XML
+              testResultsFiles: $(System.DefaultWorkingDirectory)\tests\Test-Pester.XML
+            condition: succeededOrFailed()
 
   - stage: Release
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
@@ -51,8 +54,6 @@ stages:
         runOnce:
           deploy:
             steps:
-              - task: GitVersion@4
-                displayName: GitVersion
               - task: GitHubRelease@0
                 inputs:
                   gitHubConnection: "SFA"

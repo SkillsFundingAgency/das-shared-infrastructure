@@ -1,0 +1,148 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceEnvironmentName": {
+      "type": "string",
+      "metadata": {
+        "description": "Base environment name. E.g. DEV. PP, PRD, MO. ",
+        "environmentVariable": "resourceEnvironmentName"
+      }
+    },
+    "serviceName": {
+      "type": "string",
+      "defaultValue": "shared",
+      "metadata": {
+        "description": "Service name of the service. E.g shared infrastructure = shared.",
+        "environmentVariable": "serviceName"
+      }
+    },
+    "keyVaultAccessObjectIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault access to",
+        "environmentVariable": "keyVaultAccessObjectIds"
+      }
+    },
+    "microsoftAzureWebsitesRPObjectId": {
+      "type": "string",
+      "defaultValue": "7fa23fd6-537e-4d28-b0ca-54d075cce842",
+      "metadata": {
+        "description": "Object Id of the Azure Websites RP",
+        "environmentVariable": "microsoftAzureWebsitesRPObjectId"
+      }
+    },
+    "backupManagementServiceObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object Id for the backup management service",
+        "environmentVariable": "backupManagementServiceObjectId"
+      }
+    },
+    "diskEncryptionAppRegistrationObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object Id for the disk Encryption App Registration",
+        "environmentVariable": "diskEncryptionAppRegistrationObjectId"
+      }
+    },
+    "environments": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "String array of all environments in this subscription",
+        "environmentVariable": "environmentNames"
+      }
+    },
+    "sqlServerActiveDirectoryAdminLogin": {
+      "type": "string",
+      "metadata": {
+        "description": "The active directory admin that will be assigned to the sql server",
+        "environmentVariable": "sqlServerActiveDirectoryAdminLogin"
+      }
+    },
+    "sqlServerActiveDirectoryAdminObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "The object id of the active directory admin that will be assigned to the sql server",
+        "environmentVariable": "sqlServerActiveDirectoryAdminObjectId"
+      }
+    },
+    "threatDetectionEmailAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The email address that threat alerts will be sent to",
+        "environmentVariable": "threatDetectionEmailAddress"
+      }
+    },
+    "aseHostingEnvironmentName": {
+      "type": "string",
+      "defaultValue": "null",
+      "metadata": {
+        "description": "Optional ASE to deploy ASP to",
+        "environmentVariable": "aseHostingEnvironmentName"
+      }
+    },
+    "aseResourceGroup": {
+      "type": "string",
+      "defaultValue": "null",
+      "metadata": {
+        "description": "Resource group where the optional ASE resides",
+        "environmentVariable": "aseResourceGroup"
+      }
+    },
+    "databaseConfiguration": {
+      "type": "object",
+      "metadata": {
+        "description": "Configuration object which describes the structure of failover groups",
+        "environmentVariable": "databaseConfiguration"
+      }
+    },
+    "gatewaySubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of gateway subnets to provision",
+        "environmentVariable": "gatewaySubnetCount"
+      }
+    },
+    "managementSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of management subnets to provision",
+        "environmentVariable": "managementSubnetCount"
+      }
+    },
+    "externalAppSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 10,
+      "metadata": {
+        "description": "The number of external subnets to provision",
+        "environmentVariable": "externalAppSubnetCount"
+      }
+    },
+    "internalAppSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 10,
+      "metadata": {
+        "description": "The number of internal subnets to provision.",
+        "environmentVariable": "internalAppSubnetCount"
+      }
+    },
+    "sqlAdminPasswordSeed": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The seed used to generate passwords for sql server deployments.",
+        "environmentVariable": "sqlAdminPasswordSeed"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [],
+  "outputs": {}
+}

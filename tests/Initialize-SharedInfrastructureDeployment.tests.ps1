@@ -1,55 +1,57 @@
-Describe "Initialize-SharedInfrastructureDeployment tests" {
+using module './../modules/InitializationHelper.psm1'
+using module './../modules/ResourceGroupBuilder.psm1'
+using module './../modules/FailoverGroupBuilder.psm1'
+using module './../modules/ParametersFileBuilder.psm1'
+Import-Module -Name "$PSScriptRoot/modules/UnitTest.Helpers.psm1" -Force
 
-    $ENV:isTest = $true
-    $ENV:environmentNames = "['DTA']"
-    $ENV:resourceEnvironmentName = "['DTA']"
-    $ENV:serviceName = "shared"
-    $ENV:threatDetectionEmailAddress = "test@test.com"
-    $ENV:sqlServerActiveDirectoryAdminLogin = "test@test.com"
-    $ENV:keyVaultAccessObjectIds = "['fb0eac10-bda1-4410-9f8f-f4d381268d13']"
-    $ENV:sqlServerActiveDirectoryAdminObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
-    $ENV:diskEncryptionAppRegistrationObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
-    $ENV:backupManagementServiceObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
-    $ENV:gatewaySubnetCount = 1
-    $ENV:internalAppSubnetCount = 1
-    $ENV:externalAppSubnetCount = 1
-    $ENV:sqlAdminPasswordSeed = "test seed"
+Describe "Initialize-SharedInfrastructureDeployment tests" -Tag "e2e" {
+
+    BeforeAll {
+        Set-MockEnvironment
+    }
+
+    AfterAll {
+        Clear-MockEnvironment
+    }
 
     Mock Get-AzContext {
-        Write-Verbose -Message "Using mock Get-AzContext"
         return @{
             "Account" = "test@test.com"
         }
-    }
+    } -ModuleName 'InitializationHelper'
 
     Mock Get-AzResource {
-        Write-Verbose -Message "Using mock Get-AzResource"
-        return @{}
-    }
+        return @{ }
+    } -ModuleName 'FailoverGroupBuilder'
 
-    Mock Get-AzSqlDatabase {
-        Write-Verbose -Message "Using mock Get-AzSqlDatabase"
-        return @{}
-    }
-
-    Context "Pre deployment against an existing Resource Group" {
-
-        Mock Get-AzResourceGroup {
-            Write-Verbose -Message "Using mock Get-AzResourceGroup"
-            return @{
-                "ResourceGroupName" = "test-resource-group"
-                "Location"          = "westeurope"
-                "ProvisioningState" = "Succeeded"
-                "Tags"              = @{}
-                "ResourceId"        = "/subscriptions/7db81549-e1e7-467b-9c24-04b81630eeaa/resourceGroups/test-resource-group"
-            }
+    Mock Get-AzResourceGroup {
+        Write-Verbose -Message "Using mock Get-AzResourceGroup"
+        return @{
+            "ResourceGroupName" = "test-resource-group"
+            "Location"          = "westeurope"
+            "ProvisioningState" = "Succeeded"
+            "Tags"              = @{ }
+            "ResourceId"        = "/subscriptions/7db81549-e1e7-467b-9c24-04b81630eeaa/resourceGroups/test-resource-group"
         }
+    } -ModuleName 'ResourceGroupBuilder'
 
-        It "Should consume environment variables and default variables where applicable and now throw an error" {
-            {. $PSScriptRoot\..\Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
-            Assert-MockCalled -Command Get-AzContext
-            Assert-MockCalled -Command Get-AzResourceGroup
-            Assert-MockCalled -Command Get-AzResource
+    Context "Pre deployment against an existing Resource Group using EnvironmentNames environment variable" {
+
+        It "Should consume environment variables and default variables where applicable and not throw an error" {
+            { . $PSScriptRoot/../Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
+            Assert-MockCalled -CommandName Get-AzContext -ModuleName InitializationHelper
+            Assert-MockCalled -Commandname Get-AzResource -ModuleName FailoverGroupBuilder
+            Assert-MockCalled -CommandName Get-AzResourceGroup -ModuleName ResourceGroupBuilder
+        }
+    }
+
+    Context "Pre deployment against an existing Resource Group using EnvironmentNames parameter" {
+
+        It "Should consume environment variables and default variables where applicable and not throw an error" {
+            { . $PSScriptRoot/../Initialize-SharedInfrastructureDeployment.ps1 -EnvironmentNames "DTA" -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
+            Assert-MockCalled -CommandName Get-AzContext -ModuleName InitializationHelper
+            Assert-MockCalled -Commandname Get-AzResource -ModuleName FailoverGroupBuilder
+            Assert-MockCalled -CommandName Get-AzResourceGroup -ModuleName ResourceGroupBuilder
         }
     }
 }
