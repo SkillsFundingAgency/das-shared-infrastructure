@@ -14,8 +14,9 @@ class InitializationHelper {
         $EnvironmentNames = @()
 
         if ($InputObject.ContainsKey("EnvironmentNames")) {
-            $EnvironmentNames = $InputObject['EnvironmentNames'] | ConvertTo-Json -ErrorAction Stop
-            $ENV:EnvironmentNames = $EnvironmentNames
+            $EnvironmentNames = $InputObject['EnvironmentNames']
+            Write-Host "EnvironmentNames $EnvironmentNames"
+            $ENV:EnvironmentNames =  @($InputObject['EnvironmentNames']) | ConvertTo-Json -ErrorAction Stop
             Write-Verbose -Message "ENV:EnvironmentNames has been successfully set to $($ENV:EnvironmentNames) from parameter input"
         }
         elseif ($ENV:EnvironmentNames) {
