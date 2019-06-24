@@ -35,10 +35,20 @@ Describe "Initialize-SharedInfrastructureDeployment tests" -Tag "e2e" {
         }
     } -ModuleName 'ResourceGroupBuilder'
 
-    Context "Pre deployment against an existing Resource Group" {
+    Context "Pre deployment against an existing Resource Group using EnvironmentNames environment variable" {
 
         It "Should consume environment variables and default variables where applicable and not throw an error" {
             { . $PSScriptRoot/../Initialize-SharedInfrastructureDeployment.ps1 -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
+            Assert-MockCalled -CommandName Get-AzContext -ModuleName InitializationHelper
+            Assert-MockCalled -Commandname Get-AzResource -ModuleName FailoverGroupBuilder
+            Assert-MockCalled -CommandName Get-AzResourceGroup -ModuleName ResourceGroupBuilder
+        }
+    }
+
+    Context "Pre deployment against an existing Resource Group using EnvironmentNames parameter" {
+
+        It "Should consume environment variables and default variables where applicable and not throw an error" {
+            { . $PSScriptRoot/../Initialize-SharedInfrastructureDeployment.ps1 -EnvironmentNames "DTA" -SubscriptionAbbreviation "DTA" -Verbose:$VerbosePreference } | Should Not Throw
             Assert-MockCalled -CommandName Get-AzContext -ModuleName InitializationHelper
             Assert-MockCalled -Commandname Get-AzResource -ModuleName FailoverGroupBuilder
             Assert-MockCalled -CommandName Get-AzResourceGroup -ModuleName ResourceGroupBuilder
