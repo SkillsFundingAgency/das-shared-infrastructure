@@ -9,8 +9,8 @@ if ($LocalExecution.IsPresent) {
 
     $Header = @"
     #######################################################################
-    #   Test Execution Mangaer                                            #
-    #   Run tests in the context of a new process to avoid poluting the   #
+    #   Test Execution Manager                                            #
+    #   Run tests in the context of a new process to avoid polluting the  #
     #   current runspace                                                  #
     #   [For local execution only]                                        #
     #######################################################################
@@ -22,7 +22,7 @@ if ($LocalExecution.IsPresent) {
         "-NoExit"
         "-NoLogo"
         "-NoProfile"
-        "-Command & {Invoke-Pester $Path -ExcludeTag e2e; exit}"
+        "-Command & {Invoke-Pester $Path; exit}"
     )
 
     Start-Process PowerShell -NoNewWindow -ArgumentList $ArgumentList
