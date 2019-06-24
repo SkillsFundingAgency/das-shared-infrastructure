@@ -1,8 +1,5 @@
 class FailoverGroupBuilder {
 
-    FailoverGroupBuilder() {
-    }
-
     [string] CreateFailoverGroupConfig([String[]]$EnvironmentNames) {
 
         [Hashtable]$DatabaseConfiguration = @{ }

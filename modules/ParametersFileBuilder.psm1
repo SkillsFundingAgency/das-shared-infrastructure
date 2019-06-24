@@ -1,8 +1,5 @@
 class ParametersFileBuilder {
 
-    ParametersFileBuilder() {
-    }
-
     [PSCustomObject] CreateParametersFileConfig([String]$TemplateFilePath) {
         # --- Set Template parameters
         Write-Host "- Building deployment parameters file ->"

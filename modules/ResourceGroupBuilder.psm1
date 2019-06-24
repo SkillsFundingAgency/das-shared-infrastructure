@@ -1,8 +1,5 @@
 class ResourceGroupBuilder {
 
-    ResourceGroupBuilder() {
-    }
-
     [String[]] CreateResourceGroups([String]$SubscriptionAbbreviation, [String[]]$EnvironmentNames, [String]$Location, [Hashtable]$Tags) {
 
         # --- Create Resource Groups

@@ -1,8 +1,5 @@
 class InitializationHelper {
 
-    InitializationHelper() {
-    }
-
     static [void] IsLoggedIn() {
         $IsLoggedIn = $null -ne (Get-AzContext -ErrorAction SilentlyContinue).Account
         if (!$IsLoggedIn) {
