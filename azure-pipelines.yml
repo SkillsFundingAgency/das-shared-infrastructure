@@ -24,6 +24,8 @@ stages:
         workspace:
           clean: all
         steps:
+                      - task: GitVersion@4
+                displayName: GitVersion
           - script: |
               npm install eclint
               node ./node_modules/eclint/bin/eclint.js check
@@ -34,7 +36,7 @@ stages:
             displayName: "Execute unit tests"
             failOnStderr: "true"
             workingDirectory:  $(System.DefaultWorkingDirectory)
-            continueOnError: true
+            continueOnError: "true"
           - task: PublishTestResults@2
             inputs:
               testResultsFormat: 'NUnit'
@@ -52,8 +54,6 @@ stages:
         runOnce:
           deploy:
             steps:
-              - task: GitVersion@4
-                displayName: GitVersion
               - task: GitHubRelease@0
                 inputs:
                   gitHubConnection: "SFA"
