@@ -259,6 +259,9 @@
           },
           "managementSubnetCount": {
             "value": "[variables('mgmtManagementSubnetCount')]"
+          },
+          "virtualNetworkAddressSpacePrefix": {
+            "value": "10.0"
           }
         }
       }

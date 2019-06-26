@@ -161,6 +161,9 @@
           "virtualNetworkName": {
             "value": "[variables('virtualNetworkName')]"
           },
+          "virtualNetworkAddressSpacePrefix": {
+            "value": "10.1"
+          },
           "serviceEndpointList": {
             "value": "[variables('subnetServiceEndpointList')]"
           },
