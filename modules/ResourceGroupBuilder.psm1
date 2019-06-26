@@ -3,8 +3,8 @@ class ResourceGroupBuilder {
     [String[]] CreateResourceGroups([String]$SubscriptionAbbreviation, [String[]]$EnvironmentNames, [String]$Location, [Hashtable]$Tags) {
 
         # --- Create Resource Groups
-        $ManagementResourceGroupName = "das-$($SubscriptionAbbreviation)-mgmt-rg".ToLower()
-        $ResourceGroupList = [System.Collections.ArrayList]::new(@($ManagementResourceGroupName))
+        $ManagementResourceGroupName = "das-$($SubscriptionAbbreviation)-mgmt-rg"
+        $ResourceGroupList = [System.Collections.ArrayList]::new(@($ManagementResourceGroupName.ToLower()))
         $ResourceGroupList.AddRange(@($EnvironmentNames | ForEach-Object { "das-$($_)-shared-rg".ToLower() }))
 
         Write-Host "- Creating Resource Groups ->"
