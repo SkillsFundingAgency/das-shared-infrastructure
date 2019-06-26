@@ -65,7 +65,7 @@ try {
 
     $BuildNumber = "local-deployment"
     if ($ENV:TF_BUILD) {
-        $BuildNumber = $ENV:Build.BuildNumber
+        $BuildNumber = $ENV:Build_BuildNumber
     }
 
     Write-Verbose -Message "Version: $BuildNumber"
