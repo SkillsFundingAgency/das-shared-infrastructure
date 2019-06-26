@@ -56,6 +56,12 @@
         "description": "Configuration object which describes the structure of failovergroups"
       }
     },
+    "virtualNetworkAddressSpacePrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual network address prefix for the environment vnet"
+      }
+    },
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -95,7 +101,7 @@
         "size": "2",
         "instances": 2
       },
-      "metadata":{
+      "metadata": {
         "description": "An object representing the sku of the app service plan."
       }
     },
@@ -106,7 +112,7 @@
         "size": "2",
         "instances": 2
       },
-      "metadata":{
+      "metadata": {
         "description": "An object representing the sku of the app service plan."
       }
     }
@@ -162,7 +168,7 @@
             "value": "[variables('virtualNetworkName')]"
           },
           "virtualNetworkAddressSpacePrefix": {
-            "value": "10.1"
+            "value": "[parameters('virtualNetworkAddressSpacePrefix')]"
           },
           "serviceEndpointList": {
             "value": "[variables('subnetServiceEndpointList')]"

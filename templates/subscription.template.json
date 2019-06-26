@@ -132,7 +132,7 @@
         "size": "2",
         "instances": 2
       },
-      "metadata":{
+      "metadata": {
         "description": "An object representing the sku of the app service plan.",
         "environmentVariable": "frontEndAppServicePlanSku"
       }
@@ -144,7 +144,7 @@
         "size": "2",
         "instances": 2
       },
-      "metadata":{
+      "metadata": {
         "description": "An object representing the sku of the app service plan.",
         "environmentVariable": "backEndAppServicePlanSku"
       }
@@ -363,6 +363,9 @@
           },
           "databaseConfiguration": {
             "value": "[parameters('databaseConfiguration')]"
+          },
+          "virtualNetworkAddressSpacePrefix": {
+            "value": "[concat('10.', copyIndex(1))]"
           },
           "gatewaySubnetCount": {
             "value": "[parameters('gatewaySubnetCount')]"
