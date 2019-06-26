@@ -25,7 +25,6 @@ Describe "Initialize-SharedInfrastructureDeployment tests" -Tag "e2e" {
     } -ModuleName 'FailoverGroupBuilder'
 
     Mock Get-AzResourceGroup {
-        Write-Verbose -Message "Using mock Get-AzResourceGroup"
         return @{
             "ResourceGroupName" = "test-resource-group"
             "Location"          = "westeurope"
@@ -34,6 +33,10 @@ Describe "Initialize-SharedInfrastructureDeployment tests" -Tag "e2e" {
             "ResourceId"        = "/subscriptions/7db81549-e1e7-467b-9c24-04b81630eeaa/resourceGroups/test-resource-group"
         }
     } -ModuleName 'ResourceGroupBuilder'
+
+    Mock Set-AzResourceGroup {
+        return @{ }
+    }
 
     Context "Pre deployment against an existing Resource Group using EnvironmentNames environment variable" {
 
