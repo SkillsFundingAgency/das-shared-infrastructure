@@ -144,7 +144,7 @@
     "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
     "secondarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').secondary.nameSuffix))]",
-    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet-we')]",
+    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "subnetServiceEndpointList": [
       "Microsoft.Web",
       "Microsoft.Sql",

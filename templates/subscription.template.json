@@ -157,7 +157,7 @@
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "mgmtManagementSubnetCount": 1,
-    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet-we')]",
+    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
