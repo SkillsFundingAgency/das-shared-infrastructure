@@ -36,7 +36,7 @@ Describe "Initialize-SharedInfrastructureDeployment tests" -Tag "e2e" {
 
     Mock Set-AzResourceGroup {
         return @{ }
-    }
+    } -ModuleName 'ResourceGroupBuilder'
 
     Context "Pre deployment against an existing Resource Group using EnvironmentNames environment variable" {
 
