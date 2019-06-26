@@ -49,9 +49,7 @@ param(
     [string[]]$EnvironmentNames,
     [Parameter(Mandatory = $false)]
     [ValidateSet("West Europe", "North Europe")]
-    [string]$Location = "West Europe",
-    [Parameter(Mandatory = $false)]
-    [switch]$AcceptDefaults
+    [string]$Location = "West Europe"
 )
 
 $TemplateFilePath = "$PSScriptRoot/templates/subscription.template.json"
@@ -63,19 +61,12 @@ try {
 
     $ParsedEnvironmentNames = [InitializationHelper]::ParseEnvironmentNames($PSBoundParameters)
 
-    $BuildNumber = "local-deployment"
-    if ($ENV:TF_BUILD) {
-        $BuildNumber = $ENV:Build_BuildNumber
-    }
-
-    Write-Verbose -Message "Version: $BuildNumber"
-
     # --- Create resource groups
     $Tags = @{
         Environment        = $ENV:EnvironmentTag
         'Parent Business'  = $ENV:ParentBusinessTag
         'Service Offering' = $ENV:ServiceOfferingTag
-        'Version'          = $BuildNumber
+        'Version'          = [InitializationHelper]::GetBuildNumber()
     }
     $ResourceGroupBuilder = [ResourceGroupBuilder]::New()
     $null = $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $ParsedEnvironmentNames, $Location, $Tags)
