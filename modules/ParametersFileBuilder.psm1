@@ -27,6 +27,10 @@ class ParametersFileBuilder {
 
                 if ($ParameterVariableValue) {
                     Write-Verbose -Message "Using default value for $Property"
+
+                    if ($ParameterEnvironmentVariableType -eq "object") {
+                        $ParameterVariableValue = $ParameterVariableValue | ConvertTo-Json -Depth 10
+                    }
                 }
             }
             else {
@@ -64,8 +68,13 @@ class ParametersFileBuilder {
     }
 
     [void] Save([PSCustomObject]$ParametersFile, [String]$TemplateParametersFilePath) {
+        try {
+            Write-Host "- Saving parameters file"
+            $null = Set-Content -Path $TemplateParametersFilePath -Value ([Regex]::Unescape(($ParametersFile | ConvertTo-Json -Depth 10))) -Force
+            Write-Host "- Parameter file content saved to $TemplateParametersFilePath"
+        } catch {
+            Write-Error -Message "An error occured when attempting to save the parameters file: $_"
+        }
 
-        $null = Set-Content -Path $TemplateParametersFilePath -Value ([Regex]::Unescape(($ParametersFile | ConvertTo-Json -Depth 10))) -Force
-        Write-Host "- Parameter file content saved to $TemplateParametersFilePath"
     }
 }
