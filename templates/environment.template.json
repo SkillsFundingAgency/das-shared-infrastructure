@@ -124,7 +124,6 @@
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'config')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
-    "deployToAsE": "[not(equals(parameters('aseHostingEnvironmentName'), 'null'))]",
     "sqlServerLocationMap": {
       "primary": {
         "location": "westeurope",
