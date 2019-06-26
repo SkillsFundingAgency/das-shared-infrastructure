@@ -101,7 +101,7 @@
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 1,
+      "maxValue": 5,
       "metadata": {
         "description": "The number of gateway subnets to provision",
         "environmentVariable": "gatewaySubnetCount"
@@ -110,7 +110,7 @@
     "managementSubnetCount": {
       "type": "int",
       "defaultValue": 1,
-      "maxValue": 1,
+      "maxValue": 50,
       "metadata": {
         "description": "The number of management subnets to provision",
         "environmentVariable": "managementSubnetCount"
@@ -119,7 +119,7 @@
     "externalAppSubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 10,
+      "maxValue": 50,
       "metadata": {
         "description": "The number of external subnets to provision",
         "environmentVariable": "externalAppSubnetCount"
@@ -128,7 +128,7 @@
     "internalAppSubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 10,
+      "maxValue": 150,
       "metadata": {
         "description": "The number of internal subnets to provision.",
         "environmentVariable": "internalAppSubnetCount"
@@ -139,6 +139,30 @@
       "metadata": {
         "description": "The seed used to generate passwords for sql server deployments.",
         "environmentVariable": "sqlAdminPasswordSeed"
+      }
+    },
+    "frontEndAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "2",
+        "instances": 2
+      },
+      "metadata":{
+        "description": "An object representing the sku of the app service plan.",
+        "environmentVariable": "frontEndAppServicePlanSku"
+      }
+    },
+    "backEndAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "2",
+        "instances": 2
+      },
+      "metadata":{
+        "description": "An object representing the sku of the app service plan.",
+        "environmentVariable": "backEndAppServicePlanSku"
       }
     }
   },
@@ -350,12 +374,6 @@
           "threatDetectionEmailAddress": {
             "value": "[parameters('threatDetectionEmailAddress')]"
           },
-          "aseHostingEnvironmentName": {
-            "value": "[parameters('aseHostingEnvironmentName')]"
-          },
-          "aseResourceGroup": {
-            "value": "[parameters('aseResourceGroup')]"
-          },
           "databaseConfiguration": {
             "value": "[parameters('databaseConfiguration')]"
           },
@@ -370,6 +388,12 @@
           },
           "internalAppSubnetCount": {
             "value": "[parameters('internalAppSubnetCount')]"
+          },
+          "frontEndAppServicePlanSku": {
+            "value": "[parameters('frontEndAppServicePlanSku')]"
+          },
+          "backEndAppServicePlanSku": {
+            "value": "[parameters('backEndAppServicePlanSku')]"
           }
         }
       },
