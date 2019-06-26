@@ -40,7 +40,6 @@ steps:
       testResultsFormat: 'NUnit'
       testResultsFiles: $(System.DefaultWorkingDirectory)\tests\Test-Pester.XML
     condition: succeededOrFailed()
-
   - task: CopyFiles@2
     displayName: "Copy Files to: $(build.artifactstagingdirectory)"
     inputs:
@@ -51,7 +50,6 @@ steps:
         Initialize-SharedInfrastructureDeployment.ps1
       TargetFolder: "$(build.artifactstagingdirectory)/publish"
       OverWrite: true
-
   - task: PublishBuildArtifacts@1
     displayName: "Publish Artifact"
     inputs:
