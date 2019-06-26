@@ -50,24 +50,16 @@
         "description": "The email address that threat alerts will be sent to"
       }
     },
-    "aseHostingEnvironmentName": {
-      "type": "string",
-      "defaultValue": "null",
-      "metadata": {
-        "description": "Optional ASE to deploy ASP to"
-      }
-    },
-    "aseResourceGroup": {
-      "type": "string",
-      "defaultValue": "null",
-      "metadata": {
-        "description": "Resource group where the optional ASE resides"
-      }
-    },
     "databaseConfiguration": {
       "type": "object",
       "metadata": {
         "description": "Configuration object which describes the structure of failovergroups"
+      }
+    },
+    "virtualNetworkAddressSpacePrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual network address prefix for the environment vnet"
       }
     },
     "gatewaySubnetCount": {
@@ -101,6 +93,28 @@
       "metadata": {
         "description": "The number of internal subnets to provision."
       }
+    },
+    "frontEndAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "2",
+        "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the app service plan."
+      }
+    },
+    "backEndAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "2",
+        "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the app service plan."
+      }
     }
   },
   "variables": {
@@ -108,26 +122,14 @@
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
-    "sharedAppServicePlanName": "[concat(variables('resourceNamePrefix'),'-asp')]",
+    "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
+    "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'config')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
-    "aseHostingEnvironmentName": "[if(equals(parameters('aseHostingEnvironmentName'),'null'), '', parameters('aseHostingEnvironmentName'))]",
-    "aseResourceGroup": "[if(equals(parameters('aseResourceGroup'),'null'), '', parameters('aseResourceGroup'))]",
-    "deployToAsE": "[not(equals(parameters('aseHostingEnvironmentName'), 'null'))]",
-    "appServicePlanSKUs": {
-      "standard": {
-        "size": "2",
-        "instanceCount": 2
-      },
-      "isolated": {
-        "size": "2",
-        "instanceCount": 2
-      }
-    },
     "sqlServerLocationMap": {
       "primary": {
         "location": "westeurope",
@@ -142,7 +144,7 @@
     "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
     "secondarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').secondary.nameSuffix))]",
-    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet-we')]",
+    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "subnetServiceEndpointList": [
       "Microsoft.Web",
       "Microsoft.Sql",
@@ -164,6 +166,9 @@
         "parameters": {
           "virtualNetworkName": {
             "value": "[variables('virtualNetworkName')]"
+          },
+          "virtualNetworkAddressSpacePrefix": {
+            "value": "[parameters('virtualNetworkAddressSpacePrefix')]"
           },
           "serviceEndpointList": {
             "value": "[variables('subnetServiceEndpointList')]"
@@ -389,7 +394,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "app-service-plan",
+      "name": "front-end-app-service-plan",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -399,19 +404,42 @@
         },
         "parameters": {
           "appServicePlanName": {
-            "value": "[variables('sharedAppServicePlanName')]"
-          },
-          "aseHostingEnvironmentName": {
-            "value": "[variables('aseHostingEnvironmentName')]"
-          },
-          "aseResourceGroup": {
-            "value": "[variables('aseResourceGroup')]"
+            "value": "[variables('sharedFrontEndAppServicePlanName')]"
           },
           "aspSize": {
-            "value": "[if(variables('deployToASE'), variables('appServicePlanSKUs').isolated.size, variables('appServicePlanSKUs').standard.size)]"
+            "value": "[parameters('frontEndAppServicePlanSku').size]"
           },
           "aspInstances": {
-            "value": "[if(variables('deployToASE'), variables('appServicePlanSKUs').isolated.instanceCount, variables('appServicePlanSKUs').standard.instanceCount)]"
+            "value": "[parameters('frontEndAppServicePlanSku').instances]"
+          },
+          "nonASETier": {
+            "value": "[parameters('frontEndAppServicePlanSku').tier]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "back-end-app-service-plan",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServicePlanName": {
+            "value": "[variables('sharedBackEndAppServicePlanName')]"
+          },
+          "aspSize": {
+            "value": "[parameters('backEndAppServicePlanSku').size]"
+          },
+          "aspInstances": {
+            "value": "[parameters('backEndAppServicePlanSku').instances]"
+          },
+          "nonASETier": {
+            "value": "[parameters('backEndAppServicePlanSku').tier]"
           }
         }
       }

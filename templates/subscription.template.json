@@ -75,22 +75,6 @@
         "environmentVariable": "threatDetectionEmailAddress"
       }
     },
-    "aseHostingEnvironmentName": {
-      "type": "string",
-      "defaultValue": "null",
-      "metadata": {
-        "description": "Optional ASE to deploy ASP to",
-        "environmentVariable": "aseHostingEnvironmentName"
-      }
-    },
-    "aseResourceGroup": {
-      "type": "string",
-      "defaultValue": "null",
-      "metadata": {
-        "description": "Resource group where the optional ASE resides",
-        "environmentVariable": "aseResourceGroup"
-      }
-    },
     "databaseConfiguration": {
       "type": "object",
       "metadata": {
@@ -101,7 +85,7 @@
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 1,
+      "maxValue": 5,
       "metadata": {
         "description": "The number of gateway subnets to provision",
         "environmentVariable": "gatewaySubnetCount"
@@ -110,7 +94,7 @@
     "managementSubnetCount": {
       "type": "int",
       "defaultValue": 1,
-      "maxValue": 1,
+      "maxValue": 50,
       "metadata": {
         "description": "The number of management subnets to provision",
         "environmentVariable": "managementSubnetCount"
@@ -119,7 +103,7 @@
     "externalAppSubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 10,
+      "maxValue": 50,
       "metadata": {
         "description": "The number of external subnets to provision",
         "environmentVariable": "externalAppSubnetCount"
@@ -128,7 +112,7 @@
     "internalAppSubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 10,
+      "maxValue": 150,
       "metadata": {
         "description": "The number of internal subnets to provision.",
         "environmentVariable": "internalAppSubnetCount"
@@ -140,6 +124,30 @@
         "description": "The seed used to generate passwords for sql server deployments.",
         "environmentVariable": "sqlAdminPasswordSeed"
       }
+    },
+    "frontEndAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "2",
+        "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the app service plan.",
+        "environmentVariable": "frontEndAppServicePlanSku"
+      }
+    },
+    "backEndAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "2",
+        "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the app service plan.",
+        "environmentVariable": "backEndAppServicePlanSku"
+      }
     }
   },
   "variables": {
@@ -149,7 +157,7 @@
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "mgmtManagementSubnetCount": 1,
-    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet-we')]",
+    "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
@@ -251,6 +259,9 @@
           },
           "managementSubnetCount": {
             "value": "[variables('mgmtManagementSubnetCount')]"
+          },
+          "virtualNetworkAddressSpacePrefix": {
+            "value": "10.0"
           }
         }
       }
@@ -350,14 +361,11 @@
           "threatDetectionEmailAddress": {
             "value": "[parameters('threatDetectionEmailAddress')]"
           },
-          "aseHostingEnvironmentName": {
-            "value": "[parameters('aseHostingEnvironmentName')]"
-          },
-          "aseResourceGroup": {
-            "value": "[parameters('aseResourceGroup')]"
-          },
           "databaseConfiguration": {
             "value": "[parameters('databaseConfiguration')]"
+          },
+          "virtualNetworkAddressSpacePrefix": {
+            "value": "[concat('10.', copyIndex(1))]"
           },
           "gatewaySubnetCount": {
             "value": "[parameters('gatewaySubnetCount')]"
@@ -370,6 +378,12 @@
           },
           "internalAppSubnetCount": {
             "value": "[parameters('internalAppSubnetCount')]"
+          },
+          "frontEndAppServicePlanSku": {
+            "value": "[parameters('frontEndAppServicePlanSku')]"
+          },
+          "backEndAppServicePlanSku": {
+            "value": "[parameters('backEndAppServicePlanSku')]"
           }
         }
       },
