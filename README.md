@@ -37,7 +37,7 @@ The diagram below is a logical representation of the deployment template structu
 This is the primary method used to deploy the infrastructure. Configuration is stored securely either in the build definition or variable groups and versioned artifacts are used when deploying.
 
 ### Local deployment
- To deploy from your local machine, set each parmeter as an environment variable then run the script below.
+ To deploy from your local machine, set each parameter as an environment variable then run the script below.
 
 ``` PowerShell
 .\Initialize-SharedInfrastructureDeployment.ps1
