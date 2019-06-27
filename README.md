@@ -29,7 +29,7 @@ Both shared and application deployments consume templates from the [platform bui
 ## Logical view
 The diagram below is a logical representation of the deployment template structure.
 
-![ApprenticeshipsSharedInfrastructure](images/ApprenticeshipsSharedInfrastructure.png)
+![ApprenticeshipsSharedInfrastructure](images/ApprenticeshipsSharedInfrastructure-v1.2.png)
 
 ## Deployment
 
@@ -37,15 +37,13 @@ The diagram below is a logical representation of the deployment template structu
 This is the primary method used to deploy the infrastructure. Configuration is stored securely either in the build definition or variable groups and versioned artifacts are used when deploying.
 
 ### Local deployment
-To deploy from your local machine run the script below. If matching environment variables are not found, you will be prompted for the values.
-
-**Note**: This deployment method should ***only*** be used for testing purposes.
+ To deploy from your local machine, set each parameter as an environment variable then run the script below.
 
 ``` PowerShell
 .\Initialize-SharedInfrastructureDeployment.ps1
 ```
 
-If you want to set environment variables, the names expected can be found in the **metadata** object for each parameter in [subscription.template.json](templates/subscription.json).
+The expected environment variable names can be found in the **metadata** object for each parameter in [subscription.template.json](templates/subscription.json).
 
 For example:
 
@@ -59,12 +57,22 @@ For example:
 }
 ```
 
+**Note**: This deployment method should ***only*** be used for testing purposes.
+
 ## Testing
 
-Use Pester to invoke tests locally.
+Use the unit test runner to execute tests. The LocalDeployment switch will execute tests in a new process to avoid polluting the current runspace.
 
 ```PowerShell
-Invoke-Pester -Path tests\*
+.\Start-UnitTest.ps1 -LocalDeployment
 ```
+
+You can specify specific tests by using the Path parameters.
+
+```PowerShell
+.\Start-UnitTest.ps1 -Path .\Initialize-SharedInfrastructureDeployment.tests.ps1 -LocalDeployment
+```
+
+The example above will execute the end to end mock deployment test.
 
 New tests are automatically invoked at build time and the run will produce a test report which is published back to azure-pipelines in the context of the build.
