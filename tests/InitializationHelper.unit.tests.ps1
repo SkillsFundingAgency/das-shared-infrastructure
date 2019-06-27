@@ -36,6 +36,36 @@ InModuleScope InitializationHelper {
         }
     }
 
+    Describe "[InitializationHelper] GetBuildNumber() tests" {
+
+        Context "When the script is ran from Azure Pipelines" {
+
+            $MockBuildNumber = "1.0.0"
+
+            BeforeAll {
+                Set-Item -Path Env:\Build_BuildNumber -Value "1.0.0"
+                Set-Item -Path Env:\TF_BUILD -Value $true
+            }
+
+            AfterAll {
+                Remove-Item -Path Env:\Build_BuildNumber
+                Remove-Item -Path Env:\TF_BUILD
+            }
+
+            It "Should return the build number found in Build.BuildNumber" {
+
+                [InitializationHelper]::GetBuildNumber() | Should Be $MockBuildNumber
+            }
+        }
+
+        Context "When the script is ran locally" {
+
+            It "Should return the default value set by the method" {
+                [InitializationHelper]::GetBuildNumber() | Should Be "local-deployment"
+            }
+        }
+    }
+
     Describe "[InitializationHelper] ParseEnvironmentNames() tests" {
 
         Context "When the EnvironmentNames parameter is used" {

@@ -29,6 +29,7 @@ InModuleScope ResourceGroupBuilder {
             Environment        = "TestEnvironment"
             'Parent Business'  = "TestParentBusiness"
             'Service Offering' = "TestServiceOffering"
+            'Version'          = "1.0.0"
         }
 
         $MockManagementResourceGroupName = "das-mock-mgmt-rg"
@@ -72,7 +73,7 @@ InModuleScope ResourceGroupBuilder {
                     "ResourceGroupName" = "das-mock-mgmt-rg"
                     "Location"          = "westeurope"
                     "ProvisioningState" = "Succeeded"
-                    "Tags"              = $Tags
+                    "Tags"              = $MockTags
                     "ResourceId"        = "/subscriptions/7db81549-e1e7-467b-9c24-04b81630eeaa/resourceGroups/test-resource-group"
                 }
             } -Verifiable
@@ -107,6 +108,7 @@ InModuleScope ResourceGroupBuilder {
                         Environment        = "WrongTag"
                         'Parent Business'  = "WrongTag"
                         'Service Offering' = "WrongTag"
+                        'Version'          = "WrongTag"
                     }
                     "ResourceId"        = "/subscriptions/7db81549-e1e7-467b-9c24-04b81630eeaa/resourceGroups/test-resource-group"
                 }

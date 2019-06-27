@@ -7,6 +7,17 @@ class InitializationHelper {
         }
     }
 
+    static [String] GetBuildNumber() {
+
+        $BuildNumber = "local-deployment"
+        if ($ENV:TF_BUILD) {
+            $BuildNumber = $ENV:Build_BuildNumber
+        }
+
+        Write-Verbose -Message "Build number is: $BuildNumber"
+        return $BuildNumber
+    }
+
     static [String[]] ParseEnvironmentNames([Hashtable]$InputObject) {
         $EnvironmentNames = @()
 
