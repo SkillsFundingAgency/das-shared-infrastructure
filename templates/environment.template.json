@@ -221,9 +221,6 @@
         "parameters": {
           "storageAccountName": {
             "value": "[variables('configurationStorageName')]"
-          },
-          "subnetResourceIdList": {
-            "value": "[reference('get-subnet-resourceid-list').outputs.subnetResourceIdList.value]"
           }
         }
       }
