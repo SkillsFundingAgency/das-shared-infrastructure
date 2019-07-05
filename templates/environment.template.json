@@ -128,7 +128,7 @@
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
-    "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'config')]",
+    "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'configstr')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
     "sqlServerLocationMap": {
       "primary": {
