@@ -47,6 +47,7 @@ steps:
         modules/**
         templates/**
         utilities/**
+        tests/Remove-Environment.ps1
         Initialize-SharedInfrastructureDeployment.ps1
       TargetFolder: "$(build.artifactstagingdirectory)/publish"
       OverWrite: true
