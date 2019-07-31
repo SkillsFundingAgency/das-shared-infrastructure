@@ -27,4 +27,12 @@ $ResourceGroupList | ForEach-Object {
 }
 
 Write-Host "Hard deleting $($KeyVaultList.Count) key vault(s)"
-$KeyVaultList | ForEach-Object { Remove-AzKeyVault -VaultName $_.VaultName -Location $_.Location -InRemovedState -Force }
+$KeyVaultList | ForEach-Object {
+    try {
+        Write-Host "    -> $($_.VaultName)"
+        $null = Remove-AzKeyVault -VaultName $_.VaultName -Location $_.Location -InRemovedState -Force
+    }
+    catch {
+        Write-Warning -Message "Failed to hard delete key vault $($_.VaultName)"
+    }
+}
