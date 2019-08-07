@@ -17,11 +17,18 @@
         "environmentVariable": "serviceName"
       }
     },
-    "keyVaultAccessObjectIds": {
+    "keyVaultSecretCertOpsAccessObjectIds": {
       "type": "array",
       "metadata": {
-        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault access to",
-        "environmentVariable": "keyVaultAccessObjectIds"
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret and Certificate access to",
+        "environmentVariable": "keyVaultSecretCertOpsAccessObjectIds"
+      }
+    },
+    "keyVaultSecretOpsAccessObjectIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret access to",
+        "environmentVariable": "keyVaultSecretOpsAccessObjectIds"
       }
     },
     "microsoftAzureWebsitesRPObjectId": {
@@ -195,14 +202,33 @@
             "Set"
           ]
         }
+      },
+      {
+        "objectId": "[parameters('keyVaultSecretCertOpsAccessObjectIds')]",
+        "tenantId": "[subscription().tenantId]",
+        "permissions": {
+          "secrets": [
+            "Get",
+            "List",
+            "Set"
+          ],
+          "certificates": [
+            "Get",
+            "List",
+            "Create",
+            "Update",
+            "GetIssuers",
+            "ListIssuers"
+          ]
+        }
       }
     ],
     "copy": [
       {
-        "name": "parameterKeyVaultAccessPolicies",
-        "count": "[length(parameters('keyVaultAccessObjectIds'))]",
+        "name": "parameterKeyVaultSecretOpsAccessPolicies",
+        "count": "[length(parameters('keyVaultSecretOpsAccessObjectIds'))]",
         "input": {
-          "objectId": "[parameters('keyVaultAccessObjectIds')[copyIndex('parameterKeyVaultAccessPolicies')]]",
+          "objectId": "[parameters('keyVaultSecretOpsAccessObjectIds')[copyIndex('parameterKeyVaultSecretOpsAccessPolicies')]]",
           "tenantId": "[subscription().tenantId]",
           "permissions": {
             "secrets": [
