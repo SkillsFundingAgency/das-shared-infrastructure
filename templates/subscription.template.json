@@ -18,9 +18,9 @@
       }
     },
     "keyVaultSecretCertificateAccessObjectId": {
-      "type": "array",
+      "type": "string",
       "metadata": {
-        "description": "Object Ids of the Azure AD Object you want to grant Key Vault Secret and Certificate access to",
+        "description": "Object Id of the Azure AD Object you want to grant Key Vault Secret and Certificate access to",
         "environmentVariable": "keyVaultSecretCertificateAccessObjectId"
       }
     },
