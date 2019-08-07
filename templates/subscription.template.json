@@ -17,18 +17,18 @@
         "environmentVariable": "serviceName"
       }
     },
-    "keyVaultSecretCertOpsAccessObjectIds": {
+    "keyVaultSecretCertificateAccessObjectIds": {
       "type": "array",
       "metadata": {
         "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret and Certificate access to",
-        "environmentVariable": "keyVaultSecretCertOpsAccessObjectIds"
+        "environmentVariable": "keyVaultSecretCertificateAccessObjectIds"
       }
     },
-    "keyVaultSecretOpsAccessObjectIds": {
+    "keyVaultSecretAccessObjectIds": {
       "type": "array",
       "metadata": {
         "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret access to",
-        "environmentVariable": "keyVaultSecretOpsAccessObjectIds"
+        "environmentVariable": "keyVaultSecretAccessObjectIds"
       }
     },
     "microsoftAzureWebsitesRPObjectId": {
@@ -204,7 +204,7 @@
         }
       },
       {
-        "objectId": "[parameters('keyVaultSecretCertOpsAccessObjectIds')]",
+        "objectId": "[parameters('keyVaultSecretCertificateAccessObjectIds')]",
         "tenantId": "[subscription().tenantId]",
         "permissions": {
           "secrets": [
@@ -225,10 +225,10 @@
     ],
     "copy": [
       {
-        "name": "parameterKeyVaultSecretOpsAccessPolicies",
-        "count": "[length(parameters('keyVaultSecretOpsAccessObjectIds'))]",
+        "name": "parameterKeyVaultSecretAccessPolicies",
+        "count": "[length(parameters('keyVaultSecretAccessObjectIds'))]",
         "input": {
-          "objectId": "[parameters('keyVaultSecretOpsAccessObjectIds')[copyIndex('parameterKeyVaultSecretOpsAccessPolicies')]]",
+          "objectId": "[parameters('keyVaultSecretAccessObjectIds')[copyIndex('parameterKeyVaultSecretAccessPolicies')]]",
           "tenantId": "[subscription().tenantId]",
           "permissions": {
             "secrets": [
