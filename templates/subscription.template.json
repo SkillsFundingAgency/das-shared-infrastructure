@@ -17,11 +17,11 @@
         "environmentVariable": "serviceName"
       }
     },
-    "keyVaultSecretCertificateAccessObjectIds": {
+    "keyVaultSecretCertificateAccessObjectId": {
       "type": "array",
       "metadata": {
-        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret and Certificate access to",
-        "environmentVariable": "keyVaultSecretCertificateAccessObjectIds"
+        "description": "Object Ids of the Azure AD Object you want to grant Key Vault Secret and Certificate access to",
+        "environmentVariable": "keyVaultSecretCertificateAccessObjectId"
       }
     },
     "keyVaultSecretAccessObjectIds": {
@@ -204,7 +204,7 @@
         }
       },
       {
-        "objectId": "[parameters('keyVaultSecretCertificateAccessObjectIds')]",
+        "objectId": "[parameters('keyVaultSecretCertificateAccessObjectId')]",
         "tenantId": "[subscription().tenantId]",
         "permissions": {
           "secrets": [
