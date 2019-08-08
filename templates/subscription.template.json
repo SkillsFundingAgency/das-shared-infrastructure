@@ -306,7 +306,7 @@
             "value": "[variables('keyVaultName')]"
           },
           "keyVaultAccessPolicies": {
-            "value": "[concat(variables('KeyVaultAccessPolicies'), variables('parameterKeyVaultAccessPolicies'))]"
+            "value": "[concat(variables('KeyVaultAccessPolicies'), variables('parameterKeyVaultSecretAccessPolicies'))]"
           },
           "enabledForDiskEncryption": {
             "value": true
