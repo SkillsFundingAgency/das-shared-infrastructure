@@ -23,7 +23,7 @@ pool:
     - node.js
 
 steps:
-  - task: GitVersion@4
+  - task: gittools.gitversion.gitversion-task.GitVersion@5
     displayName: GitVersion
   - script: |
       npm install eclint

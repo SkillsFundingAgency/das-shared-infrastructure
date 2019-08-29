@@ -5,7 +5,8 @@ function Set-MockEnvironment {
     $ENV:serviceName = "shared"
     $ENV:threatDetectionEmailAddress = "test@test.com"
     $ENV:sqlServerActiveDirectoryAdminLogin = "test@test.com"
-    $ENV:keyVaultAccessObjectIds = "['fb0eac10-bda1-4410-9f8f-f4d381268d13']"
+    $ENV:keyVaultSecretCertificateAccessObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
+    $ENV:keyVaultSecretAccessObjectIds = "['fb0eac10-bda1-4410-9f8f-f4d381268d13']"
     $ENV:sqlServerActiveDirectoryAdminObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:diskEncryptionAppRegistrationObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:backupManagementServiceObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
@@ -25,7 +26,8 @@ function Clear-MockEnvironment {
         "ENV:serviceName",
         "ENV:threatDetectionEmailAddress",
         "ENV:sqlServerActiveDirectoryAdminLogin",
-        "ENV:keyVaultAccessObjectIds",
+        "ENV:keyVaultSecretCertificateAccessObjectId",
+        "ENV:keyVaultSecretAccessObjectIds",
         "ENV:sqlServerActiveDirectoryAdminObjectId",
         "ENV:diskEncryptionAppRegistrationObjectId",
         "ENV:backupManagementServiceObjectId",
