@@ -272,7 +272,7 @@
         }
       },
       "copy": {
-        "name": "storageaccountcontainercopy",
+        "name": "sharedstorageaccountcontainercopy",
         "count": "[length(parameters('sharedStorageAccountContainerArray'))]"
       },
       "dependsOn": [
