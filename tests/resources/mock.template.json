@@ -147,6 +147,13 @@
         "description": "The seed used to generate passwords for sql server deployments.",
         "environmentVariable": "sqlAdminPasswordSeed"
       }
+    },
+    "sharedStorageAccountContainerArray": {
+      "type": "array",
+      "metadata": {
+        "description": "An array of the blob container names to deploy to the shared storage account.",
+        "environmentVariable": "sharedStorageAccountContainerArray"
+      }
     }
   },
   "variables": {},

@@ -115,6 +115,12 @@
       "metadata": {
         "description": "An object representing the sku of the app service plan."
       }
+    },
+    "sharedStorageAccountContainerArray": {
+      "type": "array",
+      "metadata": {
+        "description": "An array of the blob container names to deploy to the shared storage account."
+      }
     }
   },
   "variables": {
@@ -241,6 +247,37 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('shared-storage-account-container', parameters('sharedStorageAccountContainerArray')[copyIndex()])]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[greater(length(parameters('sharedStorageAccountContainerArray')), 0)]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'), 'storage-container.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "storageAccountName": {
+            "value": "[variables('sharedARMStorageName')]"
+          },
+          "containerName": {
+            "value": "[parameters('sharedStorageAccountContainerArray')[copyIndex()]]"
+          },
+          "publicAccess": {
+            "value": "None"
+          }
+        }
+      },
+      "copy": {
+        "name": "sharedstorageaccountcontainercopy",
+        "count": "[length(parameters('sharedStorageAccountContainerArray'))]"
+      },
+      "dependsOn": [
+        "arm-shared-storage"
+      ]
     },
     {
       "apiVersion": "2017-05-10",
