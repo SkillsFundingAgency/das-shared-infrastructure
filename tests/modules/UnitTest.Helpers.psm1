@@ -15,6 +15,7 @@ function Set-MockEnvironment {
     $ENV:externalAppSubnetCount = 1
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
+    $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
 }
 
 function Clear-MockEnvironment {
@@ -34,7 +35,8 @@ function Clear-MockEnvironment {
         "ENV:gatewaySubnetCount",
         "ENV:internalAppSubnetCount",
         "ENV:externalAppSubnetCount",
-        "ENV:sqlAdminPasswordSeed"
+        "ENV:sqlAdminPasswordSeed",
+        "ENV:sharedStorageAccountContainerArray"
     ) -Force
 }
 
