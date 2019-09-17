@@ -155,6 +155,13 @@
         "description": "An object representing the sku of the app service plan.",
         "environmentVariable": "backEndAppServicePlanSku"
       }
+    },
+    "sharedStorageAccountContainerArray": {
+      "type": "array",
+      "metadata": {
+        "description": "An array of the blob container names to deploy to the shared storage account.",
+        "environmentVariable": "sharedStorageAccountContainerArray"
+      }
     }
   },
   "variables": {
@@ -409,6 +416,9 @@
           },
           "backEndAppServicePlanSku": {
             "value": "[parameters('backEndAppServicePlanSku')]"
+          },
+          "sharedStorageAccountContainerArray": {
+            "value": "[parameters('sharedStorageAccountContainerArray')]"
           }
         }
       },
