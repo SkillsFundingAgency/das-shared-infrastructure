@@ -9,7 +9,7 @@ function Set-MockEnvironment {
     $ENV:keyVaultSecretAccessObjectIds = "['fb0eac10-bda1-4410-9f8f-f4d381268d13']"
     $ENV:sqlServerActiveDirectoryAdminObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:diskEncryptionEnterpriseApplicationObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
-    $ENV:AKSEnterpriseApplicationObjectId = ""
+    $ENV:AKSEnterpriseApplicationObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:backupManagementServiceObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:gatewaySubnetCount = 1
     $ENV:internalAppSubnetCount = 1
