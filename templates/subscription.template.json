@@ -46,11 +46,18 @@
         "environmentVariable": "backupManagementServiceObjectId"
       }
     },
-    "diskEncryptionAppRegistrationObjectId": {
+    "diskEncryptionEnterpriseApplicationObjectId": {
       "type": "string",
       "metadata": {
-        "description": "Object Id for the disk Encryption App Registration",
-        "environmentVariable": "diskEncryptionAppRegistrationObjectId"
+        "description": "Object Id for the disk Encryption Enterprise Application",
+        "environmentVariable": "diskEncryptionEnterpriseApplicationObjectId"
+      }
+    },
+    "AKSEnterpriseApplicationObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object Id for the AKS Enterprise Application",
+        "environmentVariable": "AKSEnterpriseApplicationObjectId"
       }
     },
     "environments": {
@@ -199,7 +206,7 @@
         }
       },
       {
-        "objectId": "[parameters('diskEncryptionAppRegistrationObjectId')]",
+        "objectId": "[parameters('diskEncryptionEnterpriseApplicationObjectId')]",
         "tenantId": "[subscription().tenantId]",
         "permissions": {
           "keys": [
@@ -207,6 +214,19 @@
           ],
           "secrets": [
             "Set"
+          ]
+        }
+      },
+      {
+        "condition": "[greater(length(parameters('AKSEnterpriseApplicationObjectId')), 0)]",
+        "objectId": "[parameters('AKSEnterpriseApplicationObjectId')]",
+        "tenantId": "[subscription().tenantId]",
+        "permissions": {
+          "secrets": [
+            "Get"
+          ],
+          "certificates": [
+            "Get"
           ]
         }
       },
