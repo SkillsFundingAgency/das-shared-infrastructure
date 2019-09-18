@@ -55,6 +55,7 @@
     },
     "AKSEnterpriseApplicationObjectId": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "Object Id for the AKS Enterprise Application",
         "environmentVariable": "AKSEnterpriseApplicationObjectId"
