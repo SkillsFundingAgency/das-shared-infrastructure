@@ -55,7 +55,7 @@
     },
     "AKSEnterpriseApplicationObjectId": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "Disabled",
       "metadata": {
         "description": "Object Id for the AKS Enterprise Application",
         "environmentVariable": "AKSEnterpriseApplicationObjectId"
@@ -219,7 +219,7 @@
         }
       },
       {
-        "condition": "[greater(length(parameters('AKSEnterpriseApplicationObjectId')), 0)]",
+        "condition": "[not(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled'))]",
         "objectId": "[parameters('AKSEnterpriseApplicationObjectId')]",
         "tenantId": "[subscription().tenantId]",
         "permissions": {
