@@ -38,7 +38,7 @@ class ParametersFileBuilder {
             }
 
             # --- If !$ParameterVariableValue and it is not a securestring throw
-            if (!$ParameterVariableValue -and ($ParameterEnvironmentVariableType -ne "securestring")) {
+            if (!$ParameterVariableValue -and ($ParameterEnvironmentVariableType -ne "securestring") -and ($TemplateParameters.$Property.defaultValue -ne "")) {
                 Write-Verbose -Message "Default value for $Property was not found. Process will terminate"
                 throw "Could not find environment variable or default value for template parameter $Property"
             }
