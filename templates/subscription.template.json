@@ -180,18 +180,20 @@
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
-    "AKSKeyVaultAccessPolicy": {
-      "objectId": "[parameters('AKSEnterpriseApplicationObjectId')]",
-      "tenantId": "[subscription().tenantId]",
-      "permissions": {
-        "secrets": [
-          "Get"
-        ],
-        "certificates": [
-          "Get"
-        ]
+    "AKSKeyVaultAccessPolicy": [
+      {
+        "objectId": "[parameters('AKSEnterpriseApplicationObjectId')]",
+        "tenantId": "[subscription().tenantId]",
+        "permissions": {
+          "secrets": [
+            "Get"
+          ],
+          "certificates": [
+            "Get"
+          ]
+        }
       }
-    },
+    ],
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
@@ -333,7 +335,7 @@
             "value": "[variables('keyVaultName')]"
           },
           "keyVaultAccessPolicies": {
-            "value": "[if(not(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled')),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies'),variables('AKSKeyVaultAccessPolicy')),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies')))]"
+            "value": "[if(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled'),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies')),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies'),variables('AKSKeyVaultAccessPolicy')))]"
           },
           "enabledForDiskEncryption": {
             "value": true
