@@ -95,10 +95,27 @@
       "metadata": {
         "description": "A list of service endpoints to configure on the subnets provisioned in the vnet."
       }
+    },
+    "AKSRouteTableName": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Name of the AKS Route Table to be included in the DEV management subnet mgmt-sn-0"
+      }
+    },
+    "AKSRouteTableResourceGroupName": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Name of the DEV Resource Group where the AKS Route Table resides, used for the resourceId function to get the AKS Route Table resource"
+      }
     }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "aksRouteTableId": {
+      "id": "[if(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), resourceId(parameters('AKSRouteTableResourceGroupName'), 'Microsoft.Network/routeTables', parameters('AKSRouteTableName')),'')]"
+    },
     "subnetDelegations": [
       {
         "name": "webapp",
@@ -135,7 +152,8 @@
         "input": {
           "name": "[concat(parameters('managementSubnetNamePrefix'), '-', copyIndex('managementSubnetCopy'))]",
           "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 5, copyIndex('managementSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]"
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 5, copyIndex('managementSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "routeTable": "[if(and(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), bool(equals(copyIndex('managementSubnetCopy'), 0))), variables('aksRouteTableId'), json('null'))]"
           }
         }
       },
