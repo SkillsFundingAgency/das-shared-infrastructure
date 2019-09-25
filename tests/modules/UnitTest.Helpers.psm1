@@ -9,6 +9,7 @@ function Set-MockEnvironment {
     $ENV:keyVaultSecretAccessObjectIds = "['fb0eac10-bda1-4410-9f8f-f4d381268d13']"
     $ENV:sqlServerActiveDirectoryAdminObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:diskEncryptionEnterpriseApplicationObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
+    $ENV:microsoftAzureWebsitesRPObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:microsoftAzureFrontDoorObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:AKSEnterpriseApplicationObjectId = "Disabled"
     $ENV:AKSRouteTableName = "Disabled"
@@ -35,6 +36,7 @@ function Clear-MockEnvironment {
         "ENV:keyVaultSecretAccessObjectIds",
         "ENV:sqlServerActiveDirectoryAdminObjectId",
         "ENV:diskEncryptionEnterpriseApplicationObjectId",
+        "ENV:microsoftAzureWebsitesRPObjectId",
         "ENV:microsoftAzureFrontDoorObjectId",
         "ENV:AKSEnterpriseApplicationObjectId",
         "ENV:AKSRouteTableName",
