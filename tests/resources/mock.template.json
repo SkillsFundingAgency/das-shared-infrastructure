@@ -39,6 +39,13 @@
         "environmentVariable": "microsoftAzureWebsitesRPObjectId"
       }
     },
+    "microsoftAzureFrontDoorObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object Id for the Azure Front Door service",
+        "environmentVariable": "microsoftAzureFrontDoorObjectId"
+      }
+    },
     "backupManagementServiceObjectId": {
       "type": "string",
       "metadata": {

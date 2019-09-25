@@ -39,6 +39,14 @@
         "environmentVariable": "microsoftAzureWebsitesRPObjectId"
       }
     },
+    "microsoftAzureFrontDoorObjectId": {
+      "type": "string",
+      "defaultValue": "7fa23fd6-537e-4d28-b0ca-54d075cce842",
+      "metadata": {
+        "description": "Object Id for the Azure Front Door service",
+        "environmentVariable": "microsoftAzureFrontDoorObjectId"
+      }
+    },
     "backupManagementServiceObjectId": {
       "type": "string",
       "metadata": {
@@ -213,6 +221,15 @@
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
+        "tenantId": "[subscription().tenantId]",
+        "permissions": {
+          "secrets": [
+            "Get"
+          ]
+        }
+      },
+      {
+        "objectId": "[parameters('microsoftAzureFrontDoorObjectId')]",
         "tenantId": "[subscription().tenantId]",
         "permissions": {
           "secrets": [
