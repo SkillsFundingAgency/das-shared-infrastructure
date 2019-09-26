@@ -33,10 +33,16 @@
     },
     "microsoftAzureWebsitesRPObjectId": {
       "type": "string",
-      "defaultValue": "7fa23fd6-537e-4d28-b0ca-54d075cce842",
       "metadata": {
         "description": "Object Id of the Azure Websites RP",
         "environmentVariable": "microsoftAzureWebsitesRPObjectId"
+      }
+    },
+    "microsoftAzureFrontDoorObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object Id for the Azure Front Door service",
+        "environmentVariable": "microsoftAzureFrontDoorObjectId"
       }
     },
     "backupManagementServiceObjectId": {
