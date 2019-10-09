@@ -142,7 +142,8 @@
         "input": {
           "name": "[concat(parameters('gatewaySubnetNamePrefix'), '-', copyIndex('gatewaySubnetCopy'))]",
           "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, copyIndex('gatewaySubnetCopy'), parameters('subnetAddressSpaceCIDR'))]"
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, copyIndex('gatewaySubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]"
           }
         }
       },
