@@ -192,6 +192,7 @@
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
+    "classicStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'deploystr')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
@@ -399,6 +400,23 @@
       "dependsOn": [
         "key-vault"
       ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "classic-storage-account",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'storage-account-classic.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "storageAccountName": {
+            "value": "[variables('classicStorageName')]"
+          }
+        }
+      }
     },
     {
       "apiVersion": "2017-05-10",
