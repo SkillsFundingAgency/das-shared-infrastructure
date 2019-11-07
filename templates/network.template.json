@@ -111,14 +111,14 @@
         "description": "Name of the DEV Resource Group where the AKS Route Table resides, used for the resourceId function to get the AKS Route Table resource"
       }
     },
-    "FirewallNsgName": {
+    "firewallNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
       "metadata": {
         "description": "Name of the firewall NSG to be associated to the gateway subnet gw-sn-0"
       }
     },
-    "FirewallResourceGroupName": {
+    "firewallResourceGroupName": {
       "type": "string",
       "defaultValue": "Disabled",
       "metadata": {
@@ -132,7 +132,7 @@
       "id": "[if(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), resourceId(parameters('AKSRouteTableResourceGroupName'), 'Microsoft.Network/routeTables', parameters('AKSRouteTableName')),'')]"
     },
     "firewallNsgId": {
-      "id": "[if(not(bool(equals(parameters('FirewallNsgName'),'Disabled'))), resourceId(parameters('FirewallResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', parameters('FirewallNsgName')),'')]"
+      "id": "[if(not(bool(equals(parameters('firewallNsgName'),'Disabled'))), resourceId(parameters('firewallResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', parameters('firewallNsgName')),'')]"
     },
     "subnetDelegations": [
       {
@@ -163,7 +163,7 @@
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, copyIndex('gatewaySubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
-            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('FirewallNsgName'),'Disabled'))), bool(equals(copyIndex('gatewaySubnetCopy'), 0))), variables('firewallNsgId'), json('null'))]"
+            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('firewallNsgName'),'Disabled'))), bool(equals(copyIndex('gatewaySubnetCopy'), 0))), variables('firewallNsgId'), json('null'))]"
           }
         }
       },
