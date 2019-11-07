@@ -355,12 +355,6 @@
           },
           "AKSRouteTableResourceGroupName": {
             "value": "[parameters('AKSRouteTableResourceGroupName')]"
-          },
-          "FirewallResourceGroupName": {
-            "value": "[parameters('FirewallResourceGroupName')]"
-          },
-          "FirewallNsg": {
-            "value": "[parameters('FirewallNsg')]"
           }
         }
       }
@@ -494,6 +488,12 @@
           },
           "internalAppSubnetCount": {
             "value": "[parameters('internalAppSubnetCount')]"
+          },
+          "FirewallResourceGroupName": {
+            "value": "[parameters('FirewallResourceGroupName')]"
+          },
+          "FirewallNsg": {
+            "value": "[parameters('FirewallNsg')]"
           },
           "frontEndAppServicePlanSku": {
             "value": "[parameters('frontEndAppServicePlanSku')]"
