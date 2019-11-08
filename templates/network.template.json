@@ -91,7 +91,8 @@
     },
     "serviceEndpointList": {
       "type": "array",
-      "defaultValue": [],
+      "defaultValue": [
+      ],
       "metadata": {
         "description": "A list of service endpoints to configure on the subnets provisioned in the vnet."
       }
@@ -109,12 +110,29 @@
       "metadata": {
         "description": "Name of the DEV Resource Group where the AKS Route Table resides, used for the resourceId function to get the AKS Route Table resource"
       }
+    },
+    "firewallsNsgName": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Name of the firewall NSG to be associated to the gateway subnet gw-sn-0"
+      }
+    },
+    "firewallsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Name of the Resource Group where the firewall NSG resides, used for the resourceId function to get the firewall NSG resource"
+      }
     }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "aksRouteTableId": {
       "id": "[if(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), resourceId(parameters('AKSRouteTableResourceGroupName'), 'Microsoft.Network/routeTables', parameters('AKSRouteTableName')),'')]"
+    },
+    "firewallNsgId": {
+      "id": "[if(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), resourceId(parameters('firewallsResourceGroupName'), 'Microsoft.Network/networkSecurityGroups', parameters('firewallsNsgName')),'')]"
     },
     "subnetDelegations": [
       {
@@ -127,7 +145,8 @@
         }
       }
     ],
-    "serviceEndpointsEmpty": [],
+    "serviceEndpointsEmpty": [
+    ],
     "copy": [
       {
         "name": "serviceEndpoints",
@@ -143,7 +162,8 @@
           "name": "[concat(parameters('gatewaySubnetNamePrefix'), '-', copyIndex('gatewaySubnetCopy'))]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, copyIndex('gatewaySubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]"
+            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
+            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), bool(equals(copyIndex('gatewaySubnetCopy'), 0))), variables('firewallNsgId'), json('null'))]"
           }
         }
       },
@@ -183,7 +203,8 @@
         }
       }
     ],
-    "emptyArray": [],
+    "emptyArray": [
+    ],
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
     "externalSubnet": "[if(greater(parameters('externalAppSubnetCount'), 0), variables('externalSubnetCopy'), variables('emptyArray'))]",
     "internalSubnet": "[if(greater(parameters('internalAppSubnetCount'), 0), variables('internalSubnetCopy'), variables('emptyArray'))]",

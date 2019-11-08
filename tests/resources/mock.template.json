@@ -75,6 +75,22 @@
         "environmentVariable": "AKSRouteTableResourceGroupName"
       }
     },
+    "firewallsNsgName": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Name of the firewall NSG to be associated to the gateway subnet gw-sn-0",
+        "environmentVariable": "firewallsNsgName"
+      }
+    },
+    "firewallsResourceGroupName": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Name of the Resource Group where the firewall NSG resides, used for the resourceId function to get the firewall NSG resource",
+        "environmentVariable": "firewallsResourceGroupName"
+      }
+    },
     "environments": {
       "type": "array",
       "defaultValue": [],
