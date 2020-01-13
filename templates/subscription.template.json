@@ -202,12 +202,34 @@
         "description": "An array of the blob container names to deploy to the shared storage account.",
         "environmentVariable": "sharedStorageAccountContainerArray"
       }
+    },
+    "loggingRedisCacheSKU": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "metadata": {
+        "environmentVariable": "loggingRedisCacheSKU"
+      }
+    },
+    "loggingRedisCacheFamily": {
+      "type": "string",
+      "defaultValue": "C",
+      "metadata": {
+        "environmentVariable": "loggingRedisCacheFamily"
+      }
+    },
+    "loggingRedisCacheCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "environmentVariable": "loggingRedisCacheCapacity"
+      }
     }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+    "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "classicStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'deploystr')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
@@ -528,6 +550,35 @@
         "parameters": {
           "automationAccountName": {
             "value": "[variables('automationAccountName')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "logging-redis-cache",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'redis.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "redisCacheName": {
+            "value": "[variables('loggingRedisCacheName')]"
+          },
+          "redisCacheSKU": {
+            "value": "[parameters('loggingRedisCacheSKU')]"
+          },
+          "redisCacheFamily": {
+            "value": "[parameters('loggingRedisCacheFamily')]"
+          },
+          "redisCacheCapacity": {
+            "value": "[parameters('loggingRedisCacheCapacity')]"
+          },
+          "enableNonSslPort": {
+            "value": false
           }
         }
       }
