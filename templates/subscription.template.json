@@ -229,7 +229,7 @@
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
-    "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds')]",
+    "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "classicStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'deploystr')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
