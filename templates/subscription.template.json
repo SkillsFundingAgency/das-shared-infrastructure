@@ -218,8 +218,8 @@
       }
     },
     "loggingRedisCacheCapacity": {
-      "type": "string",
-      "defaultValue": "1",
+      "type": "int",
+      "defaultValue": 1,
       "metadata": {
         "environmentVariable": "loggingRedisCacheCapacity"
       }
