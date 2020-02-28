@@ -133,7 +133,7 @@
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
-        "description": "An array of the blob container names to deploy to the shared storage account."
+        "description": "An array of the blob container names and public access level to deploy to the shared storage account."
       }
     }
   },
@@ -270,7 +270,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('shared-storage-account-container', parameters('sharedStorageAccountContainerArray')[copyIndex()])]",
+      "name": "[concat('shared-storage-account-container', parameters('sharedStorageAccountContainerArray')[copyIndex()].name)]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[greater(length(parameters('sharedStorageAccountContainerArray')), 0)]",
       "properties": {
@@ -284,10 +284,10 @@
             "value": "[variables('sharedARMStorageName')]"
           },
           "containerName": {
-            "value": "[parameters('sharedStorageAccountContainerArray')[copyIndex()]]"
+            "value": "[parameters('sharedStorageAccountContainerArray')[copyIndex()].name]"
           },
           "publicAccess": {
-            "value": "None"
+            "value": "[parameters('sharedStorageAccountContainerArray')[copyIndex()].publicAccess]"
           }
         }
       },

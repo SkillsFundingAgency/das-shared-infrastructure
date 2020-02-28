@@ -189,7 +189,7 @@
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
-        "description": "An array of the blob container names to deploy to the shared storage account.",
+        "description": "An array of the blob container names and public access level to deploy to the shared storage account.",
         "environmentVariable": "sharedStorageAccountContainerArray"
       }
     }
