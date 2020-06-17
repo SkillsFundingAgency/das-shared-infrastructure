@@ -203,6 +203,75 @@
         "environmentVariable": "sharedStorageAccountContainerArray"
       }
     },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "defaultValue": true,
+      "metadata": {
+        "description": "The name of the Log Analytics workspace for the subscription."
+      }
+    },
+    "initialApimDeploy": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "A boolean for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
+      }
+    },
+    "apimLogsRetentionDays": {
+      "type": "int",
+      "defaultValue": 30,
+      "metadata": {
+        "description": "Number of days to retain the APIM logs within the Log Analytics Workspace."
+      }
+    },
+    "apimPublisherEmail": {
+      "type": "string",
+      "metadata": {
+        "description": "The publisher email of the APIM instance."
+      }
+    },
+    "apimPublisherName": {
+      "type": "string",
+      "metadata": {
+        "description": "The publisher name of the APIM instance."
+      }
+    },
+    "apimPortalHostName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Developer Portal custom domain of the APIM instance."
+      }
+    },
+    "apimPortalKeyVaultCertificateName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance."
+      }
+    },
+    "apimGatewayHostName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Gateway custom domain of the APIM instance."
+      }
+    },
+    "apimGatewayKeyVaultCertificateName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Key vault certificate for the Gateway custom domain of the APIM instance."
+      }
+    },
+    "apimGroupsArray": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of Groups for the APIM instance."
+      }
+    },
+    "apimProductsArray": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of Products for the APIM instance."
+      }
+    },
     "loggingRedisCacheSKU": {
       "type": "string",
       "defaultValue": "Standard",
@@ -472,7 +541,7 @@
           "environmentName": {
             "value": "[toUpper(parameters('environments')[copyIndex()])]"
           },
-          "sharedKeyVaultResourceGroup": {
+          "sharedManagementResourceGroup": {
             "value": "[resourceGroup().name]"
           },
           "sharedKeyVaultName": {
@@ -525,6 +594,39 @@
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "initialApimDeploy": {
+            "value": "[parameters('initialApimDeploy')]"
+          },
+          "apimLogsRetentionDays": {
+            "value": "[parameters('apimLogsRetentionDays')]"
+          },
+          "apimPublisherEmail": {
+            "value": "[parameters('apimPublisherEmail')]"
+          },
+          "apimPublisherName": {
+            "value": "[parameters('apimPublisherName')]"
+          },
+          "apimPortalHostName": {
+            "value": "[parameters('apimPortalHostName')]"
+          },
+          "apimPortalKeyVaultCertificateName": {
+            "value": "[parameters('apimPortalKeyVaultCertificateName')]"
+          },
+          "apimGatewayHostName": {
+            "value": "[parameters('apimGatewayHostName')]"
+          },
+          "apimGatewayKeyVaultCertificateName": {
+            "value": "[parameters('apimGatewayKeyVaultCertificateName')]"
+          },
+          "apimGroupsArray": {
+            "value": "[parameters('apimGroupsArray')]"
+          },
+          "apimProductsArray": {
+            "value": "[parameters('apimProductsArray')]"
           }
         }
       },
