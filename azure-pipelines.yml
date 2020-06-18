@@ -17,10 +17,11 @@ workspace:
   clean: all
 
 pool:
-  name: "DAS - Continuous Deployment"
+  name: "DAS - Continuous Integration"
   demands:
     - npm
     - node.js
+    - Agent.OS -equals Windows_NT
 
 steps:
   - task: gittools.gitversion.gitversion-task.GitVersion@5
