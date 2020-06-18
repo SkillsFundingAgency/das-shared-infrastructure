@@ -218,7 +218,7 @@
     "apimName": "[concat(variables('resourceNamePrefix'),'-apim')]",
     "apimNetworkType": "External",
     "apimSubnetName": "apim-sn-0",
-    "apimNsgName": "[concat(variables('resourceNamePrefix'),'-apim-nsg')]",
+    "apimNsgName": "[if(variables('apimNsgDeployBoolean'), concat(variables('resourceNamePrefix'),'-apim-nsg'), 'Disabled')]",
     "apimPortalHostameSuffix": "[concat('portal.', parameters('customDomainHostedZone'))]",
     "apimPortalHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimPortalHostameSuffix'), toLower(concat(parameters('environmentName'), '-', parameters('customDomainHostedZone'))))]",
     "apimGatewayHostnameSuffix": "[concat('gateway.', parameters('customDomainHostedZone'))]",
