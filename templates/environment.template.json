@@ -978,7 +978,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()].productResourceName, 'placeholder'))]",
+      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()], 'placeholder'))]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[variables('apimDeployProducts')]",
       "resourceGroup": "[variables('apimResourceGroup')]",
