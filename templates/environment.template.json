@@ -146,7 +146,6 @@
     },
     "logAnalyticsWorkspaceName": {
       "type": "string",
-      "defaultValue": true,
       "metadata": {
         "description": "The name of the Log Analytics workspace for the subscription."
       }
@@ -159,7 +158,6 @@
     },
     "initialApimDeploy": {
       "type": "bool",
-      "defaultValue": false,
       "metadata": {
         "description": "A boolean for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
       }
