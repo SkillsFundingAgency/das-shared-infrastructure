@@ -256,7 +256,7 @@
     },
     "apimPortalKeyVaultCertificateName": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "Disabled",
       "metadata": {
         "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance.",
         "environmentVariable": "apimPortalKeyVaultCertificateName"
@@ -264,7 +264,7 @@
     },
     "apimGatewayKeyVaultCertificateName": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "Disabled",
       "metadata": {
         "description": "The Key vault certificate for the Gateway custom domain of the APIM instance.",
         "environmentVariable": "apimGatewayKeyVaultCertificateName"
