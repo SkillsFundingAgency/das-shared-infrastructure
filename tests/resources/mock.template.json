@@ -208,11 +208,11 @@
         "environmentVariable": "customDomainHostedZone"
       }
     },
-    "initialApimDeploy": {
+    "apimInitialDeploy": {
       "type": "string",
       "metadata": {
         "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration.",
-        "environmentVariable": "initialApimDeploy"
+        "environmentVariable": "apimInitialDeploy"
       }
     },
     "apimLogsRetentionDays": {

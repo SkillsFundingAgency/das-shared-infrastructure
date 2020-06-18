@@ -149,7 +149,7 @@
         "description": "The Hosted Zone used for the APIM DNS records."
       }
     },
-    "initialApimDeploy": {
+    "apimInitialDeploy": {
       "type": "string",
       "metadata": {
         "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
@@ -217,7 +217,9 @@
     "apimPortalHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimPortalHostameSuffix'), toLower(concat(parameters('environmentName'), '-', parameters('customDomainHostedZone'))))]",
     "apimGatewayHostnameSuffix": "[concat('gateway.', parameters('customDomainHostedZone'))]",
     "apimGatewayHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimGatewayHostnameSuffix'), toLower(concat(parameters('environmentName'), '-', parameters('customDomainHostedZone'))))]",
-    "initialApimDeployBoolean": "[if(not(equals(parameters('initialApimDeploy'), 'Disabled')), bool('true'), bool('false'))]",
+    "apimInitialDeployBoolean": "[if(not(equals(parameters('apimInitialDeploy'), 'Disabled')), bool('true'), bool('false'))]",
+    "apimDeployGroups": "[greater(length(parameters('apimGroupsArray')), 0)]",
+    "apimDeployProducts": "[greater(length(parameters('apimProductsArray')), 0)]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
@@ -702,8 +704,8 @@
           "serviceName": {
             "value": "[variables('apimName')]"
           },
-          "initialApimDeploy": {
-            "value": "[variables('initialApimDeployBoolean')]"
+          "apimInitialDeploy": {
+            "value": "[variables('apimInitialDeployBoolean')]"
           },
           "publisherEmail": {
             "value": "[parameters('apimPublisherEmail')]"
@@ -927,8 +929,9 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('apim-group-', parameters('apimGroupsArray')[copyIndex()].groupResourceName)]",
+      "name": "[concat('apim-group-', if(variables('apimDeployGroups'), parameters('apimGroupsArray')[copyIndex()].groupResourceName, 'placeholder'))]",
       "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('apimDeployGroups')]",
       "resourceGroup": "[variables('apimResourceGroup')]",
       "properties": {
         "mode": "Incremental",
@@ -956,7 +959,7 @@
       },
       "copy": {
         "name": "apim-groups-copy",
-        "count": "[length(parameters('apimGroupsArray'))]"
+        "count": "[if(variables('apimDeployGroups'), length(parameters('apimGroupsArray')), 1)]"
       },
       "dependsOn": [
         "apim-service"
@@ -964,8 +967,9 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('apim-product-', parameters('apimProductsArray')[copyIndex()].productResourceName)]",
+      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()].productResourceName, 'placeholder'))]",
       "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('apimDeployProducts')]",
       "resourceGroup": "[variables('apimResourceGroup')]",
       "properties": {
         "mode": "Incremental",
@@ -1002,7 +1006,7 @@
       },
       "copy": {
         "name": "apim-products-copy",
-        "count": "[length(parameters('apimProductsArray'))]"
+        "count": "[if(variables('apimDeployProducts'), length(parameters('apimProductsArray')), 1)]"
       },
       "dependsOn": [
         "apim-service",

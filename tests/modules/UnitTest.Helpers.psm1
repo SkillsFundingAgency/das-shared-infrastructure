@@ -24,7 +24,7 @@ function Set-MockEnvironment {
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
     $ENV:logAnalyticsWorkspaceName = "das-dta-ws"
     $ENV:customDomainHostedZone = "hosted-zone.com"
-    $ENV:initialApimDeploy = "Disabled"
+    $ENV:apimInitialDeploy = "Disabled"
     $ENV:apimPublisherEmail = "test@test.com"
     $ENV:apimPublisherName = "Test Publisher"
     $ENV:apimPortalKeyVaultCertificateName = "test-apim-portal-com"
@@ -60,7 +60,7 @@ function Clear-MockEnvironment {
         "ENV:sharedStorageAccountContainerArray",
         "ENV:logAnalyticsWorkspaceName",
         "ENV:customDomainHostedZone",
-        "ENV:initialApimDeploy",
+        "ENV:apimInitialDeploy",
         "ENV:apimPublisherEmail",
         "ENV:apimPublisherName",
         "ENV:apimPortalKeyVaultCertificateName",

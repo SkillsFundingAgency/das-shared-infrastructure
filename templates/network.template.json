@@ -207,7 +207,7 @@
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 5, copyIndex('apimSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
-            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), bool(equals(copyIndex('apimSubnetCopy'), 0))), variables('apimNsgId'), json('null'))]"
+            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('apimNsgName'),'Disabled'))), bool(equals(copyIndex('apimSubnetCopy'), 0))), variables('apimNsgId'), json('null'))]"
           }
         }
       },
