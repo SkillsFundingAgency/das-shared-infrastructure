@@ -17,11 +17,10 @@ workspace:
   clean: all
 
 pool:
-  name: "DAS - Continuous Integration"
+  name: "DAS - Continuous Deployment"
   demands:
     - npm
     - node.js
-    - Agent.OS -equals Windows_NT
 
 steps:
   - task: gittools.gitversion.gitversion-task.GitVersion@5
@@ -31,11 +30,12 @@ steps:
       node ./node_modules/eclint/bin/eclint.js check
     displayName: "Validate editorconfig"
     workingDirectory: $(System.DefaultWorkingDirectory)
-  - powershell: |
-      ./tests/Start-UnitTest.ps1
+  - task: PowerShell@2
     displayName: "Execute unit tests"
-    failOnStderr: "true"
-    workingDirectory:  $(System.DefaultWorkingDirectory)
+    inputs:
+      filePath: ./tests/Start-UnitTest.ps1
+      failOnStderr: true
+      workingDirectory:  $(System.DefaultWorkingDirectory)
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'NUnit'

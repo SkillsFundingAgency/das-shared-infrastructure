@@ -23,12 +23,11 @@ function Set-MockEnvironment {
     $ENV:DatabaseConfiguration = "{}"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
     $ENV:logAnalyticsWorkspaceName = "das-dta-ws"
+    $ENV:customDomainHostedZone = "hosted-zone.com"
     $ENV:initialApimDeploy = false
     $ENV:apimPublisherEmail = "test@test.com"
     $ENV:apimPublisherName = "Test Publisher"
-    $ENV:apimPortalHostName = "test-apim-portal.com"
     $ENV:apimPortalKeyVaultCertificateName = "test-apim-portal-com"
-    $ENV:apimGatewayHostName = "test-apim-gateway.com"
     $ENV:apimGatewayKeyVaultCertificateName = "test-apim-gateway-com"
     $ENV:apimGroupsArray = "[]"
     $ENV:apimProductsArray = "[]"
@@ -60,12 +59,11 @@ function Clear-MockEnvironment {
         "ENV:sqlAdminPasswordSeed",
         "ENV:sharedStorageAccountContainerArray",
         "ENV:logAnalyticsWorkspaceName",
+        "ENV:customDomainHostedZone",
         "ENV:initialApimDeploy",
         "ENV:apimPublisherEmail",
         "ENV:apimPublisherName",
-        "ENV:apimPortalHostName",
         "ENV:apimPortalKeyVaultCertificateName",
-        "ENV:apimGatewayHostName",
         "ENV:apimGatewayKeyVaultCertificateName",
         "ENV:apimGroupsArray",
         "ENV:apimProductsArray"

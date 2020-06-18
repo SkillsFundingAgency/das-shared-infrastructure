@@ -207,6 +207,12 @@
         "description": "A boolean for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
       }
     },
+    "customDomainHostedZone": {
+      "type": "string",
+      "metadata": {
+        "description": "The Hosted Zone used for the APIM DNS records."
+      }
+    },
     "apimLogsRetentionDays": {
       "type": "int",
       "defaultValue": 30,
@@ -226,22 +232,10 @@
         "description": "The publisher name of the APIM instance."
       }
     },
-    "apimPortalHostName": {
-      "type": "string",
-      "metadata": {
-        "description": "The Developer Portal custom domain of the APIM instance."
-      }
-    },
     "apimPortalKeyVaultCertificateName": {
       "type": "string",
       "metadata": {
         "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance."
-      }
-    },
-    "apimGatewayHostName": {
-      "type": "string",
-      "metadata": {
-        "description": "The Gateway custom domain of the APIM instance."
       }
     },
     "apimGatewayKeyVaultCertificateName": {

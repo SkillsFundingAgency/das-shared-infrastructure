@@ -151,6 +151,12 @@
         "description": "The name of the Log Analytics workspace for the subscription."
       }
     },
+    "customDomainHostedZone": {
+      "type": "string",
+      "metadata": {
+        "description": "The Hosted Zone used for the APIM DNS records."
+      }
+    },
     "initialApimDeploy": {
       "type": "bool",
       "defaultValue": false,
@@ -177,22 +183,10 @@
         "description": "The publisher name of the APIM instance."
       }
     },
-    "apimPortalHostName": {
-      "type": "string",
-      "metadata": {
-        "description": "The Developer Portal custom domain of the APIM instance."
-      }
-    },
     "apimPortalKeyVaultCertificateName": {
       "type": "string",
       "metadata": {
         "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance."
-      }
-    },
-    "apimGatewayHostName": {
-      "type": "string",
-      "metadata": {
-        "description": "The Gateway custom domain of the APIM instance."
       }
     },
     "apimGatewayKeyVaultCertificateName": {
@@ -228,6 +222,10 @@
     "apimNetworkType": "External",
     "apimSubnetName": "apim-sn-0",
     "apimNsgName": "[concat(variables('resourceNamePrefix'),'-apim-nsg')]",
+    "apimPortalHostameSuffix": "[concat('portal.', parameters('customDomainHostedZone'))]",
+    "apimPortalHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimPortalHostameSuffix'), toLower(concat(parameters('environmentName'), '-', parameters('customDomainHostedZone'))))]",
+    "apimGatewayHostnameSuffix": "[concat('gateway.', parameters('customDomainHostedZone'))]",
+    "apimGatewayHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimGatewayHostnameSuffix'), toLower(concat(parameters('environmentName'), '-', parameters('customDomainHostedZone'))))]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
@@ -740,13 +738,13 @@
             "value": "[parameters('sharedKeyVaultName')]"
           },
           "portalHostname": {
-            "value": "[parameters('apimPortalHostName')]"
+            "value": "[variables('apimPortalHostName')]"
           },
           "portalKeyVaultCertificateName": {
             "value": "[parameters('apimPortalKeyVaultCertificateName')]"
           },
           "gatewayHostname": {
-            "value": "[parameters('apimGatewayHostName')]"
+            "value": "[variables('apimGatewayHostName')]"
           },
           "gatewayKeyVaultCertificateName": {
             "value": "[parameters('apimGatewayKeyVaultCertificateName')]"
