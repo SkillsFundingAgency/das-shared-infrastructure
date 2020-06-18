@@ -17,6 +17,7 @@ function Set-MockEnvironment {
     $ENV:firewallsResourceGroupName = "Disabled"
     $ENV:backupManagementServiceObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:gatewaySubnetCount = 1
+    $ENV:apimSubnetCount = 1
     $ENV:internalAppSubnetCount = 1
     $ENV:externalAppSubnetCount = 1
     $ENV:sqlAdminPasswordSeed = "test seed"
@@ -24,7 +25,7 @@ function Set-MockEnvironment {
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
     $ENV:logAnalyticsWorkspaceName = "das-dta-ws"
     $ENV:customDomainHostedZone = "hosted-zone.com"
-    $ENV:initialApimDeploy = false
+    $ENV:initialApimDeploy = $false
     $ENV:apimPublisherEmail = "test@test.com"
     $ENV:apimPublisherName = "Test Publisher"
     $ENV:apimPortalKeyVaultCertificateName = "test-apim-portal-com"
@@ -54,6 +55,7 @@ function Clear-MockEnvironment {
         "ENV:firewallsResourceGroupName",
         "ENV:backupManagementServiceObjectId",
         "ENV:gatewaySubnetCount",
+        "ENV:apimSubnetCount",
         "ENV:internalAppSubnetCount",
         "ENV:externalAppSubnetCount",
         "ENV:sqlAdminPasswordSeed",

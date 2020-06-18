@@ -152,6 +152,15 @@
         "environmentVariable": "gatewaySubnetCount"
       }
     },
+    "apimSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of APIM subnets to provision",
+        "environmentVariable": "apimSubnetCount"
+      }
+    },
     "managementSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -196,62 +205,72 @@
     "logAnalyticsWorkspaceName": {
       "type": "string",
       "metadata": {
-        "description": "The name of the Log Analytics workspace for the subscription."
-      }
-    },
-    "initialApimDeploy": {
-      "type": "bool",
-      "metadata": {
-        "description": "A boolean for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
+        "description": "The name of the Log Analytics workspace for the subscription.",
+        "environmentVariable": "logAnalyticsWorkspaceName"
       }
     },
     "customDomainHostedZone": {
       "type": "string",
       "metadata": {
-        "description": "The Hosted Zone used for the APIM DNS records."
+        "description": "The Hosted Zone used for the APIM DNS records.",
+        "environmentVariable": "customDomainHostedZone"
+      }
+    },
+    "initialApimDeploy": {
+      "type": "bool",
+      "metadata": {
+        "description": "A boolean for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration.",
+        "environmentVariable": "initialApimDeploy"
       }
     },
     "apimLogsRetentionDays": {
       "type": "int",
       "defaultValue": 30,
       "metadata": {
-        "description": "Number of days to retain the APIM logs within the Log Analytics Workspace."
+        "description": "Number of days to retain the APIM logs within the Log Analytics Workspace.",
+        "environmentVariable": "apimLogsRetentionDays"
       }
     },
     "apimPublisherEmail": {
       "type": "string",
       "metadata": {
-        "description": "The publisher email of the APIM instance."
+        "description": "The publisher email of the APIM instance.",
+        "environmentVariable": "apimPublisherEmail"
       }
     },
     "apimPublisherName": {
       "type": "string",
       "metadata": {
-        "description": "The publisher name of the APIM instance."
+        "description": "The publisher name of the APIM instance.",
+        "environmentVariable": "apimPublisherName"
       }
     },
     "apimPortalKeyVaultCertificateName": {
       "type": "string",
       "metadata": {
-        "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance."
+        "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance.",
+        "environmentVariable": "apimPortalKeyVaultCertificateName"
       }
     },
     "apimGatewayKeyVaultCertificateName": {
       "type": "string",
       "metadata": {
-        "description": "The Key vault certificate for the Gateway custom domain of the APIM instance."
+        "description": "The Key vault certificate for the Gateway custom domain of the APIM instance.",
+        "environmentVariable": "apimGatewayKeyVaultCertificateName"
       }
     },
     "apimGroupsArray": {
       "type": "array",
       "metadata": {
-        "description": "Array of Groups for the APIM instance."
+        "description": "Array of Groups for the APIM instance.",
+        "environmentVariable": "apimGroupsArray"
       }
     },
     "apimProductsArray": {
       "type": "array",
       "metadata": {
-        "description": "Array of Products for the APIM instance."
+        "description": "Array of Products for the APIM instance.",
+        "environmentVariable": "apimProductsArray"
       }
     }
   },
