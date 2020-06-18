@@ -217,9 +217,9 @@
       }
     },
     "initialApimDeploy": {
-      "type": "bool",
+      "type": "string",
       "metadata": {
-        "description": "A boolean for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration.",
+        "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration.",
         "environmentVariable": "initialApimDeploy"
       }
     },

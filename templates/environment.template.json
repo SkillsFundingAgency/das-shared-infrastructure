@@ -157,9 +157,9 @@
       }
     },
     "initialApimDeploy": {
-      "type": "bool",
+      "type": "string",
       "metadata": {
-        "description": "A boolean for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
+        "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
       }
     },
     "apimLogsRetentionDays": {
@@ -224,6 +224,7 @@
     "apimPortalHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimPortalHostameSuffix'), toLower(concat(parameters('environmentName'), '-', parameters('customDomainHostedZone'))))]",
     "apimGatewayHostnameSuffix": "[concat('gateway.', parameters('customDomainHostedZone'))]",
     "apimGatewayHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimGatewayHostnameSuffix'), toLower(concat(parameters('environmentName'), '-', parameters('customDomainHostedZone'))))]",
+    "initialApimDeployBoolean": "[if(not(equals(parameters('initialApimDeploy'), 'Disabled')), bool('true'), bool('false'))]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
@@ -708,8 +709,8 @@
           "serviceName": {
             "value": "[variables('apimName')]"
           },
-          "deployBasicApim": {
-            "value": "[parameters('initialApimDeploy')]"
+          "initialApimDeploy": {
+            "value": "[variables('initialApimDeployBoolean')]"
           },
           "publisherEmail": {
             "value": "[parameters('apimPublisherEmail')]"
