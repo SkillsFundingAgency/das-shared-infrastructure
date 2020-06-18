@@ -707,10 +707,7 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "resourceEnvironmentName": {
-            "value": "[parameters('environmentName')]"
-          },
-          "serviceName": {
+          "apimName": {
             "value": "[variables('apimName')]"
           },
           "apimInitialDeploy": {
