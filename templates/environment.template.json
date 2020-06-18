@@ -753,6 +753,7 @@
         }
       },
       "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
       ]
     },
     {
