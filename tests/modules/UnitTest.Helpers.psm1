@@ -25,6 +25,7 @@ function Set-MockEnvironment {
     $ENV:logAnalyticsWorkspaceName = "das-dta-ws"
     $ENV:customDomainHostedZone = "hosted-zone.com"
     $ENV:apimInitialDeploy = "Disabled"
+    $ENV:apimNsgDeploy = "Disabled"
     $ENV:apimPublisherEmail = "test@test.com"
     $ENV:apimPublisherName = "Test Publisher"
     $ENV:apimPortalKeyVaultCertificateName = "test-apim-portal-com"
@@ -61,6 +62,7 @@ function Clear-MockEnvironment {
         "ENV:logAnalyticsWorkspaceName",
         "ENV:customDomainHostedZone",
         "ENV:apimInitialDeploy",
+        "ENV:apimNsgDeploy"
         "ENV:apimPublisherEmail",
         "ENV:apimPublisherName",
         "ENV:apimPortalKeyVaultCertificateName",
