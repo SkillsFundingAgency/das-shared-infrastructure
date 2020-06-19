@@ -44,21 +44,6 @@
         "description": "The number of gateway subnets to provision"
       }
     },
-    "apimSubnetNamePrefix": {
-      "type": "string",
-      "defaultValue": "apim-sn",
-      "metadata": {
-        "description": "The prefix used for naming new APIM subnets."
-      }
-    },
-    "apimSubnetCount": {
-      "type": "int",
-      "defaultValue": 0,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of APIM subnets to provision"
-      }
-    },
     "managementSubnetNamePrefix": {
       "type": "string",
       "defaultValue": "mgmt-sn",
@@ -72,6 +57,21 @@
       "maxValue": 50,
       "metadata": {
         "description": "The number of management subnets to provision"
+      }
+    },
+    "apimSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "apim-sn",
+      "metadata": {
+        "description": "The prefix used for naming new APIM subnets."
+      }
+    },
+    "apimSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of APIM subnets to provision"
       }
     },
     "externalSubnetNamePrefix": {
@@ -200,25 +200,25 @@
         }
       },
       {
-        "name": "apimSubnetCopy",
-        "count": "[if(greater(parameters('apimSubnetCount'), 0), parameters('apimSubnetCount'), 1)]",
-        "input": {
-          "name": "[concat(parameters('apimSubnetNamePrefix'), '-', copyIndex('apimSubnetCopy'))]",
-          "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 5, copyIndex('apimSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
-            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('apimNsgName'),'Disabled'))), bool(equals(copyIndex('apimSubnetCopy'), 0))), variables('apimNsgId'), json('null'))]"
-          }
-        }
-      },
-      {
         "name": "managementSubnetCopy",
         "count": "[parameters('managementSubnetCount')]",
         "input": {
           "name": "[concat(parameters('managementSubnetNamePrefix'), '-', copyIndex('managementSubnetCopy'))]",
           "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 10, copyIndex('managementSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 5, copyIndex('managementSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "routeTable": "[if(and(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), bool(equals(copyIndex('managementSubnetCopy'), 0))), variables('aksRouteTableId'), json('null'))]"
+          }
+        }
+      },
+      {
+        "name": "apimSubnetCopy",
+        "count": "[if(greater(parameters('apimSubnetCount'), 0), parameters('apimSubnetCount'), 1)]",
+        "input": {
+          "name": "[concat(parameters('apimSubnetNamePrefix'), '-', copyIndex('apimSubnetCopy'))]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 10, copyIndex('apimSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
+            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('apimNsgName'),'Disabled'))), bool(equals(copyIndex('apimSubnetCopy'), 0))), variables('apimNsgId'), json('null'))]"
           }
         }
       },

@@ -144,15 +144,6 @@
         "environmentVariable": "gatewaySubnetCount"
       }
     },
-    "apimSubnetCount": {
-      "type": "int",
-      "defaultValue": 0,
-      "maxValue": 1,
-      "metadata": {
-        "description": "The number of APIM subnets to provision",
-        "environmentVariable": "apimSubnetCount"
-      }
-    },
     "managementSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -160,6 +151,15 @@
       "metadata": {
         "description": "The number of management subnets to provision",
         "environmentVariable": "managementSubnetCount"
+      }
+    },
+    "apimSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of APIM subnets to provision",
+        "environmentVariable": "apimSubnetCount"
       }
     },
     "externalAppSubnetCount": {
