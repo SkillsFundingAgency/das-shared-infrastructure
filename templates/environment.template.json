@@ -155,12 +155,6 @@
         "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
       }
     },
-    "apimNsgDeploy": {
-      "type": "string",
-      "metadata": {
-        "description": "A string for the APIM NSG deployment. Disabled for DTA"
-      }
-    },
     "apimLogsRetentionDays": {
       "type": "int",
       "defaultValue": 30,
@@ -218,7 +212,8 @@
     "apimName": "[concat(variables('resourceNamePrefix'),'-apim')]",
     "apimNetworkType": "External",
     "apimSubnetName": "apim-sn-0",
-    "apimNsgName": "[if(variables('apimNsgDeployBoolean'), concat(variables('resourceNamePrefix'),'-apim-nsg'), 'Disabled')]",
+    "apimNsgName": "[concat(variables('resourceNamePrefix'),'-apim-nsg')]",
+    "apimNsgRestrictToAppGateway": "[if(or(equals(parameters('environmentName'), 'DTA'), equals(parameters('environmentName'), 'AT')), bool('false'), bool('true'))]",
     "apimPortalKeyVaultCertificateNameValue": "[if(equals(parameters('apimPortalKeyVaultCertificateName'), 'Disabled'), '', parameters('apimPortalKeyVaultCertificateName'))]",
     "apimPortalHostameSuffix": "[concat('portal.', parameters('customDomainHostedZone'))]",
     "apimPortalHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimPortalHostameSuffix'), toLower(concat(parameters('environmentName'), '-', variables('apimPortalHostameSuffix'))))]",
@@ -226,7 +221,6 @@
     "apimGatewayHostnameSuffix": "[concat('gateway.', parameters('customDomainHostedZone'))]",
     "apimGatewayHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimGatewayHostnameSuffix'), toLower(concat(parameters('environmentName'), '-', variables('apimGatewayHostnameSuffix'))))]",
     "apimInitialDeployBoolean": "[if(not(equals(parameters('apimInitialDeploy'), 'Disabled')), bool('true'), bool('false'))]",
-    "apimNsgDeployBoolean": "[if(not(equals(parameters('apimNsgDeploy'), 'Disabled')), bool('true'), bool('false'))]",
     "apimDeployGroups": "[greater(length(parameters('apimGroupsArray')), 0)]",
     "apimDeployProducts": "[greater(length(parameters('apimProductsArray')), 0)]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
@@ -759,7 +753,6 @@
       "apiVersion": "2017-05-10",
       "type": "Microsoft.Resources/deployments",
       "name": "[variables('apimNsgName')]",
-      "condition": "[variables('apimNsgDeployBoolean')]",
       "resourceGroup": "[variables('apimResourceGroup')]",
       "properties": {
         "mode": "Incremental",
@@ -780,7 +773,7 @@
                   "protocol": "TCP",
                   "sourcePortRange": "*",
                   "destinationPortRange": "443",
-                  "sourceAddressPrefix": "[if(variables('apimNsgDeployBoolean'), reference(resourceId(variables('firewallsResourceGroup'), 'Microsoft.Network/publicIPAddresses', variables('sharedFrontEndAppGatewayPublicIpName')), '2019-09-01').ipAddress, json('null'))]",
+                  "sourceAddressPrefix": "[if(variables('apimNsgRestrictToAppGateway'), reference(resourceId(variables('firewallsResourceGroup'), 'Microsoft.Network/publicIPAddresses', variables('sharedFrontEndAppGatewayPublicIpName')), '2019-09-01').ipAddress, 'Internet')]",
                   "destinationAddressPrefix": "VirtualNetwork",
                   "access": "Allow",
                   "priority": 100,

@@ -215,13 +215,6 @@
         "environmentVariable": "apimInitialDeploy"
       }
     },
-    "apimNsgDeploy": {
-      "type": "string",
-      "metadata": {
-        "description": "A string for the APIM NSG deployment. Disabled for DTA",
-        "environmentVariable": "apimNsgDeploy"
-      }
-    },
     "apimLogsRetentionDays": {
       "type": "int",
       "defaultValue": 30,
