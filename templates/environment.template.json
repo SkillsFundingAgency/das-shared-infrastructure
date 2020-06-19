@@ -937,7 +937,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('apim-group-', if(variables('apimDeployGroups'), parameters('apimGroupsArray')[copyIndex()], 'placeholder'))]",
+      "name": "[concat('apim-group-', if(variables('apimDeployGroups'), copyIndex(), 'placeholder'))]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[variables('apimDeployGroups')]",
       "resourceGroup": "[variables('apimResourceGroup')]",
