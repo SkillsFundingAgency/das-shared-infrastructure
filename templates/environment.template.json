@@ -975,7 +975,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/api-m/templates/apim/apim-product.json",
+          "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-product.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
