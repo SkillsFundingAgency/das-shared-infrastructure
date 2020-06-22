@@ -1,6 +1,6 @@
 function Set-MockEnvironment {
     $ENV:isTest = $true
-    $ENV:environmentNames = '["DTA"]'
+    $ENV:environmentNames = "['DTA']"
     $ENV:resourceEnvironmentName = "DTA"
     $ENV:serviceName = "shared"
     $ENV:threatDetectionEmailAddress = "test@test.com"
