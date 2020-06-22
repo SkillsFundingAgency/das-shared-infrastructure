@@ -45,7 +45,7 @@ class ParametersFileBuilder {
 
             switch ($ParameterEnvironmentVariableType) {
                 'array' {
-                    $ParameterVariableValue = [String[]]($ParameterVariableValue | ConvertFrom-Json)
+                    $ParameterVariableValue = [System.Collections.ArrayList]($ParameterVariableValue | ConvertFrom-Json)
                     break
                 }
                 'int' {
