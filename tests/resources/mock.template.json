@@ -209,7 +209,7 @@
       }
     },
     "logAnalyticsWorkspaceDataRetentionDays": {
-      "type": "string",
+      "type": "int",
       "metadata": {
         "description": "The number of days data is retained in the Log Analytics workspace for the subscription.",
         "environmentVariable": "logAnalyticsWorkspaceDataRetentionDays"
