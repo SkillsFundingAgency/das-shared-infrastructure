@@ -22,7 +22,9 @@ function Set-MockEnvironment {
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
-    $ENV:logAnalyticsWorkspaceName = "das-dta-ws"
+    $ENV:logAnalyticsWorkspaceName = "oms"
+    $ENV:logAnalyticsWorkspaceSku = "PerGB2018"
+    $ENV:logAnalyticsWorkspaceDataRetentionDays = 31
     $ENV:customDomainHostedZone = "hosted-zone.com"
     $ENV:apimInitialDeploy = "Disabled"
     $ENV:apimPublisherEmail = "test@test.com"
@@ -59,6 +61,8 @@ function Clear-MockEnvironment {
         "ENV:sqlAdminPasswordSeed",
         "ENV:sharedStorageAccountContainerArray",
         "ENV:logAnalyticsWorkspaceName",
+        "ENV:logAnalyticsWorkspaceSku",
+        "ENV:logAnalyticsWorkspaceDataRetentionDays",
         "ENV:customDomainHostedZone",
         "ENV:apimInitialDeploy",
         "ENV:apimPublisherEmail",

@@ -211,6 +211,20 @@
         "environmentVariable": "logAnalyticsWorkspaceName"
       }
     },
+    "logAnalyticsWorkspaceSku": {
+      "type": "string",
+      "metadata": {
+        "description": "The SKU of the Log Analytics workspace for the subscription.",
+        "environmentVariable": "logAnalyticsWorkspaceSku"
+      }
+    },
+    "logAnalyticsWorkspaceDataRetentionDays": {
+      "type": "string",
+      "metadata": {
+        "description": "The number of days data is retained in the Log Analytics workspace for the subscription.",
+        "environmentVariable": "logAnalyticsWorkspaceDataRetentionDays"
+      }
+    },
     "customDomainHostedZone": {
       "type": "string",
       "metadata": {
@@ -516,6 +530,29 @@
     },
     {
       "apiVersion": "2017-05-10",
+      "name": "log-analytics-workspace",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'log-analytics-workspace.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceSku": {
+            "value": "[parameters('logAnalyticsWorkspaceSku')]"
+          },
+          "dataRetentionDays": {
+            "value": "[parameters('logAnalyticsWorkspaceDataRetentionDays')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
       "name": "classic-storage-account",
       "type": "Microsoft.Resources/deployments",
       "properties": {
@@ -638,7 +675,8 @@
       },
       "dependsOn": [
         "key-vault",
-        "secretsCopy"
+        "secretsCopy",
+        "log-analytics-workspace"
       ]
     },
     {
