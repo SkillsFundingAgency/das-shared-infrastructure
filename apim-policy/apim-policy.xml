@@ -7,7 +7,6 @@
     - To add a policy position the cursor at the desired insertion point and click on the round button associated with the policy.
     - To remove a policy, delete the corresponding policy statement from the policy document.
     - Policies are applied in the order of their appearance, from the top down.
-    - Extra comment.
 -->
 <policies>
 	<inbound />
