@@ -8,6 +8,7 @@ trigger:
       - tests/*
       - templates/*
       - utilities/*
+      - apim-policy/*
       - Initialize-SharedInfrastructureDeployment.ps1
       - azure-pipelines.yml
 
@@ -49,6 +50,7 @@ steps:
         modules/**
         templates/**
         utilities/**
+        apim-policy/**
         tests/Remove-Environment.ps1
         Initialize-SharedInfrastructureDeployment.ps1
       TargetFolder: "$(build.artifactstagingdirectory)/publish"
