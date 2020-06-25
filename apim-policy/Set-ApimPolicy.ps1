@@ -7,5 +7,6 @@ Param(
 $EnvironmentNames | ForEach-Object {
     Write-Host "Environment: $($_)"
     $ApimContext = New-AzApiManagementContext -ResourceGroupName "das-$($_)-apim-rg".ToLower() -ServiceName "das-$($_)-shared-apim".ToLower()
-    Set-AzApiManagementPolicy -Context $ApimContext -PolicyFilePath "./apim-policy/apim-policy.xml"
+    Set-AzApiManagementPolicy -Context $ApimContext -PolicyFilePath "$PSScriptRoot/apim-policy/apim-policy.xml"
+    Get-AzApiManagementPolicy -Context $ApimContext
 }
