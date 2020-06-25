@@ -14,14 +14,25 @@ function Set-MockEnvironment {
     $ENV:AKSRouteTableName = "Disabled"
     $ENV:AKSRouteTableResourceGroupName = "Disabled"
     $ENV:firewallsNsgName = "Disabled"
-    $ENV:firewallsResourceGroupName = "Disabled"
     $ENV:backupManagementServiceObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:gatewaySubnetCount = 1
+    $ENV:apimSubnetCount = 1
     $ENV:internalAppSubnetCount = 1
     $ENV:externalAppSubnetCount = 1
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
+    $ENV:logAnalyticsWorkspaceName = "oms"
+    $ENV:logAnalyticsWorkspaceSku = "PerGB2018"
+    $ENV:logAnalyticsWorkspaceDataRetentionDays = 31
+    $ENV:customDomainHostedZone = "hosted-zone.com"
+    $ENV:apimInitialDeploy = "Disabled"
+    $ENV:apimPublisherEmail = "test@test.com"
+    $ENV:apimPublisherName = "Test Publisher"
+    $ENV:apimPortalKeyVaultCertificateName = "test-apim-portal-com"
+    $ENV:apimGatewayKeyVaultCertificateName = "test-apim-gateway-com"
+    $ENV:apimGroupsArray = "[]"
+    $ENV:apimProductsArray = "[]"
 }
 
 function Clear-MockEnvironment {
@@ -42,13 +53,24 @@ function Clear-MockEnvironment {
         "ENV:AKSRouteTableName",
         "ENV:AKSRouteTableResourceGroupName",
         "ENV:firewallsNsgName",
-        "ENV:firewallsResourceGroupName",
         "ENV:backupManagementServiceObjectId",
         "ENV:gatewaySubnetCount",
+        "ENV:apimSubnetCount",
         "ENV:internalAppSubnetCount",
         "ENV:externalAppSubnetCount",
         "ENV:sqlAdminPasswordSeed",
-        "ENV:sharedStorageAccountContainerArray"
+        "ENV:sharedStorageAccountContainerArray",
+        "ENV:logAnalyticsWorkspaceName",
+        "ENV:logAnalyticsWorkspaceSku",
+        "ENV:logAnalyticsWorkspaceDataRetentionDays",
+        "ENV:customDomainHostedZone",
+        "ENV:apimInitialDeploy",
+        "ENV:apimPublisherEmail",
+        "ENV:apimPublisherName",
+        "ENV:apimPortalKeyVaultCertificateName",
+        "ENV:apimGatewayKeyVaultCertificateName",
+        "ENV:apimGroupsArray",
+        "ENV:apimProductsArray"
     ) -Force
 }
 

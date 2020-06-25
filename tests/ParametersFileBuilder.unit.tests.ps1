@@ -42,6 +42,7 @@ InModuleScope ParametersFileBuilder {
                 $EnvironmentVariableNames = @(
                     "backupManagementServiceObjectId",
                     "gatewaySubnetCount",
+                    "apimSubnetCount",
                     "internalAppSubnetCount",
                     "externalAppSubnetCount",
                     "sqlAdminPasswordSeed"

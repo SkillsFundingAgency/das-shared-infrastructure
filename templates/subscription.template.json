@@ -84,14 +84,6 @@
         "environmentVariable": "firewallsNsgName"
       }
     },
-    "firewallsResourceGroupName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Name of the Resource Group where the firewall NSG resides, used for the resourceId function to get the firewall NSG resource",
-        "environmentVariable": "firewallsResourceGroupName"
-      }
-    },
     "environments": {
       "type": "array",
       "defaultValue": [
@@ -145,6 +137,15 @@
       "metadata": {
         "description": "The number of management subnets to provision",
         "environmentVariable": "managementSubnetCount"
+      }
+    },
+    "apimSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of APIM subnets to provision",
+        "environmentVariable": "apimSubnetCount"
       }
     },
     "externalAppSubnetCount": {
@@ -201,6 +202,93 @@
       "metadata": {
         "description": "An array of the blob container names to deploy to the shared storage account.",
         "environmentVariable": "sharedStorageAccountContainerArray"
+      }
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics workspace for the subscription.",
+        "environmentVariable": "logAnalyticsWorkspaceName"
+      }
+    },
+    "logAnalyticsWorkspaceSku": {
+      "type": "string",
+      "metadata": {
+        "description": "The SKU of the Log Analytics workspace for the subscription.",
+        "environmentVariable": "logAnalyticsWorkspaceSku"
+      }
+    },
+    "logAnalyticsWorkspaceDataRetentionDays": {
+      "type": "int",
+      "metadata": {
+        "description": "The number of days data is retained in the Log Analytics workspace for the subscription.",
+        "environmentVariable": "logAnalyticsWorkspaceDataRetentionDays"
+      }
+    },
+    "customDomainHostedZone": {
+      "type": "string",
+      "metadata": {
+        "description": "The Hosted Zone used for the APIM DNS records.",
+        "environmentVariable": "customDomainHostedZone"
+      }
+    },
+    "apimInitialDeploy": {
+      "type": "string",
+      "metadata": {
+        "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration.",
+        "environmentVariable": "apimInitialDeploy"
+      }
+    },
+    "apimLogsRetentionDays": {
+      "type": "int",
+      "defaultValue": 30,
+      "metadata": {
+        "description": "Number of days to retain the APIM logs within the Log Analytics Workspace.",
+        "environmentVariable": "apimLogsRetentionDays"
+      }
+    },
+    "apimPublisherEmail": {
+      "type": "string",
+      "metadata": {
+        "description": "The publisher email of the APIM instance.",
+        "environmentVariable": "apimPublisherEmail"
+      }
+    },
+    "apimPublisherName": {
+      "type": "string",
+      "metadata": {
+        "description": "The publisher name of the APIM instance.",
+        "environmentVariable": "apimPublisherName"
+      }
+    },
+    "apimPortalKeyVaultCertificateName": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance.",
+        "environmentVariable": "apimPortalKeyVaultCertificateName"
+      }
+    },
+    "apimGatewayKeyVaultCertificateName": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "The Key vault certificate for the Gateway custom domain of the APIM instance.",
+        "environmentVariable": "apimGatewayKeyVaultCertificateName"
+      }
+    },
+    "apimGroupsArray": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of Groups for the APIM instance.",
+        "environmentVariable": "apimGroupsArray"
+      }
+    },
+    "apimProductsArray": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of Products for the APIM instance.",
+        "environmentVariable": "apimProductsArray"
       }
     },
     "loggingRedisCacheSKU": {
@@ -442,6 +530,29 @@
     },
     {
       "apiVersion": "2017-05-10",
+      "name": "log-analytics-workspace",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'log-analytics-workspace.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceSku": {
+            "value": "[parameters('logAnalyticsWorkspaceSku')]"
+          },
+          "dataRetentionDays": {
+            "value": "[parameters('logAnalyticsWorkspaceDataRetentionDays')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
       "name": "classic-storage-account",
       "type": "Microsoft.Resources/deployments",
       "properties": {
@@ -472,7 +583,7 @@
           "environmentName": {
             "value": "[toUpper(parameters('environments')[copyIndex()])]"
           },
-          "sharedKeyVaultResourceGroup": {
+          "sharedManagementResourceGroup": {
             "value": "[resourceGroup().name]"
           },
           "sharedKeyVaultName": {
@@ -505,14 +616,14 @@
           "managementSubnetCount": {
             "value": "[parameters('managementSubnetCount')]"
           },
+          "apimSubnetCount": {
+            "value": "[parameters('apimSubnetCount')]"
+          },
           "externalAppSubnetCount": {
             "value": "[parameters('externalAppSubnetCount')]"
           },
           "internalAppSubnetCount": {
             "value": "[parameters('internalAppSubnetCount')]"
-          },
-          "firewallsResourceGroupName": {
-            "value": "[parameters('firewallsResourceGroupName')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -525,6 +636,36 @@
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "customDomainHostedZone": {
+            "value": "[parameters('customDomainHostedZone')]"
+          },
+          "apimInitialDeploy": {
+            "value": "[parameters('apimInitialDeploy')]"
+          },
+          "apimLogsRetentionDays": {
+            "value": "[parameters('apimLogsRetentionDays')]"
+          },
+          "apimPublisherEmail": {
+            "value": "[parameters('apimPublisherEmail')]"
+          },
+          "apimPublisherName": {
+            "value": "[parameters('apimPublisherName')]"
+          },
+          "apimPortalKeyVaultCertificateName": {
+            "value": "[parameters('apimPortalKeyVaultCertificateName')]"
+          },
+          "apimGatewayKeyVaultCertificateName": {
+            "value": "[parameters('apimGatewayKeyVaultCertificateName')]"
+          },
+          "apimGroupsArray": {
+            "value": "[parameters('apimGroupsArray')]"
+          },
+          "apimProductsArray": {
+            "value": "[parameters('apimProductsArray')]"
           }
         }
       },
@@ -534,7 +675,8 @@
       },
       "dependsOn": [
         "key-vault",
-        "secretsCopy"
+        "secretsCopy",
+        "log-analytics-workspace"
       ]
     },
     {

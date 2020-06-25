@@ -45,7 +45,15 @@ class ParametersFileBuilder {
 
             switch ($ParameterEnvironmentVariableType) {
                 'array' {
-                    $ParameterVariableValue = [String[]]($ParameterVariableValue | ConvertFrom-Json)
+                    if (($ParameterVariableValue | ConvertFrom-Json | Get-Member)[0].TypeName -eq "System.String"){
+                        $ParameterVariableValue = [String[]]($ParameterVariableValue | ConvertFrom-Json)
+                    }
+                    else {
+                        $HashTable = @{ }
+                        (ConvertFrom-Json $ParameterVariableValue).psobject.properties | ForEach-Object { $HashTable[$_.Name] = $_.Value }
+                        $ParameterVariableValue = @($HashTable.SyncRoot)
+                    }
+                    
                     break
                 }
                 'int' {

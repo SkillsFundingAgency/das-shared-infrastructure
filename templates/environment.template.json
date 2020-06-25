@@ -8,10 +8,10 @@
         "description": "Abbreviated name for the environment, eg: AT, TEST, PP, PRD"
       }
     },
-    "sharedKeyVaultResourceGroup": {
+    "sharedManagementResourceGroup": {
       "type": "string",
       "metadata": {
-        "description": "Resource group of the shared Key Vault for storing the SQL password"
+        "description": "Name of the shared management resource group"
       }
     },
     "sharedKeyVaultName": {
@@ -78,6 +78,14 @@
         "description": "The number of management subnets to provision"
       }
     },
+    "apimSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of APIM subnets to provision"
+      }
+    },
     "externalAppSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -99,13 +107,6 @@
       "defaultValue": "Disabled",
       "metadata": {
         "description": "Name of the firewall NSG to be associated to the gateway subnet gw-sn-0"
-      }
-    },
-    "firewallsResourceGroupName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Name of the Resource Group where the firewall NSG resides, used for the resourceId function to get the firewall NSG resource"
       }
     },
     "frontEndAppServicePlanSku": {
@@ -135,6 +136,67 @@
       "metadata": {
         "description": "An array of the blob container names to deploy to the shared storage account."
       }
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Log Analytics workspace for the subscription."
+      }
+    },
+    "customDomainHostedZone": {
+      "type": "string",
+      "metadata": {
+        "description": "The Hosted Zone used for the APIM DNS records."
+      }
+    },
+    "apimInitialDeploy": {
+      "type": "string",
+      "metadata": {
+        "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
+      }
+    },
+    "apimLogsRetentionDays": {
+      "type": "int",
+      "defaultValue": 30,
+      "metadata": {
+        "description": "Number of days to retain the APIM logs within the Log Analytics Workspace."
+      }
+    },
+    "apimPublisherEmail": {
+      "type": "string",
+      "metadata": {
+        "description": "The publisher email of the APIM instance."
+      }
+    },
+    "apimPublisherName": {
+      "type": "string",
+      "metadata": {
+        "description": "The publisher name of the APIM instance."
+      }
+    },
+    "apimPortalKeyVaultCertificateName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance."
+      }
+    },
+    "apimGatewayKeyVaultCertificateName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Key vault certificate for the Gateway custom domain of the APIM instance."
+      }
+    },
+    "apimGroupsArray": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of Groups for the APIM instance."
+      }
+    },
+    "apimProductsArray": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of Products for the APIM instance."
+      }
     }
   },
   "variables": {
@@ -144,6 +206,23 @@
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
+    "sharedFrontEndAppGatewayPublicIpName": "[concat(variables('resourceNamePrefix'),'fe-ag-pip')]",
+    "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
+    "apimResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-apim-rg'))]",
+    "apimName": "[concat(variables('resourceNamePrefix'),'-apim')]",
+    "apimNetworkType": "External",
+    "apimSubnetName": "apim-sn-0",
+    "apimNsgName": "[concat(variables('resourceNamePrefix'),'-apim-nsg')]",
+    "apimNsgRestrictToAppGateway": "[if(or(equals(parameters('environmentName'), 'DTA'), equals(parameters('environmentName'), 'AT')), bool('false'), bool('true'))]",
+    "apimPortalKeyVaultCertificateNameValue": "[if(equals(parameters('apimPortalKeyVaultCertificateName'), 'Disabled'), '', parameters('apimPortalKeyVaultCertificateName'))]",
+    "apimPortalHostameSuffix": "[concat('portal.', parameters('customDomainHostedZone'))]",
+    "apimPortalHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimPortalHostameSuffix'), toLower(concat(parameters('environmentName'), '-', variables('apimPortalHostameSuffix'))))]",
+    "apimGatewayKeyVaultCertificateNameValue": "[if(equals(parameters('apimGatewayKeyVaultCertificateName'), 'Disabled'), '', parameters('apimGatewayKeyVaultCertificateName'))]",
+    "apimGatewayHostnameSuffix": "[concat('gateway.', parameters('customDomainHostedZone'))]",
+    "apimGatewayHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimGatewayHostnameSuffix'), toLower(concat(parameters('environmentName'), '-', variables('apimGatewayHostnameSuffix'))))]",
+    "apimInitialDeployBoolean": "[if(not(equals(parameters('apimInitialDeploy'), 'Disabled')), bool('true'), bool('false'))]",
+    "apimDeployGroups": "[greater(length(parameters('apimGroupsArray')), 0)]",
+    "apimDeployProducts": "[greater(length(parameters('apimProductsArray')), 0)]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
@@ -199,6 +278,9 @@
           "managementSubnetCount": {
             "value": "[parameters('managementSubnetCount')]"
           },
+          "apimSubnetCount": {
+            "value": "[parameters('apimSubnetCount')]"
+          },
           "externalAppSubnetCount": {
             "value": "[parameters('externalAppSubnetCount')]"
           },
@@ -208,11 +290,20 @@
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
           },
-          "firewallsResourceGroupName": {
-            "value": "[parameters('firewallsResourceGroupName')]"
+          "firewallsResourceGroup": {
+            "value": "[variables('firewallsResourceGroup')]"
+          },
+          "apimNsgName": {
+            "value": "[variables('apimNsgName')]"
+          },
+          "apimResourceGroup": {
+            "value": "[variables('apimResourceGroup')]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[variables('apimNsgName')]"
+      ]
     },
     {
       "apiVersion": "2017-05-10",
@@ -322,7 +413,7 @@
           "sqlServerAdminPassword": {
             "reference": {
               "keyVault": {
-                "id": "[resourceId(parameters('sharedKeyVaultResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
+                "id": "[resourceId(parameters('sharedManagementResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
               },
               "secretName": "[parameters('sqlServerAdminPasswordSecretName')]"
             }
@@ -392,7 +483,7 @@
           "sqlServerAdminPassword": {
             "reference": {
               "keyVault": {
-                "id": "[resourceId(parameters('sharedKeyVaultResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
+                "id": "[resourceId(parameters('sharedManagementResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
               },
               "secretName": "[parameters('sqlServerAdminPasswordSecretName')]"
             }
@@ -597,6 +688,331 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "apim-service",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-service.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimName": {
+            "value": "[variables('apimName')]"
+          },
+          "apimInitialDeploy": {
+            "value": "[variables('apimInitialDeployBoolean')]"
+          },
+          "publisherEmail": {
+            "value": "[parameters('apimPublisherEmail')]"
+          },
+          "publisherName": {
+            "value": "[parameters('apimPublisherName')]"
+          },
+          "virtualNetworkType": {
+            "value": "[variables('apimNetworkType')]"
+          },
+          "virtualNetworkResourceGroup": {
+            "value": "[resourceGroup().name]"
+          },
+          "virtualNetworkName": {
+            "value": "[variables('virtualNetworkName')]"
+          },
+          "subnetName": {
+            "value": "[variables('apimSubnetName')]"
+          },
+          "keyVaultResourceGroup": {
+            "value": "[parameters('sharedManagementResourceGroup')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('sharedKeyVaultName')]"
+          },
+          "portalHostname": {
+            "value": "[variables('apimPortalHostName')]"
+          },
+          "portalKeyVaultCertificateName": {
+            "value": "[variables('apimPortalKeyVaultCertificateNameValue')]"
+          },
+          "gatewayHostname": {
+            "value": "[variables('apimGatewayHostName')]"
+          },
+          "gatewayKeyVaultCertificateName": {
+            "value": "[variables('apimGatewayKeyVaultCertificateNameValue')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('apimNsgName')]",
+      "resourceGroup": "[variables('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'nsg.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "nsgName": {
+            "value": "[variables('apimNsgName')]"
+          },
+          "securityRules": {
+            "value": [
+              {
+                "name": "AllowFrontendAppGateway",
+                "properties": {
+                  "description": "Allow Frontend App Gateway Inbound traffic",
+                  "protocol": "TCP",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "443",
+                  "sourceAddressPrefix": "[if(variables('apimNsgRestrictToAppGateway'), reference(resourceId(variables('firewallsResourceGroup'), 'Microsoft.Network/publicIPAddresses', variables('sharedFrontEndAppGatewayPublicIpName')), '2019-09-01').ipAddress, 'Internet')]",
+                  "destinationAddressPrefix": "VirtualNetwork",
+                  "access": "Allow",
+                  "priority": 100,
+                  "direction": "Inbound"
+                }
+              },
+              {
+                "name": "AllowApiManagementEndpoint",
+                "properties": {
+                  "description": "Allow Azure communication for Api Management endpoint for Azure portal and PowerShell",
+                  "protocol": "TCP",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "3443",
+                  "sourceAddressPrefix": "ApiManagement",
+                  "destinationAddressPrefix": "VirtualNetwork",
+                  "access": "Allow",
+                  "priority": 110,
+                  "direction": "Inbound"
+                }
+              },
+              {
+                "name": "AllowAccessToRedisServiceInbound",
+                "properties": {
+                  "description": "Allow Access to Redis Service for Rate Limit policies between machines",
+                  "protocol": "TCP",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "6381-6383",
+                  "sourceAddressPrefix": "VirtualNetwork",
+                  "destinationAddressPrefix": "VirtualNetwork",
+                  "access": "Allow",
+                  "priority": 120,
+                  "direction": "Inbound"
+                }
+              },
+              {
+                "name": "AllowAzureLoadBalancer",
+                "properties": {
+                  "description": "Allow Azure Infrastructure Load Balancer",
+                  "protocol": "TCP",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "*",
+                  "sourceAddressPrefix": "AzureLoadBalancer",
+                  "destinationAddressPrefix": "VirtualNetwork",
+                  "access": "Allow",
+                  "priority": 130,
+                  "direction": "Inbound"
+                }
+              },
+              {
+                "name": "DenyAll",
+                "properties": {
+                  "description": "Deny all inbound traffic",
+                  "protocol": "*",
+                  "sourcePortRange": "*",
+                  "destinationPortRange": "*",
+                  "sourceAddressPrefix": "*",
+                  "destinationAddressPrefix": "*",
+                  "access": "Deny",
+                  "priority": 140,
+                  "direction": "Inbound"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "apim-logger-app-insights",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appInsightsName": {
+            "value": "[variables('apimName')]"
+          }
+        }
+      },
+      "dependsOn": [
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "apim-logger",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-logger.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimName": {
+            "value": "[variables('apimName')]"
+          },
+          "loggerName": {
+            "value": "appInsightsLogger"
+          },
+          "loggerType": {
+            "value": "applicationInsights"
+          },
+          "loggerCredentials": {
+            "value": {
+              "instrumentationKey": "[reference('apim-logger-app-insights').outputs.InstrumentationKey.value]"
+            }
+          },
+          "loggerResourceId": {
+            "value": "[resourceId('Microsoft.Insights/components', variables('apimName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "apim-service"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "apim-diagnostic-settings",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-diagnostic-settings.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimName": {
+            "value": "[variables('apimName')]"
+          },
+          "logAnalyticsWorkspaceResourceGroup": {
+            "value": "[parameters('sharedManagementResourceGroup')]"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logsRetentionDays": {
+            "value": "[parameters('apimLogsRetentionDays')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "apim-service"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('apim-group-', if(variables('apimDeployGroups'), copyIndex(), 'placeholder'))]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('apimDeployGroups')]",
+      "resourceGroup": "[variables('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-group.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimName": {
+            "value": "[variables('apimName')]"
+          },
+          "groupResourceName": {
+            "value": "[parameters('apimGroupsArray')[copyIndex()].groupResourceName]"
+          },
+          "groupDisplayName": {
+            "value": "[parameters('apimGroupsArray')[copyIndex()].groupDisplayName]"
+          },
+          "groupDescription": {
+            "value": "[parameters('apimGroupsArray')[copyIndex()].groupDescription]"
+          },
+          "groupType": {
+            "value": "custom"
+          }
+        }
+      },
+      "copy": {
+        "name": "apim-groups-copy",
+        "count": "[if(variables('apimDeployGroups'), length(parameters('apimGroupsArray')), 1)]"
+      },
+      "dependsOn": [
+        "apim-service"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()].productResourceName, 'placeholder'))]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('apimDeployProducts')]",
+      "resourceGroup": "[variables('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-product.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimName": {
+            "value": "[variables('apimName')]"
+          },
+          "productResourceName": {
+            "value": "[parameters('apimProductsArray')[copyIndex()].productResourceName]"
+          },
+          "productDisplayName": {
+            "value": "[parameters('apimProductsArray')[copyIndex()].productDisplayName]"
+          },
+          "productDescription": {
+            "value": "[parameters('apimProductsArray')[copyIndex()].productDescription]"
+          },
+          "productSubscriptionRequired": {
+            "value": true
+          },
+          "productApprovalRequired": {
+            "value": true
+          },
+          "productState": {
+            "value": "[parameters('apimProductsArray')[copyIndex()].productState]"
+          },
+          "productGroups": {
+            "value": "[parameters('apimProductsArray')[copyIndex()].productGroups]"
+          }
+        }
+      },
+      "copy": {
+        "name": "apim-products-copy",
+        "count": "[if(variables('apimDeployProducts'), length(parameters('apimProductsArray')), 1)]"
+      },
+      "dependsOn": [
+        "apim-service",
+        "apim-groups-copy"
+      ]
     }
   ],
   "outputs": {
