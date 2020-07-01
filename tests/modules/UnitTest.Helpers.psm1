@@ -31,6 +31,7 @@ function Set-MockEnvironment {
     $ENV:apimPublisherName = "Test Publisher"
     $ENV:apimPortalKeyVaultCertificateName = "test-apim-portal-com"
     $ENV:apimGatewayKeyVaultCertificateName = "test-apim-gateway-com"
+    $ENV:apimManagementKeyVaultCertificateName = "test-apim-management-com"
     $ENV:apimGroupsArray = "[]"
     $ENV:apimProductsArray = "[]"
 }
@@ -69,6 +70,7 @@ function Clear-MockEnvironment {
         "ENV:apimPublisherName",
         "ENV:apimPortalKeyVaultCertificateName",
         "ENV:apimGatewayKeyVaultCertificateName",
+        "ENV:apimManagementKeyVaultCertificateName",
         "ENV:apimGroupsArray",
         "ENV:apimProductsArray"
     ) -Force

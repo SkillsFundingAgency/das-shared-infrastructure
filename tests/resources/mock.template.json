@@ -265,6 +265,13 @@
         "environmentVariable": "apimGatewayKeyVaultCertificateName"
       }
     },
+    "apimManagementKeyVaultCertificateName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Key vault certificate for the Management custom domain of the APIM instance.",
+        "environmentVariable": "apimManagementKeyVaultCertificateName"
+      }
+    },
     "apimGroupsArray": {
       "type": "array",
       "metadata": {
