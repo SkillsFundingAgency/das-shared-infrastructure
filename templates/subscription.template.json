@@ -148,22 +148,31 @@
         "environmentVariable": "apimSubnetCount"
       }
     },
-    "externalAppSubnetCount": {
+    "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 50,
+      "maxValue": 5,
       "metadata": {
-        "description": "The number of external subnets to provision",
-        "environmentVariable": "externalAppSubnetCount"
+        "description": "The number of shared frontend app subnets to provision.",
+        "environmentVariable": "frontendSubnetCount"
       }
     },
-    "internalAppSubnetCount": {
+    "backendSubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 150,
+      "maxValue": 5,
       "metadata": {
-        "description": "The number of internal subnets to provision.",
-        "environmentVariable": "internalAppSubnetCount"
+        "description": "The number of shared backend app subnets to provision.",
+        "environmentVariable": "backendSubnetCount"
+      }
+    },
+    "apimEndpointSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of shared APIM endpoint app subnets to provision.",
+        "environmentVariable": "apimEndpointSubnetCount"
       }
     },
     "sqlAdminPasswordSeed": {
@@ -195,6 +204,18 @@
       "metadata": {
         "description": "An object representing the sku of the app service plan.",
         "environmentVariable": "backEndAppServicePlanSku"
+      }
+    },
+    "apimEndpointAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "2",
+        "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the app service plan.",
+        "environmentVariable": "apimEndpointAppServicePlanSku"
       }
     },
     "sharedStorageAccountContainerArray": {
@@ -627,11 +648,14 @@
           "apimSubnetCount": {
             "value": "[parameters('apimSubnetCount')]"
           },
-          "externalAppSubnetCount": {
-            "value": "[parameters('externalAppSubnetCount')]"
+          "frontendSubnetCount": {
+            "value": "[parameters('frontendSubnetCount')]"
           },
-          "internalAppSubnetCount": {
-            "value": "[parameters('internalAppSubnetCount')]"
+          "backendSubnetCount": {
+            "value": "[parameters('backendSubnetCount')]"
+          },
+          "apimEndpointSubnetCount": {
+            "value": "[parameters('apimEndpointSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -641,6 +665,9 @@
           },
           "backEndAppServicePlanSku": {
             "value": "[parameters('backEndAppServicePlanSku')]"
+          },
+          "apimEndpointAppServicePlanSku": {
+            "value": "[parameters('apimEndpointAppServicePlanSku')]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
