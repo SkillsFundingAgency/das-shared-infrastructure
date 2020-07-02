@@ -43,8 +43,9 @@ InModuleScope ParametersFileBuilder {
                     "backupManagementServiceObjectId",
                     "gatewaySubnetCount",
                     "apimSubnetCount",
-                    "internalAppSubnetCount",
-                    "externalAppSubnetCount",
+                    "frontendSubnetCount",
+                    "backendSubnetCount",
+                    "apimEndpointSubnetCount",
                     "sqlAdminPasswordSeed"
                 )
                 Assert-ParameterValuesAreEqual -EnvironmentVariableNames $EnvironmentVariableNames -ParametersObject $MockParametersFileConfig.Parameters
