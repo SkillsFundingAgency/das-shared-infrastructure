@@ -54,7 +54,7 @@
     "managementSubnetCount": {
       "type": "int",
       "defaultValue": 1,
-      "maxValue": 50,
+      "maxValue": 5,
       "metadata": {
         "description": "The number of management subnets to provision"
       }
@@ -74,34 +74,49 @@
         "description": "The number of APIM subnets to provision"
       }
     },
-    "externalSubnetNamePrefix": {
+    "frontendSubnetNamePrefix": {
       "type": "string",
-      "defaultValue": "ext-app-sn",
+      "defaultValue": "sharedfe-sn",
       "metadata": {
-        "description": "The prefix used for naming new external app subnets."
+        "description": "The prefix used for naming new shared frontend app subnets."
       }
     },
-    "externalAppSubnetCount": {
+    "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 50,
+      "maxValue": 5,
       "metadata": {
-        "description": "The number of external subnets to provision"
+        "description": "The number of shared frontend app subnets to provision"
       }
     },
-    "internalSubnetNamePrefix": {
+    "backendSubnetNamePrefix": {
       "type": "string",
-      "defaultValue": "int-app-sn",
+      "defaultValue": "sharedbe-sn",
       "metadata": {
-        "description": "The prefix used for naming new internal app subnets."
+        "description": "The prefix used for naming new shared backend app subnets."
       }
     },
-    "internalAppSubnetCount": {
+    "backendSubnetCount": {
       "type": "int",
       "defaultValue": 0,
-      "maxValue": 150,
+      "maxValue": 5,
       "metadata": {
-        "description": "The number of internal subnets to provision."
+        "description": "The number of shared backend app subnets to provision."
+      }
+    },
+    "apimEndpointSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "apimendp-sn",
+      "metadata": {
+        "description": "The prefix used for naming new shared APIM endpoint app subnets."
+      }
+    },
+    "apimEndpointSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of shared APIM endpoint app subnets to provision."
       }
     },
     "serviceEndpointList": {
@@ -223,24 +238,36 @@
         }
       },
       {
-        "name": "externalSubnetCopy",
-        "count": "[if(greater(parameters('externalAppSubnetCount'), 0), parameters('externalAppSubnetCount'), 1)]",
+        "name": "frontendSubnetCopy",
+        "count": "[if(greater(parameters('frontendSubnetCount'), 0), parameters('frontendSubnetCount'), 1)]",
         "input": {
-          "name": "[concat(parameters('externalSubnetNamePrefix'), '-', copyIndex('externalSubnetCopy'))]",
+          "name": "[concat(parameters('frontendSubnetNamePrefix'), '-', copyIndex('frontendSubnetCopy'))]",
           "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 61, copyIndex('externalSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 15, copyIndex('frontendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
             "delegations": "[variables('subnetDelegations')]"
           }
         }
       },
       {
-        "name": "internalSubnetCopy",
-        "count": "[if(greater(parameters('internalAppSubnetCount'), 0), parameters('internalAppSubnetCount'), 1)]",
+        "name": "backendSubnetCopy",
+        "count": "[if(greater(parameters('backendSubnetCount'), 0), parameters('backendSubnetCount'), 1)]",
         "input": {
-          "name": "[concat(parameters('internalSubnetNamePrefix'), '-', copyIndex('internalSubnetCopy'))]",
+          "name": "[concat(parameters('backendSubnetNamePrefix'), '-', copyIndex('backendSubnetCopy'))]",
           "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 111, copyIndex('internalSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 20, copyIndex('backendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
+            "delegations": "[variables('subnetDelegations')]"
+          }
+        }
+      },
+      {
+        "name": "apimEndpointSubnetCopy",
+        "count": "[if(greater(parameters('apimEndpointSubnetCount'), 0), parameters('apimEndpointSubnetCount'), 1)]",
+        "input": {
+          "name": "[concat(parameters('apimEndpointSubnetNamePrefix'), '-', copyIndex('apimEndpointSubnetCopy'))]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 25, copyIndex('apimEndpointSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
             "delegations": "[variables('subnetDelegations')]"
           }
@@ -250,10 +277,11 @@
     "emptyArray": [
     ],
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
-    "apimSubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('apimSubnetCopy'), variables('emptyArray'))]",
-    "externalSubnet": "[if(greater(parameters('externalAppSubnetCount'), 0), variables('externalSubnetCopy'), variables('emptyArray'))]",
-    "internalSubnet": "[if(greater(parameters('internalAppSubnetCount'), 0), variables('internalSubnetCopy'), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('apimSubnet'), variables('externalSubnet'), variables('internalSubnet'))]"
+    "apimSubnet": "[if(greater(parameters('apimSubnetCount'), 0), variables('apimSubnetCopy'), variables('emptyArray'))]",
+    "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
+    "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
+    "apimEndpointSubnet": "[if(greater(parameters('apimEndpointSubnetCount'), 0), variables('apimEndpointSubnetCopy'), variables('emptyArray'))]",
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('apimSubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('apimEndpointSubnet'))]"
   },
   "functions": [
     {

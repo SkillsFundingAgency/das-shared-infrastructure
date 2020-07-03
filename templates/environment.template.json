@@ -86,20 +86,28 @@
         "description": "The number of APIM subnets to provision"
       }
     },
-    "externalAppSubnetCount": {
+    "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
-      "maxValue": 10,
+      "maxValue": 5,
       "metadata": {
-        "description": "The number of external subnets to provision"
+        "description": "The number of shared frontend app subnets to provision."
       }
     },
-    "internalAppSubnetCount": {
+    "backendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
-      "maxValue": 10,
+      "maxValue": 5,
       "metadata": {
-        "description": "The number of internal subnets to provision."
+        "description": "The number of shared backend app subnets to provision."
+      }
+    },
+    "apimEndpointSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of shared APIM endpoint app subnets to provision."
       }
     },
     "firewallsNsgName": {
@@ -121,6 +129,17 @@
       }
     },
     "backEndAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "2",
+        "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the app service plan."
+      }
+    },
+    "apimEndpointAppServicePlanSku": {
       "type": "object",
       "defaultValue": {
         "tier": "Standard",
@@ -212,6 +231,7 @@
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
+    "apimEndpointAppServicePlanName": "[concat('das-', variables('environmentName'),'-apimendp-asp')]",
     "sharedFrontEndAppGatewayPublicIpName": "[concat(variables('resourceNamePrefix'),'fe-ag-pip')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "apimResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-apim-rg'))]",
@@ -290,11 +310,14 @@
           "apimSubnetCount": {
             "value": "[parameters('apimSubnetCount')]"
           },
-          "externalAppSubnetCount": {
-            "value": "[parameters('externalAppSubnetCount')]"
+          "frontendSubnetCount": {
+            "value": "[parameters('frontendSubnetCount')]"
           },
-          "internalAppSubnetCount": {
-            "value": "[parameters('internalAppSubnetCount')]"
+          "backendSubnetCount": {
+            "value": "[parameters('backendSubnetCount')]"
+          },
+          "apimEndpointSubnetCount": {
+            "value": "[parameters('apimEndpointSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -594,6 +617,32 @@
           },
           "nonASETier": {
             "value": "[parameters('backEndAppServicePlanSku').tier]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "apim-endpoint-app-service-plan",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServicePlanName": {
+            "value": "[variables('apimEndpointAppServicePlanName')]"
+          },
+          "aspSize": {
+            "value": "[parameters('apimEndpointAppServicePlanSku').size]"
+          },
+          "aspInstances": {
+            "value": "[parameters('apimEndpointAppServicePlanSku').instances]"
+          },
+          "nonASETier": {
+            "value": "[parameters('apimEndpointAppServicePlanSku').tier]"
           }
         }
       }

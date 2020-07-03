@@ -17,8 +17,9 @@ function Set-MockEnvironment {
     $ENV:backupManagementServiceObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:gatewaySubnetCount = 1
     $ENV:apimSubnetCount = 1
-    $ENV:internalAppSubnetCount = 1
-    $ENV:externalAppSubnetCount = 1
+    $ENV:frontendSubnetCount = 1
+    $ENV:backendSubnetCount = 1
+    $ENV:apimEndpointSubnetCount = 1
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
@@ -57,8 +58,9 @@ function Clear-MockEnvironment {
         "ENV:backupManagementServiceObjectId",
         "ENV:gatewaySubnetCount",
         "ENV:apimSubnetCount",
-        "ENV:internalAppSubnetCount",
-        "ENV:externalAppSubnetCount",
+        "ENV:frontendSubnetCount",
+        "ENV:backendSubnetCount",
+        "ENV:apimEndpointSubnetCount",
         "ENV:sqlAdminPasswordSeed",
         "ENV:sharedStorageAccountContainerArray",
         "ENV:logAnalyticsWorkspaceName",
