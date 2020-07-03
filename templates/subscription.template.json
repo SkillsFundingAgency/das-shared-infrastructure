@@ -206,18 +206,6 @@
         "environmentVariable": "backEndAppServicePlanSku"
       }
     },
-    "apimEndpointAppServicePlanSku": {
-      "type": "object",
-      "defaultValue": {
-        "tier": "Standard",
-        "size": "2",
-        "instances": 2
-      },
-      "metadata": {
-        "description": "An object representing the sku of the app service plan.",
-        "environmentVariable": "apimEndpointAppServicePlanSku"
-      }
-    },
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
@@ -665,9 +653,6 @@
           },
           "backEndAppServicePlanSku": {
             "value": "[parameters('backEndAppServicePlanSku')]"
-          },
-          "apimEndpointAppServicePlanSku": {
-            "value": "[parameters('apimEndpointAppServicePlanSku')]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
