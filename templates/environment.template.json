@@ -625,6 +625,7 @@
       "apiVersion": "2017-05-10",
       "name": "apim-endpoint-app-service-plan",
       "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('apimResourceGroup')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
