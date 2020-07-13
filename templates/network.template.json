@@ -380,7 +380,7 @@
             "value": "[variables('subnetConfiguration')[copyIndex()].properties.delegations]"
           },
           "networkSecurityGroup": {
-            "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.networkSecurityGroup), variables('subnetConfiguration')[copyIndex()].properties.networkSecurityGroup, variables('emptyObject'))]"
+            "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.networkSecurityGroup), variables('emptyObject'), variables('subnetConfiguration')[copyIndex()].properties.networkSecurityGroup)]"
           },
           "routeTable": {
             "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.routeTable), variables('emptyObject'), variables('subnetConfiguration')[copyIndex()].properties.routeTable)]"
