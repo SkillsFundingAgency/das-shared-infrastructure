@@ -22,6 +22,17 @@
         "description": "The CIDR notation of the Vnet address space"
       }
     },
+    "virtualNetworkDeploy": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
+      "metadata": {
+        "description": "Deploys the Virtual Network and deletes all subnets if Enabled https://github.com/Azure/azure-quickstart-templates/issues/2786"
+      }
+    },
     "subnetAddressSpaceCIDR": {
       "type": "string",
       "defaultValue": "/24",
@@ -121,8 +132,7 @@
     },
     "serviceEndpointList": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "A list of service endpoints to configure on the subnets provisioned in the vnet."
       }
@@ -171,7 +181,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/separate-subnet-deployment/templates/",
     "aksRouteTableId": {
       "id": "[if(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), resourceId(parameters('AKSRouteTableResourceGroupName'), 'Microsoft.Network/routeTables', parameters('AKSRouteTableName')),'')]"
     },
@@ -192,16 +202,7 @@
         }
       }
     ],
-    "serviceEndpointsEmpty": [
-    ],
     "copy": [
-      {
-        "name": "serviceEndpoints",
-        "count": "[if(greater(length(parameters('serviceEndpointList')), 0), length(parameters('serviceEndpointList')), 1)]",
-        "input": {
-          "service": "[if(greater(length(parameters('serviceEndpointList')), 0), parameters('serviceEndpointList')[copyIndex('serviceEndPoints')], json('null'))]"
-        }
-      },
       {
         "name": "gatewaySubnetCopy",
         "count": "[if(greater(parameters('gatewaySubnetCount'), 0), parameters('gatewaySubnetCount'), 1)]",
@@ -209,8 +210,10 @@
           "name": "[concat(parameters('gatewaySubnetNamePrefix'), '-', copyIndex('gatewaySubnetCopy'))]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, copyIndex('gatewaySubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
-            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), bool(equals(copyIndex('gatewaySubnetCopy'), 0))), variables('firewallNsgId'), json('null'))]"
+            "serviceEndpointList": "[parameters('serviceEndpointList')]",
+            "delegations": "[variables('emptyArray')]",
+            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), bool(equals(copyIndex('gatewaySubnetCopy'), 0))), variables('firewallNsgId'), json('null'))]",
+            "routeTable": "[variables('emptyObject')]"
           }
         }
       },
@@ -221,6 +224,9 @@
           "name": "[concat(parameters('managementSubnetNamePrefix'), '-', copyIndex('managementSubnetCopy'))]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 5, copyIndex('managementSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpointList": "[variables('emptyArray')]",
+            "delegations": "[variables('emptyArray')]",
+            "networkSecurityGroup": "[variables('emptyObject')]",
             "routeTable": "[if(and(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), bool(equals(copyIndex('managementSubnetCopy'), 0))), variables('aksRouteTableId'), json('null'))]"
           }
         }
@@ -232,8 +238,10 @@
           "name": "[concat(parameters('apimSubnetNamePrefix'), '-', copyIndex('apimSubnetCopy'))]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 10, copyIndex('apimSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
-            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('apimNsgName'),'Disabled'))), bool(equals(copyIndex('apimSubnetCopy'), 0))), variables('apimNsgId'), json('null'))]"
+            "serviceEndpointList": "[parameters('serviceEndpointList')]",
+            "delegations": "[variables('emptyArray')]",
+            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('apimNsgName'),'Disabled'))), bool(equals(copyIndex('apimSubnetCopy'), 0))), variables('apimNsgId'), json('null'))]",
+            "routeTable": "[variables('emptyObject')]"
           }
         }
       },
@@ -244,8 +252,10 @@
           "name": "[concat(parameters('frontendSubnetNamePrefix'), '-', copyIndex('frontendSubnetCopy'))]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 15, copyIndex('frontendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
-            "delegations": "[variables('subnetDelegations')]"
+            "serviceEndpointList": "[parameters('serviceEndpointList')]",
+            "delegations": "[variables('subnetDelegations')]",
+            "networkSecurityGroup": "[variables('emptyObject')]",
+            "routeTable": "[variables('emptyObject')]"
           }
         }
       },
@@ -256,8 +266,10 @@
           "name": "[concat(parameters('backendSubnetNamePrefix'), '-', copyIndex('backendSubnetCopy'))]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 20, copyIndex('backendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
-            "delegations": "[variables('subnetDelegations')]"
+            "serviceEndpointList": "[parameters('serviceEndpointList')]",
+            "delegations": "[variables('subnetDelegations')]",
+            "networkSecurityGroup": "[variables('emptyObject')]",
+            "routeTable": "[variables('emptyObject')]"
           }
         }
       },
@@ -268,14 +280,16 @@
           "name": "[concat(parameters('apimEndpointSubnetNamePrefix'), '-', copyIndex('apimEndpointSubnetCopy'))]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 25, copyIndex('apimEndpointSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpoints": "[if(greater(length(parameters('serviceEndpointList')), 0), variables('serviceEndpoints'), variables('serviceEndpointsEmpty'))]",
-            "delegations": "[variables('subnetDelegations')]"
+            "serviceEndpointList": "[parameters('serviceEndpointList')]",
+            "delegations": "[variables('subnetDelegations')]",
+            "networkSecurityGroup": "[variables('emptyObject')]",
+            "routeTable": "[variables('emptyObject')]"
           }
         }
       }
     ],
-    "emptyArray": [
-    ],
+    "emptyArray": [],
+    "emptyObject": {},
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
     "apimSubnet": "[if(greater(parameters('apimSubnetCount'), 0), variables('apimSubnetCopy'), variables('emptyArray'))]",
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
@@ -318,6 +332,7 @@
     {
       "apiVersion": "2017-05-10",
       "name": "virtual-network",
+      "condition": "[equals(parameters('virtualNetworkDeploy'), 'Enabled')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -331,18 +346,58 @@
           },
           "armVnetAddressSpaceCIDR": {
             "value": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, 0, parameters('virtualNetworkAddressSpaceCIDR'))]"
-          },
-          "subnetConfiguration": {
-            "value": "[variables('subnetConfiguration')]"
           }
         }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('subnet-', variables('subnetConfiguration')[copyIndex()].name)]",
+      "type": "Microsoft.Resources/deployments",
+      "dependsOn": [
+        "virtual-network"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'subnet.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "virtualNetworkName": {
+            "value": "[parameters('virtualNetworkName')]"
+          },
+          "subnetName": {
+            "value": "[variables('subnetConfiguration')[copyIndex()].name]"
+          },
+          "subnetAddressPrefix": {
+            "value": "[variables('subnetConfiguration')[copyIndex()].properties.addressPrefix]"
+          },
+          "serviceEndpointList": {
+            "value": "[variables('subnetConfiguration')[copyIndex()].properties.serviceEndpointList]"
+          },
+          "delegations": {
+            "value": "[variables('subnetConfiguration')[copyIndex()].properties.delegations]"
+          },
+          "networkSecurityGroup": {
+            "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.networkSecurityGroup), variables('subnetConfiguration')[copyIndex()].properties.networkSecurityGroup, variables('emptyObject'))]"
+          },
+          "routeTable": {
+            "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.routeTable), variables('emptyObject'), variables('subnetConfiguration')[copyIndex()].properties.routeTable)]"
+          }
+        }
+      },
+      "copy": {
+        "name": "subnet-copy",
+        "count": "[length(variables('subnetConfiguration'))]",
+        "mode": "Serial"
       }
     }
   ],
   "outputs": {
-    "subnetConfiguration": {
+    "backendSubnetConfiguration": {
       "type": "array",
-      "value": "[skip(variables('subnetConfiguration'),2)]"
+      "value": "[variables('backendSubnet')]"
     }
   }
 }

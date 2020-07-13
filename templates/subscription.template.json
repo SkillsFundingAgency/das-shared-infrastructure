@@ -121,6 +121,14 @@
         "environmentVariable": "databaseConfiguration"
       }
     },
+    "virtualNetworkDeploy": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Deploys the Virtual Network and deletes all subnets if Enabled https://github.com/Azure/azure-quickstart-templates/issues/2786",
+        "environmentVariable": "virtualNetworkDeploy"
+      }
+    },
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 0,
@@ -332,7 +340,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/separate-subnet-deployment/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -470,6 +478,9 @@
         "parameters": {
           "virtualNetworkName": {
             "value": "[variables('virtualNetworkName')]"
+          },
+          "virtualNetworkDeploy": {
+            "value": "[parameters('virtualNetworkDeploy')]"
           },
           "managementSubnetCount": {
             "value": "[variables('mgmtManagementSubnetCount')]"
@@ -626,6 +637,9 @@
           },
           "virtualNetworkAddressSpacePrefix": {
             "value": "[concat('10.', copyIndex(1))]"
+          },
+          "virtualNetworkDeploy": {
+            "value": "[parameters('virtualNetworkDeploy')]"
           },
           "gatewaySubnetCount": {
             "value": "[parameters('gatewaySubnetCount')]"

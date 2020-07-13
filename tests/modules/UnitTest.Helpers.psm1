@@ -15,6 +15,7 @@ function Set-MockEnvironment {
     $ENV:AKSRouteTableResourceGroupName = "Disabled"
     $ENV:firewallsNsgName = "Disabled"
     $ENV:backupManagementServiceObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
+    $ENV:virtualNetworkDeploy = "Disabled"
     $ENV:gatewaySubnetCount = 1
     $ENV:apimSubnetCount = 1
     $ENV:frontendSubnetCount = 1
@@ -56,6 +57,7 @@ function Clear-MockEnvironment {
         "ENV:AKSRouteTableResourceGroupName",
         "ENV:firewallsNsgName",
         "ENV:backupManagementServiceObjectId",
+        "ENV:virtualNetworkDeploy"
         "ENV:gatewaySubnetCount",
         "ENV:apimSubnetCount",
         "ENV:frontendSubnetCount",
