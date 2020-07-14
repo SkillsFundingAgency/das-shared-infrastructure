@@ -76,9 +76,6 @@ try {
         $FailoverGroupBuilder = [FailoverGroupBuilder]::New()
         $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
     }
-    else {
-        $ENV:DatabaseConfiguration = $null
-    }
 
     # --- Create parameters file
     $ParametersFileBuilder = [ParametersFileBuilder]::New()

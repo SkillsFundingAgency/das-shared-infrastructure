@@ -52,6 +52,7 @@
     },
     "databaseConfiguration": {
       "type": "object",
+      "defaultValue": {},
       "metadata": {
         "description": "Configuration object which describes the structure of failovergroups"
       }

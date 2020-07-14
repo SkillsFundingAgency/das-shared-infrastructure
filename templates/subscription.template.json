@@ -116,6 +116,7 @@
     },
     "databaseConfiguration": {
       "type": "object",
+      "defaultValue": {},
       "metadata": {
         "description": "Configuration object which describes the structure of failover groups",
         "environmentVariable": "databaseConfiguration"
