@@ -72,8 +72,13 @@ try {
     $null = $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $ParsedEnvironmentNames, $Location, $Tags)
 
     # --- Create failover group configuration
-    $FailoverGroupBuilder = [FailoverGroupBuilder]::New()
-    $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
+    if ( "PP", "PRD" -contains $ParsedEnvironmentNames ) {
+        $FailoverGroupBuilder = [FailoverGroupBuilder]::New()
+        $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
+    }
+    else {
+        [Hashtable]$ENV:DatabaseConfiguration = @{ }
+    }
 
     # --- Create parameters file
     $ParametersFileBuilder = [ParametersFileBuilder]::New()
