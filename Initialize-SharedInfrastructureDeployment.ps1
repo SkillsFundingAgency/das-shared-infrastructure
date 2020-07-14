@@ -77,7 +77,7 @@ try {
         $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
     }
     else {
-        [Hashtable]$ENV:DatabaseConfiguration = @{ }
+        $ENV:DatabaseConfiguration = $null
     }
 
     # --- Create parameters file
