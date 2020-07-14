@@ -62,6 +62,12 @@
         "description": "Virtual network address prefix for the environment vnet"
       }
     },
+    "virtualNetworkDeploy": {
+      "type": "string",
+      "metadata": {
+        "description": "Deploys the Virtual Network and deletes all subnets if Enabled https://github.com/Azure/azure-quickstart-templates/issues/2786"
+      }
+    },
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -220,7 +226,6 @@
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
-    "apimEndpointAppServicePlanName": "[concat('das-', variables('environmentName'),'-apimendp-asp')]",
     "sharedFrontEndAppGatewayPublicIpName": "[concat(variables('resourceNamePrefix'),'fe-ag-pip')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "apimResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-apim-rg'))]",
@@ -287,6 +292,9 @@
           "virtualNetworkAddressSpacePrefix": {
             "value": "[parameters('virtualNetworkAddressSpacePrefix')]"
           },
+          "virtualNetworkDeploy": {
+            "value": "[parameters('virtualNetworkDeploy')]"
+          },
           "serviceEndpointList": {
             "value": "[variables('subnetServiceEndpointList')]"
           },
@@ -341,7 +349,7 @@
             "value": "[variables('virtualNetworkName')]"
           },
           "subnetConfiguration": {
-            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.subnetConfiguration.value]"
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.backendSubnetConfiguration.value]"
           }
         }
       }

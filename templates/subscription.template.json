@@ -121,6 +121,18 @@
         "environmentVariable": "databaseConfiguration"
       }
     },
+    "virtualNetworkDeploy": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
+      "metadata": {
+        "description": "Deploys the Virtual Network and deletes all subnets if Enabled https://github.com/Azure/azure-quickstart-templates/issues/2786",
+        "environmentVariable": "virtualNetworkDeploy"
+      }
+    },
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 0,
@@ -471,6 +483,9 @@
           "virtualNetworkName": {
             "value": "[variables('virtualNetworkName')]"
           },
+          "virtualNetworkDeploy": {
+            "value": "[parameters('virtualNetworkDeploy')]"
+          },
           "managementSubnetCount": {
             "value": "[variables('mgmtManagementSubnetCount')]"
           },
@@ -626,6 +641,9 @@
           },
           "virtualNetworkAddressSpacePrefix": {
             "value": "[concat('10.', copyIndex(1))]"
+          },
+          "virtualNetworkDeploy": {
+            "value": "[parameters('virtualNetworkDeploy')]"
           },
           "gatewaySubnetCount": {
             "value": "[parameters('gatewaySubnetCount')]"
