@@ -182,6 +182,8 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "emptyArray": [],
+    "emptyObject": {},
     "aksRouteTableId": {
       "id": "[if(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), resourceId(parameters('AKSRouteTableResourceGroupName'), 'Microsoft.Network/routeTables', parameters('AKSRouteTableName')),'')]"
     },
@@ -288,8 +290,6 @@
         }
       }
     ],
-    "emptyArray": [],
-    "emptyObject": {},
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
     "apimSubnet": "[if(greater(parameters('apimSubnetCount'), 0), variables('apimSubnetCopy'), variables('emptyArray'))]",
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
