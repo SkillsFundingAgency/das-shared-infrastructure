@@ -170,6 +170,17 @@
         "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration."
       }
     },
+    "apimSKU": {
+      "type": "string",
+      "allowedValues": [
+        "Developer",
+        "Premium"
+      ],
+      "defaultValue": "Developer",
+      "metadata": {
+        "description": "The pricing tier of the API Management service."
+      }
+    },
     "apimLogsRetentionDays": {
       "type": "int",
       "defaultValue": 30,
@@ -742,6 +753,9 @@
           },
           "publisherName": {
             "value": "[parameters('apimPublisherName')]"
+          },
+          "sku": {
+            "value": "[parameters('apimSKU')]"
           },
           "virtualNetworkType": {
             "value": "[variables('apimNetworkType')]"

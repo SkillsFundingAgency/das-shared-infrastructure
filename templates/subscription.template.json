@@ -261,6 +261,17 @@
         "environmentVariable": "apimInitialDeploy"
       }
     },
+    "apimSKU": {
+      "type": "string",
+      "allowedValues": [
+        "Developer",
+        "Premium"
+      ],
+      "defaultValue": "Developer",
+      "metadata": {
+        "description": "The pricing tier of the API Management service."
+      }
+    },
     "apimLogsRetentionDays": {
       "type": "int",
       "defaultValue": 30,
@@ -684,6 +695,9 @@
           },
           "apimInitialDeploy": {
             "value": "[parameters('apimInitialDeploy')]"
+          },
+          "apimSKU": {
+            "value": "[parameters('apimSKU')]"
           },
           "apimLogsRetentionDays": {
             "value": "[parameters('apimLogsRetentionDays')]"

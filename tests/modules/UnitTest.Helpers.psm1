@@ -29,6 +29,7 @@ function Set-MockEnvironment {
     $ENV:logAnalyticsWorkspaceDataRetentionDays = 31
     $ENV:customDomainHostedZone = "hosted-zone.com"
     $ENV:apimInitialDeploy = "Disabled"
+    $ENV:apimSKU = "Developer"
     $ENV:apimPublisherEmail = "test@test.com"
     $ENV:apimPublisherName = "Test Publisher"
     $ENV:apimPortalKeyVaultCertificateName = "test-apim-portal-com"
@@ -70,6 +71,7 @@ function Clear-MockEnvironment {
         "ENV:logAnalyticsWorkspaceDataRetentionDays",
         "ENV:customDomainHostedZone",
         "ENV:apimInitialDeploy",
+        "ENV:apimSKU",
         "ENV:apimPublisherEmail",
         "ENV:apimPublisherName",
         "ENV:apimPortalKeyVaultCertificateName",
