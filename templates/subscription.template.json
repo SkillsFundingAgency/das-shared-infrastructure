@@ -269,7 +269,8 @@
       ],
       "defaultValue": "Developer",
       "metadata": {
-        "description": "The pricing tier of the API Management service."
+        "description": "The pricing tier of the API Management service.",
+        "environmentVariable": "apimSKU"
       }
     },
     "apimLogsRetentionDays": {
