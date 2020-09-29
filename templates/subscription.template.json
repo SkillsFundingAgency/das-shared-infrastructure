@@ -445,7 +445,9 @@
           "tenantId": "[subscription().tenantId]",
           "permissions": {
             "secrets": [
-              "Get"
+              "Get",
+              "List",
+              "Set"
             ]
           }
         }
