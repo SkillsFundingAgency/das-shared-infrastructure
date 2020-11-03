@@ -27,8 +27,15 @@
     "keyVaultSecretAccessObjectIds": {
       "type": "array",
       "metadata": {
-        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret access to",
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret GET access to",
         "environmentVariable": "keyVaultSecretAccessObjectIds"
+      }
+    },
+    "keyVaultSecretWriteAccessObjectIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret SET access to",
+        "environmentVariable": "keyVaultSecretWriteAccessObjectIds"
       }
     },
     "microsoftAzureWebsitesRPObjectId": {
@@ -449,6 +456,19 @@
             ]
           }
         }
+      },
+      {
+        "name": "keyVaultSecretWriteAccessPolicies",
+        "count": "[length(parameters('keyVaultSecretWriteAccessObjectIds'))]",
+        "input": {
+          "objectId": "[parameters('keyVaultSecretWriteAccessObjectIds')[copyIndex('keyVaultSecretWriteAccessPolicies')]]",
+          "tenantId": "[subscription().tenantId]",
+          "permissions": {
+            "secrets": [
+              "Set"
+            ]
+          }
+        }
       }
     ]
   },
@@ -527,7 +547,7 @@
             "value": "[variables('keyVaultName')]"
           },
           "keyVaultAccessPolicies": {
-            "value": "[if(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled'),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies')),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies'),variables('AKSKeyVaultAccessPolicy')))]"
+            "value": "[if(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled'),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies'),variables('keyVaultSecretWriteAccessPolicies')),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies'),variables('keyVaultSecretWriteAccessPolicies'),variables('AKSKeyVaultAccessPolicy')))]"
           },
           "enabledForDiskEncryption": {
             "value": true
