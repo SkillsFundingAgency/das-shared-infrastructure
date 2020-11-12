@@ -5,7 +5,6 @@ Param(
     [String[]]$EnvironmentNames,
     [Parameter(Mandatory = $true)]
     [String]$CustomDomainHostedZone
-
 )
 
 $PolicyFilePath = "$PSScriptRoot/apim-policy.xml"
