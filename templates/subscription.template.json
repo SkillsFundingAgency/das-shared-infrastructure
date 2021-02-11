@@ -353,12 +353,21 @@
       "metadata": {
         "environmentVariable": "loggingRedisCacheCapacity"
       }
+    },
+    "actionGroupWebhookUri": {
+      "type": "securestring",
+      "metadata": {
+        "environmentVariable": "actionGroupWebhookUri"
+      }
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-8441-AddScheduleQueryAlertTemplate/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+    "actionGroupDescription": "Test Alerts",
+    "actionGroupShortName": "[concat(variables('resourceNamePrefix'),'-test-algr')]",
+    "actionGroupWebhookName": "SlackWebHook",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "classicStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'deploystr')]",
@@ -591,6 +600,35 @@
           "dataRetentionDays": {
             "value": "[parameters('logAnalyticsWorkspaceDataRetentionDays')]"
           }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[variables('actionGroupShortName')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'action-group.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "actionGroupName": {
+            "value": "[variables('actionGroupDescription')]"
+          },
+          "actionGroupShortName": {
+            "value": "[variables('actionGroupShortName')]"
+          },
+          "webhookReceiverName": {
+            "value": "[variables('actionGroupWebhookName')]"
+          },
+          "webhookServiceUri": {
+            "value": "[parameters('actionGroupWebhookUri')]"
+          },
+          "enableActionGroup": {
+            "value": "[equals(parameters('resourceEnvironmentName'), 'prd')]"
+          }                                     
         }
       }
     },
