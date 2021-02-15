@@ -366,7 +366,7 @@
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "actionGroupDescription": "[concat('das-', parameters('resourceEnvironmentName'), '-pl-algr')]",
-    "actionGroupShortName": "DAS Alerts",
+    "actionGroupShortName": "DAS-Alerts",
     "actionGroupWebhookName": "SlackWebHook",
     "alertResourceName": "[concat('das-', parameters('resourceEnvironmentName'),'-shared-sql-dtu-90-sqa')]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
