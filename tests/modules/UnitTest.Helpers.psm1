@@ -35,6 +35,9 @@ function Set-MockEnvironment {
     $ENV:apimPortalKeyVaultCertificateName = "test-apim-portal-com"
     $ENV:apimGatewayKeyVaultCertificateName = "test-apim-gateway-com"
     $ENV:apimManagementKeyVaultCertificateName = "test-apim-management-com"
+    $ENV:tenantPrimaryDomain = "tenant.onmicrosoft.com"
+    $ENV:apimAppRegistrationClientId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
+    $ENV:apimAppRegistrationClientSecret = "client-secret"
     $ENV:apimGroupsArray = "[]"
     $ENV:apimProductsArray = "[]"
 }
@@ -77,6 +80,9 @@ function Clear-MockEnvironment {
         "ENV:apimPortalKeyVaultCertificateName",
         "ENV:apimGatewayKeyVaultCertificateName",
         "ENV:apimManagementKeyVaultCertificateName",
+        "ENV:tenantPrimaryDomain",
+        "ENV:apimAppRegistrationClientId",
+        "ENV:apimAppRegistrationClientSecret",
         "ENV:apimGroupsArray",
         "ENV:apimProductsArray"
     ) -Force
