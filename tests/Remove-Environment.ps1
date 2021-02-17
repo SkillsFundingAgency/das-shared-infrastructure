@@ -11,7 +11,11 @@ $ApimServiceName = "das-$($EnvironmentName)-shared-apim"
 $ResourceGroupList = @("das-$($SubscriptionAbbreviation)-mgmt-rg", $ApimResourceGroup, "das-$($EnvironmentName)-shared-rg")
 
 Write-Host "Cleaning up APIM -> $ApimServiceName"
-Remove-AzApiManagement -ResourceGroupName $ApimResourceGroup -Name $ApimServiceName
+$ApimService = Get-AzApiManagement -ResourceGroupName $ApimResourceGroup -Name $ApimServiceName
+if ($ApimService) {
+    Write-Host "    -> $ApimServiceName"
+    $ApimService | Remove-AzApiManagement
+}
 
 Write-Host "Cleaning up resource groups"
 $ResourceGroupList | ForEach-Object {
