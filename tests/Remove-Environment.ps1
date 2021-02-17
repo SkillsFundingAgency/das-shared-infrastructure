@@ -10,7 +10,7 @@ $ApimResourceGroup = "das-$($EnvironmentName)-apim-rg"
 $ApimServiceName = "das-$($EnvironmentName)-shared-apim"
 $ResourceGroupList = @("das-$($SubscriptionAbbreviation)-mgmt-rg", $ApimResourceGroup, "das-$($EnvironmentName)-shared-rg")
 
-Write-Host "Getting APIM service"
+Write-Host "Cleaning up APIM service"
 $ApimService = Get-AzApiManagement -ResourceGroupName $ApimResourceGroup -Name $ApimServiceName -ErrorAction SilentlyContinue
 if ($ApimService) {
     Write-Host "    -> $ApimServiceName"
