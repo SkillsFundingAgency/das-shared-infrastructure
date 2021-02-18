@@ -86,8 +86,7 @@
     },
     "environments": {
       "type": "array",
-      "defaultValue": [
-      ],
+      "defaultValue": [],
       "metadata": {
         "description": "String array of all environments in this subscription",
         "environmentVariable": "environmentNames"
@@ -317,6 +316,27 @@
       "metadata": {
         "description": "The Key vault certificate for the Management custom domain of the APIM instance.",
         "environmentVariable": "apimManagementKeyVaultCertificateName"
+      }
+    },
+    "tenantPrimaryDomain": {
+      "type": "string",
+      "metadata": {
+        "description": "The primary domain of the tenant.",
+        "environmentVariable": "tenantPrimaryDomain"
+      }
+    },
+    "apimAppRegistrationClientId": {
+      "type": "string",
+      "metadata": {
+        "description": "The client ID of the app registration used for the AAD identity provider of the APIM instance.",
+        "environmentVariable": "apimAppRegistrationClientId"
+      }
+    },
+    "apimAppRegistrationClientSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The client secret of the app registration used for the AAD identity provider of the APIM instance",
+        "environmentVariable": "apimAppRegistrationClientSecret"
       }
     },
     "apimGroupsArray": {
@@ -716,6 +736,15 @@
           "apimManagementKeyVaultCertificateName": {
             "value": "[parameters('apimManagementKeyVaultCertificateName')]"
           },
+          "tenantPrimaryDomain": {
+            "value": "[parameters('tenantPrimaryDomain')]"
+          },
+          "apimAppRegistrationClientId": {
+            "value": "[parameters('apimAppRegistrationClientId')]"
+          },
+          "apimAppRegistrationClientSecret": {
+            "value": "[parameters('apimAppRegistrationClientSecret')]"
+          },
           "apimGroupsArray": {
             "value": "[parameters('apimGroupsArray')]"
           },
@@ -781,6 +810,5 @@
       }
     }
   ],
-  "outputs": {
-  }
+  "outputs": {}
 }
