@@ -1,17 +1,26 @@
 [CmdletBinding()]
 Param(
     [Parameter(Mandatory = $false)]
-    [String]$SubscriptionAbbreviation = "DTA",
+    [String]$SubscriptionAbbreviation = "dta",
     [Parameter(Mandatory = $false)]
-    [String[]]$EnvironmentNames = "DTA"
+    [String]$EnvironmentName = "dta"
 )
 
-$ManagementResourceGroupName = "das-$($SubscriptionAbbreviation)-mgmt-rg"
-$ResourceGroupList = [System.Collections.ArrayList]::new(@($ManagementResourceGroupName.ToLower()))
-$ResourceGroupList.AddRange(@($EnvironmentNames | ForEach-Object { "das-$($_)-apim-rg".ToLower() }))
-$ResourceGroupList.AddRange(@($EnvironmentNames | ForEach-Object { "das-$($_)-shared-rg".ToLower() }))
+$ApimResourceGroup = "das-$($EnvironmentName)-apim-rg"
+$ApimServiceName = "das-$($EnvironmentName)-shared-apim"
+$ResourceGroupList = @("das-$($SubscriptionAbbreviation)-mgmt-rg", $ApimResourceGroup, "das-$($EnvironmentName)-shared-rg")
 
-Write-Host "Cleaning up $($ResourceGroupList.Count) resource group(s)"
+Write-Host "Cleaning up APIM service"
+$ApimService = Get-AzApiManagement -ResourceGroupName $ApimResourceGroup -Name $ApimServiceName -ErrorAction SilentlyContinue
+if ($ApimService) {
+    Write-Host "    -> $ApimServiceName"
+    $ApimService | Remove-AzApiManagement
+}
+else {
+    Write-Host "    -> $ApimServiceName not found"
+}
+
+Write-Host "Cleaning up resource groups"
 $ResourceGroupList | ForEach-Object {
     try {
         Write-Host "    -> $_"
