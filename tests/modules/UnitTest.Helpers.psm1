@@ -40,6 +40,8 @@ function Set-MockEnvironment {
     $ENV:apimAppRegistrationClientSecret = "client-secret"
     $ENV:apimGroupsArray = "[]"
     $ENV:apimProductsArray = "[]"
+    $ENV:actionGroupName = "das-dta-pl-algr"
+    $ENV:actionGroupResourceGroupName = "das-dta-pl-algr"
 }
 
 function Clear-MockEnvironment {
@@ -84,7 +86,9 @@ function Clear-MockEnvironment {
         "ENV:apimAppRegistrationClientId",
         "ENV:apimAppRegistrationClientSecret",
         "ENV:apimGroupsArray",
-        "ENV:apimProductsArray"
+        "ENV:apimProductsArray",
+        "ENV:actionGroupName",
+        "ENV:actionGroupResourceGroupName"
     ) -Force
 }
 

@@ -374,10 +374,16 @@
         "environmentVariable": "loggingRedisCacheCapacity"
       }
     },
-    "actionGroupWebhookUri": {
-      "type": "securestring",
+    "actionGroupName": {
+      "type": "string",
       "metadata": {
-        "environmentVariable": "actionGroupWebhookUri"
+        "environmentVariable": "actionGroupName"
+      }
+    },
+    "actionGroupResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "environmentVariable": "actionGroupResourceGroupName"
       }
     }
   },
@@ -385,9 +391,6 @@
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
-    "actionGroupDescription": "[toLower(concat('das-', parameters('resourceEnvironmentName'), '-pl-algr'))]",
-    "actionGroupShortName": "DAS-Alerts",
-    "actionGroupWebhookName": "SlackWebHook",
     "alertResourceName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-shared-sql-dtu-90-sqa'))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -625,35 +628,6 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
-      "name": "[variables('actionGroupShortName')]",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'action-group.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "actionGroupName": {
-            "value": "[variables('actionGroupDescription')]"
-          },
-          "actionGroupShortName": {
-            "value": "[variables('actionGroupShortName')]"
-          },
-          "webhookReceiverName": {
-            "value": "[variables('actionGroupWebhookName')]"
-          },
-          "webhookServiceUri": {
-            "value": "[parameters('actionGroupWebhookUri')]"
-          },
-          "enableActionGroup": {
-            "value": "[equals(parameters('resourceEnvironmentName'), 'prd')]"
-          }
-        }
-      }
-    },
-    {
       "apiVersion": "2019-05-01",
       "name": "[variables('alertResourceName')]",
       "type": "Microsoft.Resources/deployments",
@@ -665,7 +639,7 @@
         },
         "parameters": {
           "actionGroupId": {
-            "value": "[reference(variables('actionGroupShortName')).outputs.actionGroupResourceId.value]"
+            "value": "[resourceId(subscription().subscriptionId,parameters('actionGroupResourceGroupName'), 'Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
           },
           "alertDescription": {
             "value": "DAS - Azure SQL DTU Consumption Percentage Greater than 90"
