@@ -639,7 +639,7 @@
         },
         "parameters": {
           "actionGroupId": {
-            "value": "[resourceId(parameters('actionGroupResourceGroupName'), 'Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
+            "value": "[resourceId(subscription().subscriptionId,parameters('actionGroupResourceGroupName'), 'Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
           },
           "alertDescription": {
             "value": "DAS - Azure SQL DTU Consumption Percentage Greater than 90"
