@@ -385,9 +385,9 @@
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
-    "actionGroupDescription": "[toLower(concat('das-', parameters('resourceEnvironmentName'), '-pl-algr'))]",
+    "actionGroupName": "[concat(variables('resourceNamePrefix'), '-algr')]",
     "actionGroupShortName": "DAS-Alerts",
-    "actionGroupWebhookName": "SlackWebHook",
+    "actionGroupWebhookName": "PlatformMonitoringWebHook",
     "alertResourceName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-shared-sql-dtu-90-sqa'))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -636,7 +636,7 @@
         },
         "parameters": {
           "actionGroupName": {
-            "value": "[variables('actionGroupDescription')]"
+            "value": "[variables('actionGroupName')]"
           },
           "actionGroupShortName": {
             "value": "[variables('actionGroupShortName')]"
