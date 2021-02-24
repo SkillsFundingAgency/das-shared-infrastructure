@@ -10,6 +10,7 @@ trigger:
       - utilities/*
       - apim-policy/*
       - Initialize-SharedInfrastructureDeployment.ps1
+      - Initialize-ApimDeveloperPortal.ps1
       - azure-pipelines.yml
 
 pr: none
