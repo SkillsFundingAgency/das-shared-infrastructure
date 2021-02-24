@@ -54,6 +54,7 @@ steps:
         apim-policy/**
         tests/Remove-Environment.ps1
         Initialize-SharedInfrastructureDeployment.ps1
+        Initialize-ApimDeveloperPortal.ps1
       TargetFolder: "$(build.artifactstagingdirectory)/publish"
       OverWrite: true
   - task: PublishBuildArtifacts@1
