@@ -16,6 +16,7 @@ A string array of environments in a subscription. For example:
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
+    [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
     [string[]]$EnvironmentNames
 )
 
