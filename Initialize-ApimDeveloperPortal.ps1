@@ -30,8 +30,8 @@ Get-ChildItem -Path ./../dist/snapshot
 
 foreach ($EnvironmentName in $EnvironmentNames) {
 
-    $ApimResourceGroupName = "das-$($EnvironmentName)-apim-rg"
-    $ApimName = "das-$($EnvironmentName)-shared-apim"
+    $ApimResourceGroupName = "das-$($EnvironmentName)-apim-rg".ToLower()
+    $ApimName = "das-$($EnvironmentName)-shared-apim".ToLower()
 
     # --- Provision APIM developer portal
     Write-Verbose "Provisioning $($ApimName)"
