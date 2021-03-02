@@ -391,7 +391,6 @@
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
-    "alertResourceName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-shared-sql-dtu-90-sqa'))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "classicStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'deploystr')]",
@@ -629,7 +628,7 @@
     },
     {
       "apiVersion": "2019-05-01",
-      "name": "[variables('alertResourceName')]",
+      "name": "SQL-DTU-Consumption-Percentage-Greater-Than-90-Alert",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -642,7 +641,7 @@
             "value": "[resourceId(subscription().subscriptionId,parameters('actionGroupResourceGroupName'), 'Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
           },
           "alertDescription": {
-            "value": "DAS - Azure SQL DTU Consumption Percentage Greater than 90"
+            "value": "A database has breached the allocated DTU limit."
           },
           "alertFrequency": {
             "value": 5
@@ -654,7 +653,7 @@
             "value": 15
           },
           "alertResourceName": {
-            "value": "[variables('alertResourceName')]"
+            "value": "DAS - Azure SQL DTU Consumption Percentage Greater than 90"
           },
           "alertTriggerOperator": {
             "value": "GreaterThan"
