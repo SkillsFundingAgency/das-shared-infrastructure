@@ -385,6 +385,14 @@
       "metadata": {
         "environmentVariable": "actionGroupResourceGroupName"
       }
+    },
+    "databasesToExcludeFrom90PercentAlert": {
+      "type": "string",
+      "metadata": {
+        "environmentVariable": "databasesToExcludeFrom90PercentAlert",
+        "metadata": "Exclude databases from the default DTU alert rule which alerts when a 90% threshold is exceeded.  A comma seperated list of double quoted string, double quotes must be escaped with backslash.",
+        "example": "'\"das-prd-example-db\",\"das-prd-another-db\"'"
+      }
     }
   },
   "variables": {
@@ -668,7 +676,7 @@
             "value": "[equals(toLower(parameters('resourceEnvironmentName')), 'prd')]"
           },
           "kustoQuery": {
-            "value": "AzureMetrics\n| where ResourceProvider==\"MICROSOFT.SQL\"\n| where MetricName=='dtu_consumption_percent'\n| summarize AggregatedValue = avg(Maximum) by Resource, bin(TimeGenerated,5m)"
+            "value": "[concat('AzureMetrics | where ResourceProvider==\"MICROSOFT.SQL\" | where MetricName==\"dtu_consumption_percent\" | where Resource !in (', parameters('databasesToExcludeFrom90PercentAlert'), ') | summarize AggregatedValue = avg(Maximum) by Resource, bin(TimeGenerated,5m)')]"
           },
           "logAnalyticsId": {
             "value": "[reference('log-analytics-workspace').outputs.fullyQualifiedResourceId.value]"
