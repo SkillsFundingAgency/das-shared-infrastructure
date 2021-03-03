@@ -393,6 +393,14 @@
         "metadata": "Exclude databases from the default DTU alert rule which alerts when a 90% threshold is exceeded.  A comma seperated list of double quoted string, double quotes must be escaped with backslash.",
         "example": "'\"das-prd-example-db\",\"das-prd-another-db\"'"
       }
+    },
+    "databasesToIncludeIn100PercentAlert": {
+      "type": "string",
+      "metadata": {
+        "environmentVariable": "databasesToIncludeIn100PercentAlert",
+        "metadata": "Include databases in the optional DTU alert rule which alerts when a 100% threshold is reached.  A comma seperated list of double quoted string, double quotes must be escaped with backslash.",
+        "example": "'\"das-prd-example-db\",\"das-prd-another-db\"'"
+      }
     }
   },
   "variables": {
@@ -683,6 +691,65 @@
           },
           "queryMetricThreshold": {
             "value": 89
+          },
+          "severity": {
+            "value": 0
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2019-05-01",
+      "name": "sql-dtu-consumption-percentage-greater-than-100-alert",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'scheduled-query-alert.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "actionGroupId": {
+            "value": "[resourceId(subscription().subscriptionId,parameters('actionGroupResourceGroupName'), 'Microsoft.Insights/actionGroups', parameters('actionGroupName'))]"
+          },
+          "alertDescription": {
+            "value": "A database has breached the allocated DTU limit."
+          },
+          "alertFrequency": {
+            "value": 5
+          },
+          "alertMessageSubject": {
+            "value": "A database has breached the allocated DTU limit."
+          },
+          "alertPeriod": {
+            "value": 15
+          },
+          "alertResourceName": {
+            "value": "DAS - Azure SQL DTU Consumption Percentage Greater than 100"
+          },
+          "alertTriggerOperator": {
+            "value": "GreaterThan"
+          },
+          "alertTriggerMetricTriggerType": {
+            "value": "Consecutive"
+          },
+          "alertTriggerThreshold": {
+            "value": 1
+          },
+          "enableAlert": {
+            "value": "[equals(toLower(parameters('resourceEnvironmentName')), 'prd')]"
+          },
+          "kustoQuery": {
+            "value": "[concat('AzureMetrics | where ResourceProvider==\"MICROSOFT.SQL\" | where MetricName==\"dtu_consumption_percent\" | where Resource in (', parameters('databasesToIncludeIn100PercentAlert'), ') | summarize AggregatedValue = avg(Maximum) by Resource, bin(TimeGenerated,5m)')]"
+          },
+          "logAnalyticsId": {
+            "value": "[reference('log-analytics-workspace').outputs.fullyQualifiedResourceId.value]"
+          },
+          "queryMetricThreshold": {
+            "value": 100
+          },
+          "queryMetricThresholdOperator": {
+            "value": "GreaterThanOrEqual"
           },
           "severity": {
             "value": 0
