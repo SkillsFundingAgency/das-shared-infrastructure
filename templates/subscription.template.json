@@ -665,7 +665,7 @@
             "value": 1
           },
           "enableAlert": {
-            "value": "[equals(parameters('resourceEnvironmentName'), 'prd')]"
+            "value": "[equals(toLower(parameters('resourceEnvironmentName')), 'prd')]"
           },
           "kustoQuery": {
             "value": "AzureMetrics\n| where ResourceProvider==\"MICROSOFT.SQL\"\n| where MetricName=='dtu_consumption_percent'\n| summarize AggregatedValue = avg(Maximum) by Resource, bin(TimeGenerated,5m)"
