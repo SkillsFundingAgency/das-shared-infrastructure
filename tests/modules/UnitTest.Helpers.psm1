@@ -42,6 +42,8 @@ function Set-MockEnvironment {
     $ENV:apimProductsArray = "[]"
     $ENV:actionGroupName = "das-dta-pl-algr"
     $ENV:actionGroupResourceGroupName = "das-dta-pl-algr"
+    $ENV:databasesToExcludeFrom90PercentAlert = "das-prd-example-db"
+    $ENV:databasesToIncludeIn100PercentAlert = "das-prd-example-db"
 }
 
 function Clear-MockEnvironment {
@@ -89,6 +91,8 @@ function Clear-MockEnvironment {
         "ENV:apimProductsArray",
         "ENV:actionGroupName",
         "ENV:actionGroupResourceGroupName"
+        "ENV:databasesToExcludeFrom90PercentAlert"
+        "ENV:databasesToIncludeIn100PercentAlert"
     ) -Force
 }
 
