@@ -391,7 +391,7 @@
       "defaultValue": "",
       "metadata": {
         "environmentVariable": "databasesToExcludeFrom90PercentAlert",
-        "description": "Exclude databases from the default DTU alert rule which alerts when a 90% threshold is exceeded.  A comma seperated list of double quoted string, double quotes must be escaped with backslash.  The text inside the single quotes of the examples should be used in Azure DevOps variables.",
+        "description": "Exclude databases from the default DTU alert rule which alerts when a 90% threshold is exceeded. A comma seperated list of double quoted string, double quotes must be escaped with backslash. The text inside the single quotes of the examples should be used in Azure DevOps variables.",
         "example1": "'\"DAS-PRD-EXAMPLE-DB\",\"DAS-PRD-ANOTHER-DB\"'",
         "example2": "'\"\"'"
       }
@@ -401,7 +401,7 @@
       "defaultValue": "",
       "metadata": {
         "environmentVariable": "databasesToIncludeIn100PercentAlert",
-        "description": "Include databases in the optional DTU alert rule which alerts when a 100% threshold is reached.  A comma seperated list of double quoted string, double quotes must be escaped with backslash.",
+        "description": "Include databases in the optional DTU alert rule which alerts when a 100% threshold is reached. A comma seperated list of double quoted string, double quotes must be escaped with backslash.",
         "example": "'\"DAS-PRD-EXAMPLE-DB\",\"DAS-PRD-ANOTHER-DB\"'",
         "example2": "'\"\"'"
       }
