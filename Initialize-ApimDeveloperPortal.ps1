@@ -17,7 +17,10 @@ A string array of environments in a subscription. For example:
 param(
     [Parameter(Mandatory = $true)]
     [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
-    [string[]]$EnvironmentNames
+    [string[]]$EnvironmentNames,
+    [Parameter(Mandatory = $true)]
+    [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
+    [string]$ApimDeveloperPortalCustomDomainSuffix
 )
 
 $AzureSubscriptionId = (az account show | ConvertFrom-Json).id
@@ -46,10 +49,20 @@ foreach ($EnvironmentName in $EnvironmentNames) {
     "--headers", "{'Content-Type':'application/json'}"
     $SharedAccessSignature = (az rest @SharedAcessSignatureRequestParameters | ConvertFrom-Json).value
 
+    if ($EnvironmentName -eq "DTA") {
+        $ApimDeveloperPortalDomain = "$($ApimName).developer.azure-api.net"
+    }
+    elseif ($EnvironmentName -eq "PRD") {
+        $ApimDeveloperPortalDomain = $ApimDeveloperPortalCustomDomainSuffix
+    }
+    else {
+        $ApimDeveloperPortalDomain = "$($EnvironmentName)-$($ApimDeveloperPortalCustomDomainSuffix)".ToLower()
+    }
+
     # --- Publish APIM developer portal
     $PublishDeveloperPortalRequestParameters =
     "--method", "post",
-    "--uri", "https://$ApimName.developer.azure-api.net/publish",
+    "--uri", "https://$($ApimDeveloperPortalDomain)/publish",
     "--headers", "{'Authorization': 'SharedAccessSignature $($SharedAccessSignature)', 'Access-Control-Allow-Origin': '*'}"
     Write-Verbose "Publishing $($ApimName)"
     az rest @PublishDeveloperPortalRequestParameters
