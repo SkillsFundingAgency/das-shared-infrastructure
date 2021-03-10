@@ -14,7 +14,6 @@ A string array of environments in a subscription. For example:
 
 .PARAMETER ApimDeveloperPortalCustomDomainSuffix
 Suffix of the APIM Developer Portal custom domain
-"AT,TEST"
 
 #>
 [CmdletBinding()]
