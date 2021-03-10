@@ -12,6 +12,10 @@ working directory for Azure CLI task is set to $(System.DefaultWorkingDirectory)
 A string array of environments in a subscription. For example:
 "AT,TEST"
 
+.PARAMETER ApimDeveloperPortalCustomDomainSuffix
+Suffix of the APIM Developer Portal custom domain
+"AT,TEST"
+
 #>
 [CmdletBinding()]
 param(
@@ -19,7 +23,6 @@ param(
     [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
     [string[]]$EnvironmentNames,
     [Parameter(Mandatory = $true)]
-    [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
     [string]$ApimDeveloperPortalCustomDomainSuffix
 )
 
