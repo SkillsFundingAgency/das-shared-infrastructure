@@ -44,8 +44,8 @@ foreach ($EnvironmentName in $EnvironmentNames) {
     $TimeInFiveMinutes = (Get-Date).ToUniversalTime().AddMinutes(5).Tostring("o")
     $SharedAcessSignatureRequestParameters =
     "--method", "post",
-    "--uri", "https://management.azure.com/subscriptions/$AzureSubscriptionId/resourceGroups/$ApimResourceGroupName/providers/Microsoft.ApiManagement/service/$ApimName/users/1/token?api-version=2019-12-01",
-    "--body", "{'properties': {'keyType': 'primary', 'expiry':'$TimeInFiveMinutes'}}",
+    "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/users/1/token?api-version=2019-12-01",
+    "--body", "{'properties': {'keyType': 'primary', 'expiry':'$($TimeInFiveMinutes)'}}",
     "--headers", "{'Content-Type':'application/json'}"
     $SharedAccessSignature = (az rest @SharedAcessSignatureRequestParameters | ConvertFrom-Json).value
 
