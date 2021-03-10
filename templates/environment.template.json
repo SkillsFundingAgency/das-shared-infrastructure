@@ -814,7 +814,7 @@
           "tenantPrimaryDomain": {
             "value": "[parameters('tenantPrimaryDomain')]"
           },
-          "apimAppRegistrationClientIds": {
+          "apimAppRegistrationClientId": {
             "value": "[parameters('apimAppRegistrationClientIds')[parameters('environmentName')]]"
           },
           "apimAppRegistrationClientSecret": {
