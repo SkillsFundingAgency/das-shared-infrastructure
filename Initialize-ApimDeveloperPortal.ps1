@@ -12,12 +12,17 @@ working directory for Azure CLI task is set to $(System.DefaultWorkingDirectory)
 A string array of environments in a subscription. For example:
 "AT,TEST"
 
+.PARAMETER ApimDeveloperPortalCustomDomainSuffix
+Suffix of the APIM Developer Portal custom domain
+
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
     [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
-    [string[]]$EnvironmentNames
+    [string[]]$EnvironmentNames,
+    [Parameter(Mandatory = $true)]
+    [string]$ApimDeveloperPortalCustomDomainSuffix
 )
 
 $AzureSubscriptionId = (az account show | ConvertFrom-Json).id
@@ -41,15 +46,25 @@ foreach ($EnvironmentName in $EnvironmentNames) {
     $TimeInFiveMinutes = (Get-Date).ToUniversalTime().AddMinutes(5).Tostring("o")
     $SharedAcessSignatureRequestParameters =
     "--method", "post",
-    "--uri", "https://management.azure.com/subscriptions/$AzureSubscriptionId/resourceGroups/$ApimResourceGroupName/providers/Microsoft.ApiManagement/service/$ApimName/users/1/token?api-version=2019-12-01",
-    "--body", "{'properties': {'keyType': 'primary', 'expiry':'$TimeInFiveMinutes'}}",
+    "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/users/1/token?api-version=2019-12-01",
+    "--body", "{'properties': {'keyType': 'primary', 'expiry':'$($TimeInFiveMinutes)'}}",
     "--headers", "{'Content-Type':'application/json'}"
     $SharedAccessSignature = (az rest @SharedAcessSignatureRequestParameters | ConvertFrom-Json).value
+
+    if ($EnvironmentName -eq "DTA") {
+        $ApimDeveloperPortalDomain = "$($ApimName).developer.azure-api.net"
+    }
+    elseif ($EnvironmentName -eq "PRD") {
+        $ApimDeveloperPortalDomain = $ApimDeveloperPortalCustomDomainSuffix
+    }
+    else {
+        $ApimDeveloperPortalDomain = "$($EnvironmentName)-$($ApimDeveloperPortalCustomDomainSuffix)".ToLower()
+    }
 
     # --- Publish APIM developer portal
     $PublishDeveloperPortalRequestParameters =
     "--method", "post",
-    "--uri", "https://$ApimName.developer.azure-api.net/publish",
+    "--uri", "https://$($ApimDeveloperPortalDomain)/publish",
     "--headers", "{'Authorization': 'SharedAccessSignature $($SharedAccessSignature)', 'Access-Control-Allow-Origin': '*'}"
     Write-Verbose "Publishing $($ApimName)"
     az rest @PublishDeveloperPortalRequestParameters
