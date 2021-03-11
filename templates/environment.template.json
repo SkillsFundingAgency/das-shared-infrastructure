@@ -250,7 +250,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-8144-apim-group-building-block-corrections/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
@@ -1019,17 +1019,17 @@
           "apimName": {
             "value": "[variables('apimName')]"
           },
-          "groupResourceName": {
-            "value": "[parameters('apimGroupsArray')[copyIndex()].groupResourceName]"
+          "tenantPrimaryDomain": {
+            "value": "[parameters('tenantPrimaryDomain')]"
+          },
+          "aadGroupObjectId": {
+            "value": "[parameters('apimGroupsArray')[copyIndex()].aadGroupObjectId]"
           },
           "groupDisplayName": {
             "value": "[parameters('apimGroupsArray')[copyIndex()].groupDisplayName]"
           },
           "groupDescription": {
             "value": "[parameters('apimGroupsArray')[copyIndex()].groupDescription]"
-          },
-          "groupType": {
-            "value": "custom"
           }
         }
       },
