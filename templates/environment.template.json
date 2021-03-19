@@ -1019,17 +1019,17 @@
           "apimName": {
             "value": "[variables('apimName')]"
           },
-          "groupResourceName": {
-            "value": "[parameters('apimGroupsArray')[copyIndex()].groupResourceName]"
+          "tenantPrimaryDomain": {
+            "value": "[parameters('tenantPrimaryDomain')]"
+          },
+          "aadGroupObjectId": {
+            "value": "[parameters('apimGroupsArray')[copyIndex()].aadGroupObjectId]"
           },
           "groupDisplayName": {
             "value": "[parameters('apimGroupsArray')[copyIndex()].groupDisplayName]"
           },
           "groupDescription": {
             "value": "[parameters('apimGroupsArray')[copyIndex()].groupDescription]"
-          },
-          "groupType": {
-            "value": "custom"
           }
         }
       },
