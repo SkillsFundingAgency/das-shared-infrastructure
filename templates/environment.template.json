@@ -1054,7 +1054,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()].productResourceName, 'placeholder'))]",
+      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()], 'placeholder'))]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[variables('apimDeployProducts')]",
       "resourceGroup": "[variables('apimResourceGroup')]",
@@ -1101,7 +1101,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()].productResourceName, 'placeholder'), '-groups')]",
+      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()], 'placeholder'), '-groups')]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[and(variables('apimDeployProducts'), variables('apimDeployGroups'))]",
       "resourceGroup": "[variables('apimResourceGroup')]",
