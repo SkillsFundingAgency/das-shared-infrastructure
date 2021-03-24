@@ -1119,7 +1119,7 @@
             "value": "[parameters('apimProductsArray')[copyIndex()]]"
           },
           "productGroupIds": {
-            "value": "[parameters('apimGroupsArray').aadGroupObjectId]"
+            "value": "[createArray(parameters('apimGroupsArray').aadGroupObjectId)]"
           }
         }
       },
