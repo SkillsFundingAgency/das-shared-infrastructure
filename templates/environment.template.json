@@ -286,6 +286,15 @@
     "apimManagementHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimManagementHostnameSuffix'), toLower(concat(parameters('environmentName'), '-', variables('apimManagementHostnameSuffix'))))]",
     "apimInitialDeployBoolean": "[if(not(equals(parameters('apimInitialDeploy'), 'Disabled')), bool('true'), bool('false'))]",
     "apimDeployGroups": "[greater(length(parameters('apimGroupsArray')), 0)]",
+    "copy": [
+      {
+        "name": "apimGroupIdsArray",
+        "count": "[length(parameters('apimGroupsArray'))]",
+        "input": [
+          "[parameters('apimGroupsArray')[copyIndex('apimGroupIdsArray').aadGroupObjectId]]"
+        ]
+      }
+    ],
     "apimDeployProducts": "[greater(length(parameters('apimProductsArray')), 0)]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
@@ -1119,7 +1128,7 @@
             "value": "[parameters('apimProductsArray')[copyIndex()]]"
           },
           "productGroupIds": {
-            "value": "[createArray(parameters('apimGroupsArray').aadGroupObjectId)]"
+            "value": "[variables('apimGroupIdsArray')]"
           }
         }
       },
@@ -1134,5 +1143,10 @@
       ]
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "ApimGroupIdsArray": {
+      "type": "array",
+      "value": "[variables('apimGroupIdsArray')]"
+    }
+  }
 }
