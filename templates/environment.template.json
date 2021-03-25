@@ -291,7 +291,7 @@
         "name": "apimGroupIdsArray",
         "count": "[if(greater(length(parameters('apimGroupsArray')), 0), length(parameters('apimGroupsArray')), 1)]",
         "input": [
-          "[parameters('apimGroupsArray')[copyIndex('apimGroupIdsArray')].aadGroupObjectId]"
+          "[parameters('apimGroupsArray')[copyIndex()].aadGroupObjectId]"
         ]
       }
     ],
