@@ -290,7 +290,7 @@
       {
         "name": "apimGroupIdsArray",
         "count": "[if(greater(length(parameters('apimGroupsArray')), 0), length(parameters('apimGroupsArray')), 1)]",
-        "input": "[parameters('apimGroupsArray')[copyIndex('apimGroupIdsArray')].aadGroupObjectId]"
+        "input": "[if(greater(length(parameters('apimGroupsArray')), 0), parameters('apimGroupsArray')[copyIndex('apimGroupIdsArray')].aadGroupObjectId, '')]"
       }
     ],
     "apimDeployProducts": "[greater(length(parameters('apimProductsArray')), 0)]",
