@@ -289,7 +289,7 @@
     "copy": [
       {
         "name": "apimGroupIdsArray",
-        "count": "[length(parameters('apimGroupsArray'))]",
+        "count": "[if(greater(parameters('apimGroupsArray'), 0), parameters('apimGroupsArray'), 1)]",
         "input": [
           "[parameters('apimGroupsArray')[copyIndex('apimGroupIdsArray').aadGroupObjectId]]"
         ]
