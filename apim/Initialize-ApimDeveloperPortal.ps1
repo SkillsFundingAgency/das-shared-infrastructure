@@ -33,6 +33,36 @@ param(
     [string]$ApimDeveloperPortalCustomDomainSuffix
 )
 
+function Remove-ApimProduct {
+    param (
+        #Default APIM Product
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("starter", "unlimited")]
+        [string]$Product
+    )
+
+    # --- Get subscription of Product
+    $GetProductSubscriptionParameters =
+    "--method", "get",
+    "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/products/$($Product)/subscriptions?api-version=2019-12-01"
+    $GetProductSubscriptionResponse = az rest @GetProductSubscriptionParameters
+
+    if ($GetProductSubscriptionResponse) {
+        # --- Remove subscription of Product
+        $ProductSubscriptionId = ($GetProductSubscriptionResponse | ConvertFrom-Json).value[0].name
+        $RemoveProductSubscriptionParameters =
+        "--method", "delete",
+        "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/subscriptions/$($ProductSubscriptionId)?api-version=2019-12-01"
+        az rest @RemoveProductSubscriptionParameters
+    }
+
+    # --- Remove Product
+    $RemoveProductParameters =
+    "--method", "delete",
+    "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/products/$($Product)?api-version=2019-12-01"
+    az rest @RemoveProductParameters
+}
+
 $AzureSubscriptionId = (az account show | ConvertFrom-Json).id
 
 if ($PublishApimDeveloperPortal) {
@@ -61,36 +91,6 @@ foreach ($EnvironmentName in $EnvironmentNames) {
     "--method", "delete",
     "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/apis/echo-api?api-version=2019-12-01"
     az rest @RemoveEchoApiParameters
-
-    function Remove-ApimProduct {
-        param (
-            #Default APIM Product
-            [Parameter(Mandatory = $true)]
-            [ValidateSet("starter", "unlimited")]
-            [string]$Product
-        )
-
-        # --- Get subscription of Product
-        $GetProductSubscriptionParameters =
-        "--method", "get",
-        "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/products/$($Product)/subscriptions?api-version=2019-12-01"
-        $GetProductSubscriptionResponse = az rest @GetProductSubscriptionParameters
-
-        if ($GetProductSubscriptionResponse) {
-            # --- Remove subscription of Product
-            $ProductSubscriptionId = ($GetProductSubscriptionResponse | ConvertFrom-Json).value[0].name
-            $RemoveProductSubscriptionParameters =
-            "--method", "delete",
-            "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/subscriptions/$($ProductSubscriptionId)?api-version=2019-12-01"
-            az rest @RemoveProductSubscriptionParameters
-        }
-
-        # --- Remove Product
-        $RemoveProductParameters =
-        "--method", "delete",
-        "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/products/$($Product)?api-version=2019-12-01"
-        az rest @RemoveProductParameters
-    }
 
     # --- Remove default APIM Products
     Remove-ApimProduct -Product "starter"
