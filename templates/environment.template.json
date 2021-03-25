@@ -289,8 +289,8 @@
     "copy": [
       {
         "name": "apimGroupIdsArray",
-        "count": "[if(greater(length(parameters('apimGroupsArray')), 0), length(parameters('apimGroupsArray')), 1)]",
-        "input": "[if(greater(length(parameters('apimGroupsArray')), 0), parameters('apimGroupsArray')[copyIndex('apimGroupIdsArray')].aadGroupObjectId, '')]"
+        "count": "[if(variables('apimDeployGroups'), length(parameters('apimGroupsArray')), 1)]",
+        "input": "[if(variables('apimDeployGroups'), parameters('apimGroupsArray')[copyIndex('apimGroupIdsArray')].aadGroupObjectId, '')]"
       }
     ],
     "apimDeployProducts": "[greater(length(parameters('apimProductsArray')), 0)]",
