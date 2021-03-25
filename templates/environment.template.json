@@ -247,6 +247,17 @@
       "metadata": {
         "description": "Array of Products for the APIM instance."
       }
+    },
+    "apimProductsState": {
+      "type": "string",
+      "allowedValues": [
+        "notPublished",
+        "published"
+      ],
+      "defaultValue": "notPublished",
+      "metadata": {
+        "description": "State of Products for the APIM instance."
+      }
     }
   },
   "variables": {
@@ -275,6 +286,13 @@
     "apimManagementHostName": "[if(equals(parameters('environmentName'), 'PRD'), variables('apimManagementHostnameSuffix'), toLower(concat(parameters('environmentName'), '-', variables('apimManagementHostnameSuffix'))))]",
     "apimInitialDeployBoolean": "[if(not(equals(parameters('apimInitialDeploy'), 'Disabled')), bool('true'), bool('false'))]",
     "apimDeployGroups": "[greater(length(parameters('apimGroupsArray')), 0)]",
+    "copy": [
+      {
+        "name": "apimGroupIdsArray",
+        "count": "[if(variables('apimDeployGroups'), length(parameters('apimGroupsArray')), 1)]",
+        "input": "[if(variables('apimDeployGroups'), parameters('apimGroupsArray')[copyIndex('apimGroupIdsArray')].aadGroupObjectId, '')]"
+      }
+    ],
     "apimDeployProducts": "[greater(length(parameters('apimProductsArray')), 0)]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
@@ -1043,7 +1061,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()].productResourceName, 'placeholder'))]",
+      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()], 'placeholder'))]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[variables('apimDeployProducts')]",
       "resourceGroup": "[variables('apimResourceGroup')]",
@@ -1058,25 +1076,25 @@
             "value": "[variables('apimName')]"
           },
           "productResourceName": {
-            "value": "[parameters('apimProductsArray')[copyIndex()].productResourceName]"
+            "value": "[parameters('apimProductsArray')[copyIndex()]]"
           },
           "productDisplayName": {
-            "value": "[parameters('apimProductsArray')[copyIndex()].productDisplayName]"
+            "value": "[parameters('apimProductsArray')[copyIndex()]]"
           },
           "productDescription": {
-            "value": "[parameters('apimProductsArray')[copyIndex()].productDescription]"
+            "value": "[parameters('apimProductsArray')[copyIndex()]]"
           },
           "productSubscriptionRequired": {
             "value": true
           },
+          "productSubscriptionsLimit": {
+            "value": 1
+          },
           "productApprovalRequired": {
-            "value": true
+            "value": false
           },
           "productState": {
-            "value": "[parameters('apimProductsArray')[copyIndex()].productState]"
-          },
-          "productGroups": {
-            "value": "[parameters('apimProductsArray')[copyIndex()].productGroups]"
+            "value": "[parameters('apimProductsState')]"
           }
         }
       },
@@ -1085,7 +1103,40 @@
         "count": "[if(variables('apimDeployProducts'), length(parameters('apimProductsArray')), 1)]"
       },
       "dependsOn": [
+        "apim-service"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('apim-product-', if(variables('apimDeployProducts'), parameters('apimProductsArray')[copyIndex()], 'placeholder'), '-groups')]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[and(variables('apimDeployProducts'), variables('apimDeployGroups'))]",
+      "resourceGroup": "[variables('apimResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'apim/apim-product-groups.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "apimName": {
+            "value": "[variables('apimName')]"
+          },
+          "productResourceName": {
+            "value": "[parameters('apimProductsArray')[copyIndex()]]"
+          },
+          "productGroupIds": {
+            "value": "[variables('apimGroupIdsArray')]"
+          }
+        }
+      },
+      "copy": {
+        "name": "apim-products-groups-copy",
+        "count": "[if(variables('apimDeployProducts'), length(parameters('apimProductsArray')), 1)]"
+      },
+      "dependsOn": [
         "apim-service",
+        "apim-products-copy",
         "apim-groups-copy"
       ]
     }

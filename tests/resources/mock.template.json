@@ -340,6 +340,18 @@
         "description": "Array of Products for the APIM instance.",
         "environmentVariable": "apimProductsArray"
       }
+    },
+    "apimProductsState": {
+      "type": "string",
+      "allowedValues": [
+        "notPublished",
+        "published"
+      ],
+      "defaultValue": "notPublished",
+      "metadata": {
+        "description": "State of Products for the APIM instance.",
+        "environmentVariable": "apimProductsState"
+      }
     }
   },
   "variables": {},

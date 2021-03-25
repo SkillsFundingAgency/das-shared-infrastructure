@@ -40,6 +40,7 @@ function Set-MockEnvironment {
     $ENV:apimAppRegistrationClientSecret = "client-secret"
     $ENV:apimGroupsArray = "[]"
     $ENV:apimProductsArray = "[]"
+    $ENV:apimProductsState = "notPublished"
     $ENV:actionGroupName = "das-dta-pl-algr"
     $ENV:actionGroupResourceGroupName = "das-dta-pl-algr"
     $ENV:databasesToExcludeFrom90PercentAlert = "das-prd-example-db"
@@ -89,6 +90,7 @@ function Clear-MockEnvironment {
         "ENV:apimAppRegistrationClientSecret",
         "ENV:apimGroupsArray",
         "ENV:apimProductsArray",
+        "ENV:apimProductsState",
         "ENV:actionGroupName",
         "ENV:actionGroupResourceGroupName"
         "ENV:databasesToExcludeFrom90PercentAlert"
