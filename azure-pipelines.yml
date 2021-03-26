@@ -8,7 +8,7 @@ trigger:
       - tests/*
       - templates/*
       - utilities/*
-      - apim-policy/*
+      - apim/*
       - Initialize-SharedInfrastructureDeployment.ps1
       - Initialize-ApimDeveloperPortal.ps1
       - azure-pipelines.yml

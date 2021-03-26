@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
 Removes the username and password APIM Identity.
+Removes the default Echo API and Starter/Unlimited Products.
 With switch PublishApimDeveloperPortal, provisions and publishes the environments' APIM Developer portals with default styling.
 
 .DESCRIPTION
@@ -32,6 +33,36 @@ param(
     [string]$ApimDeveloperPortalCustomDomainSuffix
 )
 
+function Remove-ApimProduct {
+    param (
+        #Default APIM Product
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("starter", "unlimited")]
+        [string]$Product
+    )
+
+    # --- Get subscription of Product
+    $GetProductSubscriptionParameters =
+    "--method", "get",
+    "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/products/$($Product)/subscriptions?api-version=2019-12-01"
+    $GetProductSubscriptionResponse = az rest @GetProductSubscriptionParameters
+
+    if ($GetProductSubscriptionResponse) {
+        # --- Remove subscription of Product
+        $ProductSubscriptionId = ($GetProductSubscriptionResponse | ConvertFrom-Json).value[0].name
+        $RemoveProductSubscriptionParameters =
+        "--method", "delete",
+        "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/subscriptions/$($ProductSubscriptionId)?api-version=2019-12-01"
+        az rest @RemoveProductSubscriptionParameters
+    }
+
+    # --- Remove Product
+    $RemoveProductParameters =
+    "--method", "delete",
+    "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/products/$($Product)?api-version=2019-12-01"
+    az rest @RemoveProductParameters
+}
+
 $AzureSubscriptionId = (az account show | ConvertFrom-Json).id
 
 if ($PublishApimDeveloperPortal) {
@@ -53,8 +84,17 @@ foreach ($EnvironmentName in $EnvironmentNames) {
     "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/portalsettings/signup?api-version=2019-12-01",
     "--body", "{'properties': {'enabled': 'false', 'termsOfService': {'enabled': 'false', 'consentRequired': 'false'}}}",
     "--headers", "{'Content-Type':'application/json'}"
-
     az rest @RemoveUsernamePasswordApimIdentityParameters
+
+    # --- Remove default Echo API
+    $RemoveEchoApiParameters =
+    "--method", "delete",
+    "--uri", "https://management.azure.com/subscriptions/$($AzureSubscriptionId)/resourceGroups/$($ApimResourceGroupName)/providers/Microsoft.ApiManagement/service/$($ApimName)/apis/echo-api?api-version=2019-12-01"
+    az rest @RemoveEchoApiParameters
+
+    # --- Remove default APIM Products
+    Remove-ApimProduct -Product "starter"
+    Remove-ApimProduct -Product "unlimited"
 
     if ($PublishApimDeveloperPortal) {
         # --- Provision APIM developer portal
