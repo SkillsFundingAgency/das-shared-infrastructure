@@ -566,12 +566,6 @@
           },
           "virtualNetworkAddressSpacePrefix": {
             "value": "10.0"
-          },
-          "AKSRouteTableName": {
-            "value": "[parameters('AKSRouteTableName')]"
-          },
-          "AKSRouteTableResourceGroupName": {
-            "value": "[parameters('AKSRouteTableResourceGroupName')]"
           }
         }
       }
