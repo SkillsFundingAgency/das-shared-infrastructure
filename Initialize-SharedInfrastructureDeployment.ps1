@@ -65,6 +65,10 @@ try {
     $Tags = @{
         Environment        = $ENV:EnvironmentTag
         'Parent Business'  = $ENV:ParentBusinessTag
+        'Portfolio'        = $ENV:Portfolio
+        'Product'          = $ENV:ProductTag
+        'Service'          = $ENV:ServiceTag
+        'Service Line'     = $ENV:ServiceLineTag
         'Service Offering' = $ENV:ServiceOfferingTag
         'Version'          = [InitializationHelper]::GetBuildNumber()
     }
