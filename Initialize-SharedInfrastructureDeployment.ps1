@@ -69,7 +69,7 @@ try {
         'Product'          = $ENV:ProductTag
         'Service'          = $ENV:ServiceTag
         'Service Line'     = $ENV:ServiceLineTag
-        'Service Offering' = $ENV:ServiceOfferingTag
+        'Service Offering' = $ENV:ServiceOffering
         'Version'          = [InitializationHelper]::GetBuildNumber()
     }
     $ResourceGroupBuilder = [ResourceGroupBuilder]::New()
