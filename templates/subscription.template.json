@@ -60,22 +60,6 @@
         "environmentVariable": "AKSEnterpriseApplicationObjectId"
       }
     },
-    "AKSRouteTableName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Name of the AKS Route Table to be included in the DEV management subnet mgmt-sn-0",
-        "environmentVariable": "AKSRouteTableName"
-      }
-    },
-    "AKSRouteTableResourceGroupName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Name of the DEV Resource Group where the AKS Route Table resides, used for the resourceId function to get the AKS Route Table resource",
-        "environmentVariable": "AKSRouteTableResourceGroupName"
-      }
-    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -566,12 +550,6 @@
           },
           "virtualNetworkAddressSpacePrefix": {
             "value": "10.0"
-          },
-          "AKSRouteTableName": {
-            "value": "[parameters('AKSRouteTableName')]"
-          },
-          "AKSRouteTableResourceGroupName": {
-            "value": "[parameters('AKSRouteTableResourceGroupName')]"
           }
         }
       }
