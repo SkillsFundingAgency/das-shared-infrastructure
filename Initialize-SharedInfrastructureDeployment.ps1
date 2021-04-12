@@ -65,7 +65,11 @@ try {
     $Tags = @{
         Environment        = $ENV:EnvironmentTag
         'Parent Business'  = $ENV:ParentBusinessTag
-        'Service Offering' = $ENV:ServiceOfferingTag
+        'Portfolio'        = $ENV:Portfolio
+        'Product'          = $ENV:ProductTag
+        'Service'          = $ENV:ServiceTag
+        'Service Line'     = $ENV:ServiceLineTag
+        'Service Offering' = $ENV:ServiceOffering
         'Version'          = [InitializationHelper]::GetBuildNumber()
     }
     $ResourceGroupBuilder = [ResourceGroupBuilder]::New()

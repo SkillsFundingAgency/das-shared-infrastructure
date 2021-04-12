@@ -744,7 +744,7 @@
             "value": "Consecutive"
           },
           "alertTriggerThreshold": {
-            "value": 1
+            "value": 2
           },
           "enableAlert": {
             "value": "[equals(toLower(parameters('resourceEnvironmentName')), 'prd')]"
