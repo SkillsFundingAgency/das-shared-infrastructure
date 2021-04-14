@@ -137,20 +137,6 @@
         "description": "A list of service endpoints to configure on the subnets provisioned in the vnet."
       }
     },
-    "AKSRouteTableName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Name of the AKS Route Table to be included in the DEV management subnet mgmt-sn-0"
-      }
-    },
-    "AKSRouteTableResourceGroupName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Name of the DEV Resource Group where the AKS Route Table resides, used for the resourceId function to get the AKS Route Table resource"
-      }
-    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -184,9 +170,6 @@
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "emptyArray": [],
     "emptyObject": {},
-    "aksRouteTableId": {
-      "id": "[if(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), resourceId(parameters('AKSRouteTableResourceGroupName'), 'Microsoft.Network/routeTables', parameters('AKSRouteTableName')),'')]"
-    },
     "firewallNsgId": {
       "id": "[if(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), resourceId(parameters('firewallsResourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('firewallsNsgName')),'')]"
     },
@@ -229,7 +212,7 @@
             "serviceEndpointList": "[variables('emptyArray')]",
             "delegations": "[variables('emptyArray')]",
             "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[if(and(not(bool(equals(parameters('AKSRouteTableName'),'Disabled'))), bool(equals(copyIndex('managementSubnetCopy'), 0))), variables('aksRouteTableId'), json('null'))]"
+            "routeTable": "[variables('emptyObject')]"
           }
         }
       },
