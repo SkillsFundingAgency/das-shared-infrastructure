@@ -55,6 +55,21 @@
         "description": "The number of gateway subnets to provision"
       }
     },
+    "managementSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "mgmt-sn",
+      "metadata": {
+        "description": "The prefix used for naming new management subnets."
+      }
+    },
+    "managementSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of management subnets to provision"
+      }
+    },
     "apimSubnetNamePrefix": {
       "type": "string",
       "defaultValue": "apim-sn",
@@ -188,6 +203,20 @@
         }
       },
       {
+        "name": "managementSubnetCopy",
+        "count": "[parameters('managementSubnetCount')]",
+        "input": {
+          "name": "[concat(parameters('managementSubnetNamePrefix'), '-', copyIndex('managementSubnetCopy'))]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 5, copyIndex('managementSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpointList": "[variables('emptyArray')]",
+            "delegations": "[variables('emptyArray')]",
+            "networkSecurityGroup": "[variables('emptyObject')]",
+            "routeTable": "[variables('emptyObject')]"
+          }
+        }
+      },
+      {
         "name": "apimSubnetCopy",
         "count": "[if(greater(parameters('apimSubnetCount'), 0), parameters('apimSubnetCount'), 1)]",
         "input": {
@@ -249,7 +278,7 @@
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
     "apimEndpointSubnet": "[if(greater(parameters('apimEndpointSubnetCount'), 0), variables('apimEndpointSubnetCopy'), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('gatewaySubnet'), variables('apimSubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('apimEndpointSubnet'))]"
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('apimSubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('apimEndpointSubnet'))]"
   },
   "functions": [
     {
