@@ -486,17 +486,17 @@
     ],
     "copy": [
       {
-        "name": "parameterKeyVaultSecretAccessPolicies",
+        "name": "keyVaultGetAccessPoliciesCopy",
         "count": "[length(parameters('keyVaultGetAccessObjectIds'))]",
         "input": {
-          "objectId": "[parameters('keyVaultGetAccessObjectIds')[copyIndex('parameterKeyVaultSecretAccessPolicies')]]",
+          "objectId": "[parameters('keyVaultGetAccessObjectIds')[copyIndex('keyVaultGetAccessPoliciesCopy')]]",
           "tenantId": "[subscription().tenantId]",
           "permissions": {
             "secrets": [
               "Get"
             ],
             "certificates": [
-              "get"
+              "Get"
             ]
           }
         }
@@ -572,7 +572,7 @@
             "value": "[variables('keyVaultName')]"
           },
           "keyVaultAccessPolicies": {
-            "value": "[if(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled'),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies')),concat(variables('KeyVaultAccessPolicies'),variables('parameterKeyVaultSecretAccessPolicies'),variables('AKSKeyVaultAccessPolicy')))]"
+            "value": "[if(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled'),concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy')),concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy'),variables('AKSKeyVaultAccessPolicy')))]"
           },
           "enabledForDiskEncryption": {
             "value": true
