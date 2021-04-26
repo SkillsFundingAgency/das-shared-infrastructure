@@ -24,11 +24,11 @@
         "environmentVariable": "keyVaultSecretCertificateAccessObjectId"
       }
     },
-    "keyVaultSecretAccessObjectIds": {
+    "keyVaultGetAccessObjectIds": {
       "type": "array",
       "metadata": {
-        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret access to",
-        "environmentVariable": "keyVaultSecretAccessObjectIds"
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Get Secret and Get Certificate access to",
+        "environmentVariable": "keyVaultGetAccessObjectIds"
       }
     },
     "microsoftAzureWebsitesRPObjectId": {
@@ -487,13 +487,16 @@
     "copy": [
       {
         "name": "parameterKeyVaultSecretAccessPolicies",
-        "count": "[length(parameters('keyVaultSecretAccessObjectIds'))]",
+        "count": "[length(parameters('keyVaultGetAccessObjectIds'))]",
         "input": {
-          "objectId": "[parameters('keyVaultSecretAccessObjectIds')[copyIndex('parameterKeyVaultSecretAccessPolicies')]]",
+          "objectId": "[parameters('keyVaultGetAccessObjectIds')[copyIndex('parameterKeyVaultSecretAccessPolicies')]]",
           "tenantId": "[subscription().tenantId]",
           "permissions": {
             "secrets": [
               "Get"
+            ],
+            "certificates": [
+              "get"
             ]
           }
         }
