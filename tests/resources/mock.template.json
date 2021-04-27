@@ -24,11 +24,11 @@
         "environmentVariable": "keyVaultSecretCertificateAccessObjectId"
       }
     },
-    "keyVaultSecretAccessObjectIds": {
+    "keyVaultGetAccessObjectIds": {
       "type": "array",
       "metadata": {
         "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Secret access to",
-        "environmentVariable": "keyVaultSecretAccessObjectIds"
+        "environmentVariable": "keyVaultGetAccessObjectIds"
       }
     },
     "microsoftAzureWebsitesRPObjectId": {
