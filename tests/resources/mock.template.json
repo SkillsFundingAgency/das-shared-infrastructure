@@ -186,6 +186,15 @@
         "environmentVariable": "apimEndpointSubnetCount"
       }
     },
+    "sharedWorkerSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of shared worker app subnets to provision.",
+        "environmentVariable": "sharedWorkerSubnetCount"
+      }
+    },
     "sqlAdminPasswordSeed": {
       "type": "securestring",
       "metadata": {
