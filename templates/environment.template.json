@@ -117,6 +117,14 @@
         "description": "The number of shared APIM endpoint app subnets to provision."
       }
     },
+    "sharedWorkerSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of shared worker app subnets to provision."
+      }
+    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -141,6 +149,17 @@
         "tier": "Standard",
         "size": "2",
         "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the app service plan."
+      }
+    },
+    "sharedWorkerAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "Standard",
+        "size": "1",
+        "instances": 1
       },
       "metadata": {
         "description": "An object representing the sku of the app service plan."
@@ -267,6 +286,7 @@
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
+    "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
     "sharedFrontEndAppGatewayPublicIpName": "[concat(variables('resourceNamePrefix'),'fe-ag-pip')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "apimResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-apim-rg'))]",
@@ -363,6 +383,9 @@
           },
           "apimEndpointSubnetCount": {
             "value": "[parameters('apimEndpointSubnetCount')]"
+          },
+          "sharedWorkerSubnetCount": {
+            "value": "[parameters('sharedWorkerSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -662,6 +685,32 @@
           },
           "nonASETier": {
             "value": "[parameters('backEndAppServicePlanSku').tier]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "shared-worker-app-service-plan",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServicePlanName": {
+            "value": "[variables('sharedWorkerAppServicePlanName')]"
+          },
+          "aspSize": {
+            "value": "[parameters('sharedWorkerAppServicePlanSku').size]"
+          },
+          "aspInstances": {
+            "value": "[parameters('sharedWorkerAppServicePlanSku').instances]"
+          },
+          "nonASETier": {
+            "value": "[parameters('sharedWorkerAppServicePlanSku').tier]"
           }
         }
       }

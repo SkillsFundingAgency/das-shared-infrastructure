@@ -19,6 +19,7 @@ function Set-MockEnvironment {
     $ENV:frontendSubnetCount = 1
     $ENV:backendSubnetCount = 1
     $ENV:apimEndpointSubnetCount = 1
+    $ENV:sharedWorkerSubnetCount = 1
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
@@ -68,6 +69,7 @@ function Clear-MockEnvironment {
         "ENV:frontendSubnetCount",
         "ENV:backendSubnetCount",
         "ENV:apimEndpointSubnetCount",
+        "ENV:sharedWorkerSubnetCount",
         "ENV:sqlAdminPasswordSeed",
         "ENV:sharedStorageAccountContainerArray",
         "ENV:logAnalyticsWorkspaceName",
