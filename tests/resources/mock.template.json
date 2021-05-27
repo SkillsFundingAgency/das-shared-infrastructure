@@ -134,7 +134,7 @@
     },
     "gatewaySubnetCount": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "maxValue": 1,
       "metadata": {
         "description": "The number of gateway subnets to provision",
@@ -152,7 +152,7 @@
     },
     "apimSubnetCount": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "maxValue": 1,
       "metadata": {
         "description": "The number of APIM subnets to provision",
@@ -161,7 +161,7 @@
     },
     "frontendSubnetCount": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared frontend app subnets to provision.",
@@ -170,7 +170,7 @@
     },
     "backendSubnetCount": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared backend app subnets to provision.",
@@ -179,7 +179,7 @@
     },
     "apimEndpointSubnetCount": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared APIM endpoint app subnets to provision.",
@@ -188,7 +188,7 @@
     },
     "sharedWorkerSubnetCount": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared worker app subnets to provision.",
