@@ -1137,7 +1137,7 @@
             "value": true
           },
           "productSubscriptionsLimit": {
-            "value": 1
+            "value": 5
           },
           "productApprovalRequired": {
             "value": false
