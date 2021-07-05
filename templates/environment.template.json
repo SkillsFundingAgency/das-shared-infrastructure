@@ -165,6 +165,17 @@
         "description": "An object representing the sku of the app service plan."
       }
     },
+    "apimEndpointAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "PremiumV2",
+        "size": "1",
+        "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the outer API app service plan."
+      }
+    },    
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
@@ -287,6 +298,7 @@
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
+    "apimEndpointAppServicePlanName": "[concat('das-', variables('environmentName'),'-apimendp-asp')]",
     "sharedFrontEndAppGatewayPublicIpName": "[concat(variables('resourceNamePrefix'),'fe-ag-pip')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "apimResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-apim-rg'))]",
@@ -715,6 +727,32 @@
         }
       }
     },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "apim-endpoint-app-service-plan",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServicePlanName": {
+            "value": "[variables('apimEndpointAppServicePlanName')]"
+          },
+          "aspSize": {
+            "value": "[parameters('apimEndpointAppServicePlanSku').size]"
+          },
+          "aspInstances": {
+            "value": "[parameters('apimEndpointAppServicePlanSku').instances]"
+          },
+          "nonASETier": {
+            "value": "[parameters('apimEndpointAppServicePlanSku').tier]"
+          }
+        }
+      }
+    },    
     {
       "apiVersion": "2017-05-10",
       "name": "service-bus",

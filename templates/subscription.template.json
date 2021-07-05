@@ -223,6 +223,18 @@
         "environmentVariable": "sharedWorkerAppServicePlanSku"
       }
     },
+    "apimEndpointAppServicePlanSku": {
+      "type": "object",
+      "defaultValue": {
+        "tier": "PremiumV2",
+        "size": "1",
+        "instances": 2
+      },
+      "metadata": {
+        "description": "An object representing the sku of the outer API app service plan.",
+        "environmentVariable": "apimEndpointAppServicePlanSku"
+      }
+    },    
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
@@ -870,6 +882,9 @@
           "sharedWorkerAppServicePlanSku": {
             "value": "[parameters('sharedWorkerAppServicePlanSku')]"
           },
+          "apimEndpointAppServicePlanSku": {
+            "value": "[parameters('apimEndpointAppServicePlanSku')]"
+          },          
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
           },
