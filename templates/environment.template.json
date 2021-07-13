@@ -175,7 +175,7 @@
       "metadata": {
         "description": "An object representing the sku of the outer API app service plan."
       }
-    },    
+    },
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
@@ -291,7 +291,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/sql-tls/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
@@ -342,6 +342,7 @@
         "nameSuffix": "ne"
       }
     },
+    "sqlServerMinimalTlsVersion": "1.2",
     "baseSqlServerName": "[toLower(concat('das-',variables('environmentName'),'-shared-sql'))]",
     "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
@@ -535,6 +536,9 @@
           },
           "sqlServerActiveDirectoryAdminObjectId": {
             "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
+          },
+          "sqlServerMinimalTlsVersion": {
+            "value": "[variables('sqlServerMinimalTlsVersion')]"
           },
           "threatDetectionEmailAddress": {
             "value": "[parameters('threatDetectionEmailAddress')]"
@@ -752,7 +756,7 @@
           }
         }
       }
-    },    
+    },
     {
       "apiVersion": "2017-05-10",
       "name": "service-bus",
