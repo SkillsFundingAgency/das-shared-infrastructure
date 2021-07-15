@@ -610,6 +610,9 @@
           "sqlServerActiveDirectoryAdminObjectId": {
             "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
           },
+          "sqlServerMinimalTlsVersion": {
+            "value": "[variables('sqlServerMinimalTlsVersion')]"
+          },
           "threatDetectionEmailAddress": {
             "value": "[parameters('threatDetectionEmailAddress')]"
           },
