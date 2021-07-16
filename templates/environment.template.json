@@ -342,7 +342,7 @@
         "nameSuffix": "ne"
       }
     },
-    "sqlServerMinimalTlsVersion": "1.2",
+    "sqlServerMinimalTlsVersion": "1.0",
     "baseSqlServerName": "[toLower(concat('das-',variables('environmentName'),'-shared-sql'))]",
     "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
