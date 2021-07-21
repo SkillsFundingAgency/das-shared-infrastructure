@@ -175,7 +175,7 @@
       "metadata": {
         "description": "An object representing the sku of the outer API app service plan."
       }
-    },    
+    },
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
@@ -342,6 +342,7 @@
         "nameSuffix": "ne"
       }
     },
+    "sqlServerMinimalTlsVersion": "1.2",
     "baseSqlServerName": "[toLower(concat('das-',variables('environmentName'),'-shared-sql'))]",
     "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
@@ -536,6 +537,9 @@
           "sqlServerActiveDirectoryAdminObjectId": {
             "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
           },
+          "sqlServerMinimalTlsVersion": {
+            "value": "[variables('sqlServerMinimalTlsVersion')]"
+          },
           "threatDetectionEmailAddress": {
             "value": "[parameters('threatDetectionEmailAddress')]"
           },
@@ -605,6 +609,9 @@
           },
           "sqlServerActiveDirectoryAdminObjectId": {
             "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
+          },
+          "sqlServerMinimalTlsVersion": {
+            "value": "[variables('sqlServerMinimalTlsVersion')]"
           },
           "threatDetectionEmailAddress": {
             "value": "[parameters('threatDetectionEmailAddress')]"
@@ -752,7 +759,7 @@
           }
         }
       }
-    },    
+    },
     {
       "apiVersion": "2017-05-10",
       "name": "service-bus",
