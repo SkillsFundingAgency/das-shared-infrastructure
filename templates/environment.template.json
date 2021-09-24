@@ -248,10 +248,10 @@
         "description": "The Key vault certificate for the Management custom domain of the APIM instance."
       }
     },
-    "tenantPrimaryDomain": {
+    "tenantId": {
       "type": "string",
       "metadata": {
-        "description": "The primary domain of the tenant."
+        "description": "The ID of the tenant."
       }
     },
     "apimAppRegistrationClientIds": {
@@ -291,7 +291,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-9045-apim-dev-portal-tenant-id/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
@@ -923,8 +923,8 @@
           "managementKeyVaultCertificateName": {
             "value": "[variables('apimManagementKeyVaultCertificateNameValue')]"
           },
-          "tenantPrimaryDomain": {
-            "value": "[parameters('tenantPrimaryDomain')]"
+          "tenantId": {
+            "value": "[parameters('tenantId')]"
           },
           "apimAppRegistrationClientId": {
             "value": "[parameters('apimAppRegistrationClientIds')[parameters('environmentName')]]"
@@ -1131,8 +1131,8 @@
           "apimName": {
             "value": "[variables('apimName')]"
           },
-          "tenantPrimaryDomain": {
-            "value": "[parameters('tenantPrimaryDomain')]"
+          "tenantId": {
+            "value": "[parameters('tenantId')]"
           },
           "aadGroupObjectId": {
             "value": "[parameters('apimGroupsArray')[copyIndex()].aadGroupObjectId]"

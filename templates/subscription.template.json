@@ -335,11 +335,11 @@
         "environmentVariable": "apimManagementKeyVaultCertificateName"
       }
     },
-    "tenantPrimaryDomain": {
+    "tenantId": {
       "type": "string",
       "metadata": {
-        "description": "The primary domain of the tenant.",
-        "environmentVariable": "tenantPrimaryDomain"
+        "description": "The ID of the tenant.",
+        "environmentVariable": "tenantId"
       }
     },
     "apimAppRegistrationClientIds": {
@@ -438,7 +438,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-9045-apim-dev-portal-tenant-id/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -918,8 +918,8 @@
           "apimManagementKeyVaultCertificateName": {
             "value": "[parameters('apimManagementKeyVaultCertificateName')]"
           },
-          "tenantPrimaryDomain": {
-            "value": "[parameters('tenantPrimaryDomain')]"
+          "tenantId": {
+            "value": "[parameters('tenantId')]"
           },
           "apimAppRegistrationClientIds": {
             "value": "[parameters('apimAppRegistrationClientIds')]"

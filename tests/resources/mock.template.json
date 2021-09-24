@@ -299,11 +299,11 @@
         "environmentVariable": "apimManagementKeyVaultCertificateName"
       }
     },
-    "tenantPrimaryDomain": {
+    "tenantId": {
       "type": "string",
       "metadata": {
-        "description": "The primary domain of the tenant.",
-        "environmentVariable": "tenantPrimaryDomain"
+        "description": "The ID of the tenant.",
+        "environmentVariable": "tenantId"
       }
     },
     "apimAppRegistrationClientIds": {
