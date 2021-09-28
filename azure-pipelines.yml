@@ -19,7 +19,7 @@ workspace:
   clean: all
 
 pool:
-  name: "DAS - Continuous Deployment Agents"
+  name: "DAS - Continuous Integration Agents"
   demands:
     - npm
     - node.js
