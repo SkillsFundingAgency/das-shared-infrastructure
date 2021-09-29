@@ -24,19 +24,40 @@ pool:
     - npm
     - node.js
 
-resources:
-  repositories:
-  - repository: self
-  - repository: das-platform-building-blocks
-    type: github
-    name: SkillsFundingAgency/das-platform-building-blocks
-    ref: refs/tags/0.3.31
-    endpoint: SkillsFundingAgency
-
-stages:
-- stage: Build
-  jobs:
-  - template: pipeline-templates/job/code-build.yml
-    parameters:
-      SolutionBaseName: $(SolutionBaseName)
-      BuildConfiguration: $(BuildConfiguration)
+steps:
+  - task: gittools.gitversion.gitversion-task.GitVersion@5
+    displayName: GitVersion
+  - script: |
+      npm install eclint
+      node ./node_modules/eclint/bin/eclint.js check
+    displayName: "Validate editorconfig"
+    workingDirectory: $(System.DefaultWorkingDirectory)
+  - task: PowerShell@2
+    displayName: "Execute unit tests"
+    inputs:
+      filePath: ./tests/Start-UnitTest.ps1
+      failOnStderr: true
+      pwsh: true
+      workingDirectory:  $(System.DefaultWorkingDirectory)
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'NUnit'
+      testResultsFiles: $(System.DefaultWorkingDirectory)\tests\Test-Pester.XML
+    condition: succeededOrFailed()
+  - task: CopyFiles@2
+    displayName: "Copy Files to: $(build.artifactstagingdirectory)"
+    inputs:
+      Contents: |
+        modules/**
+        templates/**
+        utilities/**
+        apim/**
+        tests/Remove-Environment.ps1
+        Initialize-SharedInfrastructureDeployment.ps1
+        Initialize-ApimDeveloperPortal.ps1
+      TargetFolder: "$(build.artifactstagingdirectory)/publish"
+      OverWrite: true
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish Artifact"
+    inputs:
+      PathtoPublish: "$(build.artifactstagingdirectory)/publish"
