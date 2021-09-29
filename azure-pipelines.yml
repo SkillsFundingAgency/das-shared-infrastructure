@@ -25,8 +25,7 @@ pool:
     - node.js
 
 steps:
-  - task: gittools.gitversion.gitversion-task.GitVersion@5
-    displayName: GitVersion
+  - template: azure-pipelines-templates/build/step/gitversion.yml@das-platform-building-blocks
   - script: |
       npm install eclint
       node ./node_modules/eclint/bin/eclint.js check
