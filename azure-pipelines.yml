@@ -24,6 +24,15 @@ pool:
     - npm
     - node.js
 
+resources:
+  repositories:
+  - repository: self
+  - repository: das-platform-building-blocks
+    type: github
+    name: SkillsFundingAgency/das-platform-building-blocks
+    ref: refs/heads/master
+    endpoint: 'GitHub (SFA)'
+
 steps:
   - template: azure-pipelines-templates/build/step/gitversion.yml@das-platform-building-blocks
   - script: |
