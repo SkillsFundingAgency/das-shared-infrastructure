@@ -439,6 +439,9 @@
         "parameters": {
           "storageAccountName": {
             "value": "[variables('configurationStorageName')]"
+          },
+          "allowSharedKeyAccess": {
+            "value": true
           }
         }
       }
@@ -456,6 +459,9 @@
         "parameters": {
           "storageAccountName": {
             "value": "[variables('sharedARMStorageName')]"
+          },
+          "allowSharedKeyAccess": {
+            "value": true
           }
         }
       }
