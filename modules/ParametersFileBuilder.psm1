@@ -45,7 +45,10 @@ class ParametersFileBuilder {
 
             switch ($ParameterEnvironmentVariableType) {
                 'array' {
-                    if (($ParameterVariableValue | ConvertFrom-Json | Get-Member)[0].TypeName -eq "System.String"){
+                    if ($ParameterVariableValue -eq "[]") {
+                        $ParameterVariableValue = @()
+                    }
+                    elseif (($ParameterVariableValue | ConvertFrom-Json | Get-Member)[0].TypeName -eq "System.String"){
                         $ParameterVariableValue = [String[]]($ParameterVariableValue | ConvertFrom-Json)
                     }
                     else {
