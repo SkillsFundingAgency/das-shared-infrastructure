@@ -3,15 +3,6 @@ trigger:
   branches:
     include:
       - "*"
-  paths:
-    include:
-      - tests/*
-      - templates/*
-      - utilities/*
-      - apim/*
-      - Initialize-SharedInfrastructureDeployment.ps1
-      - Initialize-ApimDeveloperPortal.ps1
-      - azure-pipelines.yml
 
 pr: none
 
