@@ -579,7 +579,7 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2019-05-10",
       "name": "key-vault",
       "type": "Microsoft.Resources/deployments",
       "properties": {
@@ -869,7 +869,7 @@
           },
           "sharedWorkerAppServicePlanSku": {
             "value": "[parameters('sharedWorkerAppServicePlanSku')]"
-          },         
+          },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
           },
