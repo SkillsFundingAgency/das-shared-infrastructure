@@ -6,7 +6,6 @@ class ResourceGroupBuilder {
         $ManagementResourceGroupName = "das-$($SubscriptionAbbreviation)-mgmt-rg"
         $ResourceGroupList = [System.Collections.ArrayList]::new(@($ManagementResourceGroupName.ToLower()))
         $ResourceGroupList.AddRange(@($EnvironmentNames | ForEach-Object { "das-$($_)-shared-rg".ToLower() }))
-        $ResourceGroupList.AddRange(@($EnvironmentNames | ForEach-Object { "das-$($_)-apim-rg".ToLower() }))
 
         Write-Host "- Creating Resource Groups ->"
         $ResourceGroupList | ForEach-Object {

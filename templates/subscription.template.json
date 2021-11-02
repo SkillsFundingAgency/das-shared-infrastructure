@@ -135,15 +135,6 @@
         "environmentVariable": "managementSubnetCount"
       }
     },
-    "apimSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of APIM subnets to provision",
-        "environmentVariable": "apimSubnetCount"
-      }
-    },
     "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -160,15 +151,6 @@
       "metadata": {
         "description": "The number of shared backend app subnets to provision.",
         "environmentVariable": "backendSubnetCount"
-      }
-    },
-    "apimEndpointSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of shared APIM endpoint app subnets to provision.",
-        "environmentVariable": "apimEndpointSubnetCount"
       }
     },
     "sharedWorkerSubnetCount": {
@@ -249,125 +231,6 @@
       "metadata": {
         "description": "The number of days data is retained in the Log Analytics workspace for the subscription.",
         "environmentVariable": "logAnalyticsWorkspaceDataRetentionDays"
-      }
-    },
-    "customDomainHostedZone": {
-      "type": "string",
-      "metadata": {
-        "description": "The Hosted Zone used for the APIM DNS records.",
-        "environmentVariable": "customDomainHostedZone"
-      }
-    },
-    "apimInitialDeploy": {
-      "type": "string",
-      "metadata": {
-        "description": "A string for the initial APIM deployment which requires system managed identity creation before then deploying custom hostname configuration.",
-        "environmentVariable": "apimInitialDeploy"
-      }
-    },
-    "apimSKU": {
-      "type": "string",
-      "allowedValues": [
-        "Developer",
-        "Premium"
-      ],
-      "defaultValue": "Developer",
-      "metadata": {
-        "description": "The pricing tier of the API Management service.",
-        "environmentVariable": "apimSKU"
-      }
-    },
-    "apimLogsRetentionDays": {
-      "type": "int",
-      "defaultValue": 30,
-      "metadata": {
-        "description": "Number of days to retain the APIM logs within the Log Analytics Workspace.",
-        "environmentVariable": "apimLogsRetentionDays"
-      }
-    },
-    "apimPublisherEmail": {
-      "type": "string",
-      "metadata": {
-        "description": "The publisher email of the APIM instance.",
-        "environmentVariable": "apimPublisherEmail"
-      }
-    },
-    "apimPublisherName": {
-      "type": "string",
-      "metadata": {
-        "description": "The publisher name of the APIM instance.",
-        "environmentVariable": "apimPublisherName"
-      }
-    },
-    "apimPortalKeyVaultCertificateName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "The Key vault certificate name for the Developer Portal custom domain of the APIM instance.",
-        "environmentVariable": "apimPortalKeyVaultCertificateName"
-      }
-    },
-    "apimGatewayKeyVaultCertificateName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "The Key vault certificate for the Gateway custom domain of the APIM instance.",
-        "environmentVariable": "apimGatewayKeyVaultCertificateName"
-      }
-    },
-    "apimManagementKeyVaultCertificateName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "The Key vault certificate for the Management custom domain of the APIM instance.",
-        "environmentVariable": "apimManagementKeyVaultCertificateName"
-      }
-    },
-    "tenantId": {
-      "type": "string",
-      "metadata": {
-        "description": "The ID of the tenant.",
-        "environmentVariable": "tenantId"
-      }
-    },
-    "apimAppRegistrationClientIds": {
-      "type": "object",
-      "metadata": {
-        "description": "An object with keys of EnvironmentName and values of the client ID of the app registration used for the AAD identity provider of the APIM instance.",
-        "environmentVariable": "apimAppRegistrationClientIds"
-      }
-    },
-    "apimAppRegistrationClientSecret": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The client secret of the app registration used for the AAD identity provider of the APIM instance",
-        "environmentVariable": "apimAppRegistrationClientSecret"
-      }
-    },
-    "apimGroupsArray": {
-      "type": "array",
-      "metadata": {
-        "description": "Array of Groups for the APIM instance.",
-        "environmentVariable": "apimGroupsArray"
-      }
-    },
-    "apimProductsArray": {
-      "type": "array",
-      "metadata": {
-        "description": "Array of Products for the APIM instance.",
-        "environmentVariable": "apimProductsArray"
-      }
-    },
-    "apimProductsState": {
-      "type": "string",
-      "allowedValues": [
-        "notPublished",
-        "published"
-      ],
-      "defaultValue": "notPublished",
-      "metadata": {
-        "description": "State of Products for the APIM instance.",
-        "environmentVariable": "apimProductsState"
       }
     },
     "loggingRedisCacheSKU": {
@@ -843,17 +706,11 @@
           "managementSubnetCount": {
             "value": "[parameters('managementSubnetCount')]"
           },
-          "apimSubnetCount": {
-            "value": "[parameters('apimSubnetCount')]"
-          },
           "frontendSubnetCount": {
             "value": "[parameters('frontendSubnetCount')]"
           },
           "backendSubnetCount": {
             "value": "[parameters('backendSubnetCount')]"
-          },
-          "apimEndpointSubnetCount": {
-            "value": "[parameters('apimEndpointSubnetCount')]"
           },
           "sharedWorkerSubnetCount": {
             "value": "[parameters('sharedWorkerSubnetCount')]"
@@ -872,54 +729,6 @@
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
-          },
-          "logAnalyticsWorkspaceName": {
-            "value": "[parameters('logAnalyticsWorkspaceName')]"
-          },
-          "customDomainHostedZone": {
-            "value": "[parameters('customDomainHostedZone')]"
-          },
-          "apimInitialDeploy": {
-            "value": "[parameters('apimInitialDeploy')]"
-          },
-          "apimSKU": {
-            "value": "[parameters('apimSKU')]"
-          },
-          "apimLogsRetentionDays": {
-            "value": "[parameters('apimLogsRetentionDays')]"
-          },
-          "apimPublisherEmail": {
-            "value": "[parameters('apimPublisherEmail')]"
-          },
-          "apimPublisherName": {
-            "value": "[parameters('apimPublisherName')]"
-          },
-          "apimPortalKeyVaultCertificateName": {
-            "value": "[parameters('apimPortalKeyVaultCertificateName')]"
-          },
-          "apimGatewayKeyVaultCertificateName": {
-            "value": "[parameters('apimGatewayKeyVaultCertificateName')]"
-          },
-          "apimManagementKeyVaultCertificateName": {
-            "value": "[parameters('apimManagementKeyVaultCertificateName')]"
-          },
-          "tenantId": {
-            "value": "[parameters('tenantId')]"
-          },
-          "apimAppRegistrationClientIds": {
-            "value": "[parameters('apimAppRegistrationClientIds')]"
-          },
-          "apimAppRegistrationClientSecret": {
-            "value": "[parameters('apimAppRegistrationClientSecret')]"
-          },
-          "apimGroupsArray": {
-            "value": "[parameters('apimGroupsArray')]"
-          },
-          "apimProductsArray": {
-            "value": "[parameters('apimProductsArray')]"
-          },
-          "apimProductsState": {
-            "value": "[parameters('apimProductsState')]"
           }
         }
       },

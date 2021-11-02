@@ -79,4 +79,4 @@ New tests are automatically invoked at build time and the run will produce a tes
 
 ## DTA Deployment
 
-The DTA stage deploys and tears down the infrastructure to provide a method for testing the deployment process without interferring with the availablity of the AT environment.  The APIM resource is soft deleted when the resource group that contains it is deleted, to enforce a hard delete of the APIM resource it is deleted separately using `Remove-AzApiManagement`.  If for some reason this fails subsequent deployments to DTA may fail and you you will need to make an API call to the Azure Resource Graph as explained [here](https://docs.microsoft.com/en-us/azure/governance/resource-graph/first-query-rest-api#rest-api-and-powershell) to purge the APIM resource as explained [here](https://docs.microsoft.com/en-us/rest/api/apimanagement/2020-06-01-preview/deletedservices/purge).
+The DTA stage deploys and tears down the infrastructure to provide a method for testing the deployment process without interferring with the availablity of the AT environment.
