@@ -19,11 +19,12 @@ resources:
     endpoint: SkillsFundingAgency
 
 pool:
-  name: DAS - Continuous Integration Agents
+  name: DAS - Continuous Integration
   demands:
     - npm
     - node.js
     - LATEST_DOTNET_VERSION -equals 3.1
+    - Agent.OS -equals Windows_NT
 
 steps:
   - template: azure-pipelines-templates/build/step/gitversion.yml@das-platform-building-blocks
