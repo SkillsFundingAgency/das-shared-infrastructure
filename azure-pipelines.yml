@@ -9,15 +9,24 @@ pr: none
 workspace:
   clean: all
 
+resources:
+repositories:
+- repository: self
+- repository: das-platform-building-blocks
+  type: github
+  name: SkillsFundingAgency/das-platform-building-blocks
+  ref: refs/tags/0.4.14
+  endpoint: SkillsFundingAgency
+
 pool:
-  name: "DAS - Continuous Deployment"
+  name: DAS - Continuous Integration Agents
   demands:
     - npm
     - node.js
+    - LATEST_DOTNET_VERSION -equals 3.1
 
 steps:
-  - task: gittools.gitversion.gitversion-task.GitVersion@5
-    displayName: GitVersion
+  - template: azure-pipelines-templates/build/step/gitversion.yml@das-platform-building-blocks
   - script: |
       npm install eclint
       node ./node_modules/eclint/bin/eclint.js check
