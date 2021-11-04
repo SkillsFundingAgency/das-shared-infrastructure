@@ -70,21 +70,6 @@
         "description": "The number of management subnets to provision"
       }
     },
-    "apimSubnetNamePrefix": {
-      "type": "string",
-      "defaultValue": "apim-sn",
-      "metadata": {
-        "description": "The prefix used for naming new APIM subnets."
-      }
-    },
-    "apimSubnetCount": {
-      "type": "int",
-      "defaultValue": 0,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of APIM subnets to provision"
-      }
-    },
     "frontendSubnetNamePrefix": {
       "type": "string",
       "defaultValue": "sharedfe-sn",
@@ -113,21 +98,6 @@
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared backend app subnets to provision."
-      }
-    },
-    "apimEndpointSubnetNamePrefix": {
-      "type": "string",
-      "defaultValue": "apimendp-sn",
-      "metadata": {
-        "description": "The prefix used for naming new shared APIM endpoint app subnets."
-      }
-    },
-    "apimEndpointSubnetCount": {
-      "type": "int",
-      "defaultValue": 0,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of shared APIM endpoint app subnets to provision."
       }
     },
     "sharedWorkerSubnetNamePrefix": {
@@ -165,20 +135,6 @@
       "metadata": {
         "description": "Name of the Resource Group where the firewall NSG resides, used for the resourceId function to get the firewall NSG resource"
       }
-    },
-    "apimNsgName": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Name of the APIM NSG to be associated to the APIM subnet apim-sn-0"
-      }
-    },
-    "apimResourceGroup": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Name of the Resource Group where the APIM NSG resides, used for the resourceId function to get the APIM NSG resource"
-      }
     }
   },
   "variables": {
@@ -187,9 +143,6 @@
     "emptyObject": {},
     "firewallNsgId": {
       "id": "[if(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), resourceId(parameters('firewallsResourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('firewallsNsgName')),'')]"
-    },
-    "apimNsgId": {
-      "id": "[if(not(bool(equals(parameters('apimNsgName'),'Disabled'))), resourceId(parameters('apimResourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('apimNsgName')),'')]"
     },
     "subnetDelegations": [
       {
@@ -232,20 +185,6 @@
         }
       },
       {
-        "name": "apimSubnetCopy",
-        "count": "[if(greater(parameters('apimSubnetCount'), 0), parameters('apimSubnetCount'), 1)]",
-        "input": {
-          "name": "[concat(parameters('apimSubnetNamePrefix'), '-', copyIndex('apimSubnetCopy'))]",
-          "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 10, copyIndex('apimSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpointList": "[parameters('serviceEndpointList')]",
-            "delegations": "[variables('emptyArray')]",
-            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('apimNsgName'),'Disabled'))), bool(equals(copyIndex('apimSubnetCopy'), 0))), variables('apimNsgId'), json('null'))]",
-            "routeTable": "[variables('emptyObject')]"
-          }
-        }
-      },
-      {
         "name": "frontendSubnetCopy",
         "count": "[if(greater(parameters('frontendSubnetCount'), 0), parameters('frontendSubnetCount'), 1)]",
         "input": {
@@ -274,22 +213,8 @@
         }
       },
       {
-        "name": "apimEndpointSubnetCopy",
-        "count": "[if(greater(parameters('apimEndpointSubnetCount'), 0), parameters('apimEndpointSubnetCount'), 1)]",
-        "input": {
-          "name": "[concat(parameters('apimEndpointSubnetNamePrefix'), '-', copyIndex('apimEndpointSubnetCopy'))]",
-          "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 25, copyIndex('apimEndpointSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpointList": "[parameters('serviceEndpointList')]",
-            "delegations": "[variables('subnetDelegations')]",
-            "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
-          }
-        }
-      },
-      {
         "name": "sharedWorkerSubnetCopy",
-        "count": "[if(greater(parameters('apimEndpointSubnetCount'), 0), parameters('apimEndpointSubnetCount'), 1)]",
+        "count": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), parameters('sharedWorkerSubnetCount'), 1)]",
         "input": {
           "name": "[concat(parameters('sharedWorkerSubnetNamePrefix'), '-', copyIndex('sharedWorkerSubnetCopy'))]",
           "properties": {
@@ -303,12 +228,10 @@
       }
     ],
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
-    "apimSubnet": "[if(greater(parameters('apimSubnetCount'), 0), variables('apimSubnetCopy'), variables('emptyArray'))]",
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
-    "apimEndpointSubnet": "[if(greater(parameters('apimEndpointSubnetCount'), 0), variables('apimEndpointSubnetCopy'), variables('emptyArray'))]",
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('apimSubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('apimEndpointSubnet'), variables('sharedWorkerSubnet'))]"
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'))]"
   },
   "functions": [
     {
