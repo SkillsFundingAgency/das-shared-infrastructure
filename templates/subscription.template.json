@@ -52,13 +52,6 @@
         "environmentVariable": "backupManagementServiceObjectId"
       }
     },
-    "diskEncryptionEnterpriseApplicationObjectId": {
-      "type": "string",
-      "metadata": {
-        "description": "Object Id for the disk Encryption Enterprise Application",
-        "environmentVariable": "diskEncryptionEnterpriseApplicationObjectId"
-      }
-    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -319,18 +312,6 @@
             "Get",
             "List",
             "Backup"
-          ]
-        }
-      },
-      {
-        "objectId": "[parameters('diskEncryptionEnterpriseApplicationObjectId')]",
-        "tenantId": "[subscription().tenantId]",
-        "permissions": {
-          "keys": [
-            "WrapKey"
-          ],
-          "secrets": [
-            "Set"
           ]
         }
       },
