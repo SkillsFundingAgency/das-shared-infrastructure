@@ -52,14 +52,6 @@
         "environmentVariable": "diskEncryptionEnterpriseApplicationObjectId"
       }
     },
-    "AKSEnterpriseApplicationObjectId": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Object Id for the AKS Enterprise Application",
-        "environmentVariable": "AKSEnterpriseApplicationObjectId"
-      }
-    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -297,20 +289,6 @@
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
-    "AKSKeyVaultAccessPolicy": [
-      {
-        "objectId": "[parameters('AKSEnterpriseApplicationObjectId')]",
-        "tenantId": "[subscription().tenantId]",
-        "permissions": {
-          "secrets": [
-            "Get"
-          ],
-          "certificates": [
-            "Get"
-          ]
-        }
-      }
-    ],
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
@@ -456,7 +434,7 @@
             "value": "[variables('keyVaultName')]"
           },
           "keyVaultAccessPolicies": {
-            "value": "[if(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled'),concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy')),concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy'),variables('AKSKeyVaultAccessPolicy')))]"
+            "value": "[concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy'))]"
           },
           "enabledForDiskEncryption": {
             "value": true
