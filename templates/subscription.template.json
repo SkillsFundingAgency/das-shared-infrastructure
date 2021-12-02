@@ -31,6 +31,13 @@
         "environmentVariable": "keyVaultGetAccessObjectIds"
       }
     },
+    "keyVaultGetListAccessObjectIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Get Secret, List Secret, Get Certificate and List Certificate access to",
+        "environmentVariable": "keyVaultGetListAccessObjectIds"
+      }
+    },
     "microsoftAzureWebsitesRPObjectId": {
       "type": "string",
       "metadata": {
@@ -43,21 +50,6 @@
       "metadata": {
         "description": "Object Id for the backup management service",
         "environmentVariable": "backupManagementServiceObjectId"
-      }
-    },
-    "diskEncryptionEnterpriseApplicationObjectId": {
-      "type": "string",
-      "metadata": {
-        "description": "Object Id for the disk Encryption Enterprise Application",
-        "environmentVariable": "diskEncryptionEnterpriseApplicationObjectId"
-      }
-    },
-    "AKSEnterpriseApplicationObjectId": {
-      "type": "string",
-      "defaultValue": "Disabled",
-      "metadata": {
-        "description": "Object Id for the AKS Enterprise Application",
-        "environmentVariable": "AKSEnterpriseApplicationObjectId"
       }
     },
     "firewallsNsgName": {
@@ -297,20 +289,6 @@
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
-    "AKSKeyVaultAccessPolicy": [
-      {
-        "objectId": "[parameters('AKSEnterpriseApplicationObjectId')]",
-        "tenantId": "[subscription().tenantId]",
-        "permissions": {
-          "secrets": [
-            "Get"
-          ],
-          "certificates": [
-            "Get"
-          ]
-        }
-      }
-    ],
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
@@ -334,18 +312,6 @@
             "Get",
             "List",
             "Backup"
-          ]
-        }
-      },
-      {
-        "objectId": "[parameters('diskEncryptionEnterpriseApplicationObjectId')]",
-        "tenantId": "[subscription().tenantId]",
-        "permissions": {
-          "keys": [
-            "WrapKey"
-          ],
-          "secrets": [
-            "Set"
           ]
         }
       },
@@ -381,6 +347,24 @@
             ],
             "certificates": [
               "Get"
+            ]
+          }
+        }
+      },
+      {
+        "name": "keyVaultGetListAccessPoliciesCopy",
+        "count": "[length(parameters('keyVaultGetListAccessObjectIds'))]",
+        "input": {
+          "objectId": "[parameters('keyVaultGetListAccessObjectIds')[copyIndex('keyVaultGetListAccessPoliciesCopy')]]",
+          "tenantId": "[subscription().tenantId]",
+          "permissions": {
+            "secrets": [
+              "Get",
+              "List"
+            ],
+            "certificates": [
+              "Get",
+              "List"
             ]
           }
         }
@@ -456,7 +440,7 @@
             "value": "[variables('keyVaultName')]"
           },
           "keyVaultAccessPolicies": {
-            "value": "[if(equals(parameters('AKSEnterpriseApplicationObjectId'),'Disabled'),concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy')),concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy'),variables('AKSKeyVaultAccessPolicy')))]"
+            "value": "[concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy'),variables('keyVaultGetListAccessPoliciesCopy'))]"
           },
           "enabledForDiskEncryption": {
             "value": true
