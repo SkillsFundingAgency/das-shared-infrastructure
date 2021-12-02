@@ -31,7 +31,7 @@ InModuleScope ParametersFileBuilder {
                 $MockParametersFileConfig.GetType().FullName | Should Be "System.Management.Automation.PSCustomObject"
             }
 
-            It "Should return the same parmeters as the original arm template" {
+            It "Should return the same parameters as the mock arm template" {
                 $TemplateFileParameterNames = $MockTemplateFileObject.Parameters.PSObject.Properties.Name | Sort-Object
                 $ParametersFileParameterNames = $MockParametersFileConfig.Parameters.Keys | Sort-Object
                 $TemplateFileParameterNames | Should Be $ParametersFileParameterNames

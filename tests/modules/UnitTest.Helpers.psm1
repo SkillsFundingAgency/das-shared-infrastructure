@@ -7,6 +7,7 @@ function Set-MockEnvironment {
     $ENV:sqlServerActiveDirectoryAdminLogin = "test@test.com"
     $ENV:keyVaultSecretCertificateAccessObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:keyVaultGetAccessObjectIds = "['fb0eac10-bda1-4410-9f8f-f4d381268d13']"
+    $ENV:keyVaultGetListAccessObjectIds = "['fb0eac10-bda1-4410-9f8f-f4d381268d13']"
     $ENV:sqlServerActiveDirectoryAdminObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:diskEncryptionEnterpriseApplicationObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:microsoftAzureWebsitesRPObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
@@ -41,6 +42,7 @@ function Clear-MockEnvironment {
         "ENV:sqlServerActiveDirectoryAdminLogin",
         "ENV:keyVaultSecretCertificateAccessObjectId",
         "ENV:keyVaultGetAccessObjectIds",
+        "ENV:keyVaultGetListAccessObjectIds",
         "ENV:sqlServerActiveDirectoryAdminObjectId",
         "ENV:diskEncryptionEnterpriseApplicationObjectId",
         "ENV:microsoftAzureWebsitesRPObjectId",
