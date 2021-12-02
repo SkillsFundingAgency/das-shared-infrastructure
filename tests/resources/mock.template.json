@@ -45,20 +45,6 @@
         "environmentVariable": "backupManagementServiceObjectId"
       }
     },
-    "diskEncryptionEnterpriseApplicationObjectId": {
-      "type": "string",
-      "metadata": {
-        "description": "Object Id for the disk Encryption Enterprise Application",
-        "environmentVariable": "diskEncryptionEnterpriseApplicationObjectId"
-      }
-    },
-    "AKSEnterpriseApplicationObjectId": {
-      "type": "string",
-      "metadata": {
-        "description": "Object Id for the AKS Enterprise Application",
-        "environmentVariable": "AKSEnterpriseApplicationObjectId"
-      }
-    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
