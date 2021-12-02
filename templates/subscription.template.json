@@ -31,6 +31,13 @@
         "environmentVariable": "keyVaultGetAccessObjectIds"
       }
     },
+    "keyVaultGetListAccessObjectIds": {
+      "type": "array",
+      "metadata": {
+        "description": "Object Ids of the Azure AD Objects you want to grant Key Vault Get Secret, List Secret, Get Certificate and List Certificate access to",
+        "environmentVariable": "keyVaultGetListAccessObjectIds"
+      }
+    },
     "microsoftAzureWebsitesRPObjectId": {
       "type": "string",
       "metadata": {
@@ -362,6 +369,24 @@
             ]
           }
         }
+      },
+      {
+        "name": "keyVaultGetListAccessPoliciesCopy",
+        "count": "[length(parameters('keyVaultGetListAccessObjectIds'))]",
+        "input": {
+          "objectId": "[parameters('keyVaultGetListAccessObjectIds')[copyIndex('keyVaultGetListAccessPoliciesCopy')]]",
+          "tenantId": "[subscription().tenantId]",
+          "permissions": {
+            "secrets": [
+              "Get",
+              "List"
+            ],
+            "certificates": [
+              "Get",
+              "List"
+            ]
+          }
+        }
       }
     ]
   },
@@ -434,7 +459,7 @@
             "value": "[variables('keyVaultName')]"
           },
           "keyVaultAccessPolicies": {
-            "value": "[concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy'))]"
+            "value": "[concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy'),variables('keyVaultGetListAccessPoliciesCopy'))]"
           },
           "enabledForDiskEncryption": {
             "value": true
