@@ -257,11 +257,10 @@
             "value": "[variables('virtualNetworkName')]"
           },
           "subnetConfiguration": {
-            "value": [
-            "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.backendSubnetConfiguration.value]",
-            "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.frontendSubnetConfiguration.value]"
-            ]
-          }
+            "value": "[concat(
+              reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.backendSubnetConfiguration.value,
+              reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.frontendSubnetConfiguration.value)]"
+            }
         }
       }
     },
