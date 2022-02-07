@@ -334,6 +334,10 @@
     "backendSubnetConfiguration": {
       "type": "array",
       "value": "[variables('backendSubnet')]"
+    },
+    "frontendSubnetConfiguration": {
+      "type": "array",
+      "value": "[variables('frontendSubnet')]"
     }
   }
 }
