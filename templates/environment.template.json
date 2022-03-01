@@ -154,6 +154,12 @@
       "metadata": {
         "description": "An array of the blob container names to deploy to the shared storage account."
       }
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string"
+    },
+    "logAnalyticsWorkspaceResourceGroupName": {
+      "type": "string"
     }
   },
   "variables": {
@@ -582,6 +588,12 @@
             "value": [
               "deadletters"
             ]
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceResourceGroupName": {
+            "value": "[parameters('logAnalyticsWorkspaceResourceGroupName')]"
           }
         }
       }
