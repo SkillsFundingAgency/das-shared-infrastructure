@@ -197,7 +197,8 @@
       "Microsoft.Web",
       "Microsoft.Sql",
       "Microsoft.Storage",
-      "Microsoft.AzureCosmosDB"
+      "Microsoft.AzureCosmosDB",
+      "Microsoft.KeyVault"
     ]
   },
   "resources": [
