@@ -177,6 +177,13 @@
         "environmentVariable": "sharedStorageAccountContainerArray"
       }
     },
+    "deploymentAgentPublicIpAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "Public IP address of deployment agent.",
+        "environmentVariable": "deploymentAgentPublicIpAddress"
+      }
+    },
     "logAnalyticsWorkspaceName": {
       "type": "string",
       "metadata": {
