@@ -20,6 +20,7 @@ function Set-MockEnvironment {
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
+    $ENV:deploymentAgentPublicIpAddress = "111.1.1.1/32"
     $ENV:logAnalyticsWorkspaceName = "oms"
     $ENV:logAnalyticsWorkspaceSku = "PerGB2018"
     $ENV:logAnalyticsWorkspaceDataRetentionDays = 31
@@ -52,6 +53,7 @@ function Clear-MockEnvironment {
         "ENV:sharedWorkerSubnetCount",
         "ENV:sqlAdminPasswordSeed",
         "ENV:sharedStorageAccountContainerArray",
+        "ENV:deploymentAgentPublicIpAddress",
         "ENV:logAnalyticsWorkspaceName",
         "ENV:logAnalyticsWorkspaceSku",
         "ENV:logAnalyticsWorkspaceDataRetentionDays",
