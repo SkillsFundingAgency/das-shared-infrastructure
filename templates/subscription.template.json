@@ -206,6 +206,7 @@
     },
     "keyvaultAllowedIpAddressesList": {
       "type": "array",
+      "defaultValue": [],
       "metadata": {
         "description": "List of allowed Public IP addresses for Keyvault.",
         "environmentVariable": "keyvaultAllowedIpAddressesList"
@@ -213,6 +214,7 @@
     },
     "keyvaultAllowedSubnetsList": {
       "type": "array",
+      "defaultValue": [],
       "metadata": {
         "description": "List of allowed Subnets for Keyvault.",
         "environmentVariable": "keyvaultAllowedSubnetsList"
