@@ -261,6 +261,12 @@
       "metadata": {
         "environmentVariable": "loggingRedisCacheCapacity"
       }
+    },
+    "gatewaySubnetName": {
+      "type": "string",
+      "metadata": {
+        "environmentVariable": "gatewaySubnetName"
+      }
     }
   },
   "variables": {
@@ -356,7 +362,7 @@
       {
         "name": "keyVaultAllowedGatewaySubnetsCopy",
         "count": "[length(parameters('environments'))]",
-        "input": "[resourceId('Microsoft.Network/virtualNetworks/subnets',concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),'gw-sn-0')]"
+        "input": "[resourceId('Microsoft.Network/virtualNetworks/subnets',concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),parameters('gatewaySubnetName'))]"
       }
     ],
     "keyVaultAllowedSubnetsArray": "[concat(variables('keyVaultAllowedGatewaySubnetsCopy'),parameters('keyvaultAllowedSubnetsList'))]"

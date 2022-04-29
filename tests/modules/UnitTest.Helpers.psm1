@@ -28,6 +28,7 @@ function Set-MockEnvironment {
     $ENV:actionGroupResourceGroupName = "das-dta-pl-algr"
     $ENV:databasesToExcludeFrom90PercentAlert = "das-prd-example-db"
     $ENV:databasesToIncludeIn100PercentAlert = "das-prd-example-db"
+    $ENV:gatewaySubnetName = "subnet"
 }
 
 function Clear-MockEnvironment {
@@ -61,6 +62,7 @@ function Clear-MockEnvironment {
         "ENV:actionGroupResourceGroupName"
         "ENV:databasesToExcludeFrom90PercentAlert"
         "ENV:databasesToIncludeIn100PercentAlert"
+        "ENV:gatewaySubnetName"
     ) -Force
 }
 

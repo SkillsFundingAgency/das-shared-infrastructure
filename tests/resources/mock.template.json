@@ -213,6 +213,12 @@
         "description": "The number of days data is retained in the Log Analytics workspace for the subscription.",
         "environmentVariable": "logAnalyticsWorkspaceDataRetentionDays"
       }
+    },
+    "gatewaySubnetName": {
+      "type": "string",
+      "metadata": {
+        "environmentVariable": "gatewaySubnetName"
+      }
     }
   },
   "variables": {},
