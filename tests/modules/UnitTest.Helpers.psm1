@@ -53,7 +53,7 @@ function Clear-MockEnvironment {
         "ENV:sharedWorkerSubnetCount",
         "ENV:sqlAdminPasswordSeed",
         "ENV:sharedStorageAccountContainerArray",
-        "ENV:deploymentAgentPublicIpAddress",
+        "ENV:keyvaultAllowedIpAddressesList",
         "ENV:logAnalyticsWorkspaceName",
         "ENV:logAnalyticsWorkspaceSku",
         "ENV:logAnalyticsWorkspaceDataRetentionDays",

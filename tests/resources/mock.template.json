@@ -177,11 +177,11 @@
         "environmentVariable": "sharedStorageAccountContainerArray"
       }
     },
-    "deploymentAgentPublicIpAddress": {
-      "type": "string",
+    "keyvaultAllowedIpAddressesList": {
+      "type": "array",
       "metadata": {
-        "description": "Public IP address of deployment agent.",
-        "environmentVariable": "deploymentAgentPublicIpAddress"
+        "description": "List of allowed Public IP addresses for Keyvault.",
+        "environmentVariable": "keyvaultAllowedIpAddressesList"
       }
     },
     "logAnalyticsWorkspaceName": {
