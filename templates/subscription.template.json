@@ -204,11 +204,18 @@
         "environmentVariable": "sharedStorageAccountContainerArray"
       }
     },
-    "deploymentAgentPublicIpAddress": {
-      "type": "string",
+    "keyvaultAllowedIpAddressesList": {
+      "type": "array",
       "metadata": {
-        "description": "Public IP address of deployment agent.",
-        "environmentVariable": "deploymentAgentPublicIpAddress"
+        "description": "List of allowed Public IP addresses for Keyvault.",
+        "environmentVariable": "keyvaultAllowedIpAddressesList"
+      }
+    },
+    "keyvaultAllowedSubnetsList": {
+      "type": "array",
+      "metadata": {
+        "description": "List of allowed Subnets for Keyvault.",
+        "environmentVariable": "keyvaultAllowedSubnetsList"
       }
     },
     "logAnalyticsWorkspaceName": {
@@ -343,8 +350,14 @@
             ]
           }
         }
+      },
+      {
+        "name": "keyVaultAllowedGatewaySubnetsCopy",
+        "count": "[length(parameters('environments'))]",
+        "input": "[resourceId('Microsoft.Network/virtualNetworks/subnets',concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),'gw-sn-0')]"
       }
-    ]
+    ],
+    "keyVaultAllowedSubnetsArray": "[concat(variables('keyVaultAllowedGatewaySubnetsCopy'),parameters('keyvaultAllowedSubnetsList'))]"
   },
   "functions": [
     {
@@ -424,7 +437,10 @@
             "value": true
           },
           "allowedIpAddressesList": {
-            "value": "[createArray(parameters('deploymentAgentPublicIpAddress'))]"
+            "value": "[parameters('keyvaultAllowedIpAddressesList')]"
+          },
+          "subnetResourceIdList": {
+            "value": "[variables('keyVaultAllowedSubnetsArray')]"
           },
           "allowTrustedMicrosoftServices": {
             "value": true
