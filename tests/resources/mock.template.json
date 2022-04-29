@@ -177,20 +177,20 @@
         "environmentVariable": "sharedStorageAccountContainerArray"
       }
     },
-    "keyvaultAllowedIpAddressesList": {
+    "keyVaultAllowedIpAddressesList": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
         "description": "List of allowed Public IP addresses for Keyvault.",
-        "environmentVariable": "keyvaultAllowedIpAddressesList"
+        "environmentVariable": "keyVaultAllowedIpAddressesList"
       }
     },
-    "keyvaultAllowedSubnetsList": {
+    "keyVaultAllowedSubnetsList": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
         "description": "List of allowed Subnets for Keyvault.",
-        "environmentVariable": "keyvaultAllowedSubnetsList"
+        "environmentVariable": "keyVaultAllowedSubnetsList"
       }
     },
     "logAnalyticsWorkspaceName": {
