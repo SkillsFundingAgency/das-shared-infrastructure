@@ -446,7 +446,7 @@
             "value": true
           },
           "allowedIpAddressesList": {
-            "value": "[parameters('keyvaultAllowedIpAddressesList')]"
+            "value": "[parameters('keyVaultAllowedIpAddressesList')]"
           },
           "subnetResourceIdList": {
             "value": "[variables('keyVaultAllowedSubnetsArray')]"
