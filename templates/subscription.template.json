@@ -362,7 +362,7 @@
       {
         "name": "keyVaultAllowedGatewaySubnetsCopy",
         "count": "[length(parameters('environments'))]",
-        "input": "[resourceId('Microsoft.Network/virtualNetworks/subnets',concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),parameters('gatewaySubnetName'))]"
+        "input": "[resourceId(concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-rg'),'Microsoft.Network/virtualNetworks/subnets',concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),parameters('gatewaySubnetName'))]"
       }
     ],
     "keyVaultAllowedSubnetsArray": "[concat(variables('keyVaultAllowedGatewaySubnetsCopy'),parameters('keyvaultAllowedSubnetsList'))]"
