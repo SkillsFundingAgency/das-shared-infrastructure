@@ -265,6 +265,7 @@
     "gatewaySubnetName": {
       "type": "string",
       "metadata": {
+        "description": "Gateway subnet to allow on shared keyvault used by variable keyVaultAllowedGatewaySubnetsCopy",
         "environmentVariable": "gatewaySubnetName"
       }
     }
