@@ -185,14 +185,6 @@
         "environmentVariable": "keyVaultAllowedIpAddressesList"
       }
     },
-    "keyVaultAllowedSubnetsList": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "List of allowed Subnets for Keyvault.",
-        "environmentVariable": "keyVaultAllowedSubnetsList"
-      }
-    },
     "logAnalyticsWorkspaceName": {
       "type": "string",
       "metadata": {
