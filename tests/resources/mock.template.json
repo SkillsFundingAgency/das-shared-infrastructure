@@ -177,11 +177,20 @@
         "environmentVariable": "sharedStorageAccountContainerArray"
       }
     },
-    "deploymentAgentPublicIpAddress": {
-      "type": "string",
+    "keyVaultAllowedIpAddressesList": {
+      "type": "array",
+      "defaultValue": [],
       "metadata": {
-        "description": "Public IP address of deployment agent.",
-        "environmentVariable": "deploymentAgentPublicIpAddress"
+        "description": "List of allowed Public IP addresses for Keyvault.",
+        "environmentVariable": "keyVaultAllowedIpAddressesList"
+      }
+    },
+    "keyVaultAllowedSubnetsList": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "List of allowed Subnets for Keyvault.",
+        "environmentVariable": "keyVaultAllowedSubnetsList"
       }
     },
     "logAnalyticsWorkspaceName": {
@@ -203,6 +212,12 @@
       "metadata": {
         "description": "The number of days data is retained in the Log Analytics workspace for the subscription.",
         "environmentVariable": "logAnalyticsWorkspaceDataRetentionDays"
+      }
+    },
+    "gatewaySubnetName": {
+      "type": "string",
+      "metadata": {
+        "environmentVariable": "gatewaySubnetName"
       }
     }
   },

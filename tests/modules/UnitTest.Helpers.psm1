@@ -20,7 +20,8 @@ function Set-MockEnvironment {
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
-    $ENV:deploymentAgentPublicIpAddress = "111.1.1.1/32"
+    $ENV:keyVaultAllowedIpAddressesList = "['111.1.1.1/32']"
+    $ENV:keyVaultAllowedSubnetsList = "[]"
     $ENV:logAnalyticsWorkspaceName = "oms"
     $ENV:logAnalyticsWorkspaceSku = "PerGB2018"
     $ENV:logAnalyticsWorkspaceDataRetentionDays = 31
@@ -28,6 +29,7 @@ function Set-MockEnvironment {
     $ENV:actionGroupResourceGroupName = "das-dta-pl-algr"
     $ENV:databasesToExcludeFrom90PercentAlert = "das-prd-example-db"
     $ENV:databasesToIncludeIn100PercentAlert = "das-prd-example-db"
+    $ENV:gatewaySubnetName = "subnet"
 }
 
 function Clear-MockEnvironment {
@@ -53,7 +55,8 @@ function Clear-MockEnvironment {
         "ENV:sharedWorkerSubnetCount",
         "ENV:sqlAdminPasswordSeed",
         "ENV:sharedStorageAccountContainerArray",
-        "ENV:deploymentAgentPublicIpAddress",
+        "ENV:keyVaultAllowedIpAddressesList",
+        "ENV:keyVaultAllowedSubnetsList",
         "ENV:logAnalyticsWorkspaceName",
         "ENV:logAnalyticsWorkspaceSku",
         "ENV:logAnalyticsWorkspaceDataRetentionDays",
@@ -61,6 +64,7 @@ function Clear-MockEnvironment {
         "ENV:actionGroupResourceGroupName"
         "ENV:databasesToExcludeFrom90PercentAlert"
         "ENV:databasesToIncludeIn100PercentAlert"
+        "ENV:gatewaySubnetName"
     ) -Force
 }
 
