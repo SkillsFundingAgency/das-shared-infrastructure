@@ -212,14 +212,6 @@
         "environmentVariable": "keyVaultAllowedIpAddressesList"
       }
     },
-    "keyVaultAllowedSubnetsList": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "List of allowed Subnets for Keyvault.",
-        "environmentVariable": "keyVaultAllowedSubnetsList"
-      }
-    },
     "logAnalyticsWorkspaceName": {
       "type": "string",
       "metadata": {
@@ -365,8 +357,7 @@
         "count": "[length(parameters('environments'))]",
         "input": "[resourceId(concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-rg'),'Microsoft.Network/virtualNetworks/subnets',concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),parameters('gatewaySubnetName'))]"
       }
-    ],
-    "keyVaultAllowedSubnetsArray": "[concat(variables('keyVaultAllowedGatewaySubnetsCopy'),parameters('keyvaultAllowedSubnetsList'))]"
+    ]
   },
   "functions": [
     {
@@ -449,7 +440,7 @@
             "value": "[parameters('keyVaultAllowedIpAddressesList')]"
           },
           "subnetResourceIdList": {
-            "value": "[variables('keyVaultAllowedSubnetsArray')]"
+            "value": "[variables('keyVaultAllowedGatewaySubnetsCopy')]"
           },
           "allowTrustedMicrosoftServices": {
             "value": true
