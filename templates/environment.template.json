@@ -197,7 +197,7 @@
     },
     "sqlServerMinimalTlsVersion": "1.2",
     "baseSqlServerName": "[toLower(concat('das-',variables('environmentName'),'-shared-sql'))]",
-    "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
+    "deployFailoverGroups": "[contains(createArray('dta','pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
     "secondarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').secondary.nameSuffix))]",
     "sqlServerPrivateDnsZoneName": "privatelink.database.windows.net",
