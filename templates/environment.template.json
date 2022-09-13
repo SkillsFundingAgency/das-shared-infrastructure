@@ -724,7 +724,7 @@
         },
         "parameters": {
           "privateEndpointName": {
-            "value": "[concat(variables('baseSqlServerName'),'-pe')]"
+            "value": "[concat(if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName')),'-pe')]"
           },
           "subnetId": {
             "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
@@ -733,7 +733,7 @@
             "value": ["sqlServer"]
           },
           "privateLinkServiceId": {
-            "value": "[resourceId(resourceGroup().name,'Microsoft.Sql/servers',variables('baseSQLServerName'))]"
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Sql/servers',if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName')))]"
           },
           "privateDnsZoneId": {
             "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
@@ -742,6 +742,41 @@
       },
       "dependsOn": [
         "sql-server-deployment",
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "private-dns-zone"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "replica-sql-server-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('deployFailoverGroups')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(variables('secondarySQLServerName'),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "sqlServer" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Sql/servers',variables('secondarySQLServerName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "sql-server-deployment-replica",
         "[concat('virtual-network-west-europe-', variables('environmentName'))]",
         "private-dns-zone"
       ]
