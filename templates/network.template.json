@@ -115,6 +115,21 @@
         "description": "The number of shared worker app subnets to provision."
       }
     },
+    "sharedSqlServerSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "sharedsql-sn",
+      "metadata": {
+        "description": "The prefix used for naming new shared worker app subnets."
+      }
+    },
+    "sharedSqlServerSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of shared worker app subnets to provision."
+      }
+    },
     "serviceEndpointList": {
       "type": "array",
       "defaultValue": [],
@@ -138,7 +153,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-9680_private_endpoints/templates/",
     "emptyArray": [],
     "emptyObject": {},
     "firewallNsgId": {
@@ -225,13 +240,28 @@
             "routeTable": "[variables('emptyObject')]"
           }
         }
-      }
+      },
+      {
+          "name": "sharedSqlServerSubnetCopy",
+          "count": "[if(greater(parameters('sharedSqlServerSubnetCount'), 0), parameters('sharedSqlServerSubnetCount'), 1)]",
+          "input": {
+            "name": "[concat(parameters('sharedSqlServerSubnetNamePrefix'), '-', copyIndex('sharedSqlServerSubnetCopy'))]",
+            "properties": {
+              "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 35, copyIndex('sharedSqlServerSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+              "serviceEndpointList": ["Microsoft.Sql"],
+              "delegations": "[variables('emptyArray')]",
+              "networkSecurityGroup": "[variables('emptyObject')]",
+              "routeTable": "[variables('emptyObject')]"
+            }
+          }
+        }
     ],
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'))]"
+    "sharedSqlServerSubnet": "[if(greater(parameters('sharedSqlServerSubnetCount'), 0), variables('sharedSqlServerSubnetCopy'), variables('emptyArray'))]",
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'),variables('sharedSqlServerSubnet'))]"
   },
   "functions": [
     {
@@ -338,6 +368,10 @@
     "frontendSubnetConfiguration": {
       "type": "array",
       "value": "[variables('frontendSubnet')]"
+    },
+    "sharedSqlServerSubnetConfiguration": {
+      "type": "array",
+      "value": "[variables('sharedSqlServerSubnet')]"
     }
   }
 }

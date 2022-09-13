@@ -109,6 +109,14 @@
         "description": "The number of shared worker app subnets to provision."
       }
     },
+    "sharedSqlServerSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 5,
+      "metadata": {
+        "description": "The number of shared Sql Server subnets to provision."
+      }
+    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -163,8 +171,8 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-9680_private_endpoints/templates/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-9680_private_endpoints_sql/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
@@ -192,6 +200,7 @@
     "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
     "secondarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').secondary.nameSuffix))]",
+    "sqlServerPrivateDnsZoneName": "privatelink.database.windows.net",
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "subnetServiceEndpointList": [
       "Microsoft.Web",
@@ -239,6 +248,9 @@
           },
           "sharedWorkerSubnetCount": {
             "value": "[parameters('sharedWorkerSubnetCount')]"
+          },
+          "sharedSqlServerSubnetCount": {
+            "value": "[parameters('sharedSqlServerSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -676,6 +688,63 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "private-dns-zone",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('sqlServerPrivateDnsZoneName')]"
+          },
+          "vnetId": {
+            "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "sql-server-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(variables('baseSqlServerName'),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
+          },
+          "privateLinkGroupIds": {
+            "value": ["sqlServer"]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Sql/servers',variables('baseSQLServerName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "sql-server-deployment",
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "private-dns-zone"
+      ]
     }
   ],
   "outputs": {}
