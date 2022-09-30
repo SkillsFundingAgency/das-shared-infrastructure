@@ -776,6 +776,7 @@
           "manualApproval": {
             "value": true
           }
+        }
       },
       "dependsOn": [
         "sql-server-deployment-replica",
