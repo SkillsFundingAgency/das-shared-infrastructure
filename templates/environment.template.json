@@ -772,8 +772,10 @@
           },
           "privateDnsZoneId": {
             "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
+          },
+          "manualApproval": {
+            "value": true
           }
-        }
       },
       "dependsOn": [
         "sql-server-deployment-replica",
