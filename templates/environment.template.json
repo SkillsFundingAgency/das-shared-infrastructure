@@ -803,7 +803,7 @@
         },
         "parameters": {
           "privateEndpointName": {
-            "value": "[concat(variables('secondarySQLServerName'),'-pe')]"
+            "value": "[concat(parameters('externalSqlServerPrivateEndpoints')[copyIndex()],'-pe')]"
           },
           "subnetId": {
             "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
