@@ -168,6 +168,12 @@
     },
     "logAnalyticsWorkspaceResourceGroupName": {
       "type": "string"
+    },
+    "externalSqlServerPrivateEndpoints": {
+      "type": "array",
+      "metadata": {
+        "description": "An array of the external SQL Server resource ids to create private endpoints"
+      }
     }
   },
   "variables": {
@@ -780,6 +786,47 @@
       },
       "dependsOn": [
         "sql-server-deployment-replica",
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "private-dns-zone"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('dc-sql-server-private-endpoint-', copyIndex('externalSqlServerPrivateEndpointsCopy'))]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('deployFailoverGroups')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(variables('secondarySQLServerName'),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "sqlServer" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[parameters('externalSqlServerPrivateEndpoints')[copyIndex()]]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
+          },
+          "manualApproval": {
+            "value": true
+          }
+        }
+      },
+      "copy": {
+        "name": "externalSqlServerPrivateEndpointsCopy",
+        "count": "[length(parameters('externalSqlServerPrivateEndpoints'))]"
+      },
+      "dependsOn": [
         "[concat('virtual-network-west-europe-', variables('environmentName'))]",
         "private-dns-zone"
       ]
