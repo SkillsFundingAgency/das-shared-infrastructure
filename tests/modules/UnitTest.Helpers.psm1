@@ -66,7 +66,7 @@ function Clear-MockEnvironment {
         "ENV:databasesToExcludeFrom90PercentAlert"
         "ENV:databasesToIncludeIn100PercentAlert"
         "ENV:gatewaySubnetName"
-        "ENV:externalSqlServerPrivateEndpoints
+        "ENV:externalSqlServerPrivateEndpoints"
     ) -Force
 }
 
