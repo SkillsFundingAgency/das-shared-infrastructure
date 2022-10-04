@@ -803,7 +803,7 @@
         },
         "parameters": {
           "privateEndpointName": {
-            "value": "[concat(parameters('externalSqlServerPrivateEndpoints')[copyIndex()],'-pe')]"
+            "value": "[parameters('externalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName]"
           },
           "subnetId": {
             "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
@@ -812,7 +812,7 @@
             "value": [ "sqlServer" ]
           },
           "privateLinkServiceId": {
-            "value": "[parameters('externalSqlServerPrivateEndpoints')[copyIndex()]]"
+            "value": "[resourceId(parameters('externalSqlServerPrivateEndpoints')[copyIndex()].subscriptionId,parameters('externalSqlServerPrivateEndpoints')[copyIndex()].resourceGroup,'Microsoft.Sql/servers',parameters('externalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName)]"
           },
           "privateDnsZoneId": {
             "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
