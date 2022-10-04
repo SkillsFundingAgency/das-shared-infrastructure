@@ -268,6 +268,13 @@
         "description": "Gateway subnet to allow on shared keyvault used by variable keyVaultAllowedGatewaySubnetsCopy",
         "environmentVariable": "gatewaySubnetName"
       }
+    },
+    "externalSqlServerPrivateEndpoints": {
+      "type": "array",
+      "metadata": {
+        "description": "An array of the external SQL Server resource ids to create private endpoints",
+        "environmentVariable": "externalSqlServerPrivateEndpoints"
+      }
     }
   },
   "variables": {
@@ -621,6 +628,9 @@
           },
           "logAnalyticsWorkspaceResourceGroupName": {
             "value": "[resourceGroup().name]"
+          },
+          "externalSqlServerPrivateEndpoints": {
+            "value": "[parameters('externalSqlServerPrivateEndpoints')]"
           }
         }
       },
