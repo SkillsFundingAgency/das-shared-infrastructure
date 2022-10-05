@@ -112,7 +112,7 @@
     "sharedSqlServerSubnetCount": {
       "type": "int",
       "defaultValue": 1,
-      "maxValue": 5,
+      "maxValue": 1,
       "metadata": {
         "description": "The number of shared Sql Server subnets to provision."
       }
