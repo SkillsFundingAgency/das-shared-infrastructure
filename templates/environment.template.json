@@ -268,7 +268,7 @@
           },
           "sharedKeyVaultSubnetCount": {
             "value": "[parameters('sharedKeyVaultSubnetCount')]"
-          }
+          },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
           },
