@@ -884,7 +884,7 @@
             "value": [ "keyVault" ]
           },
           "privateLinkServiceId": {
-            "value": "[resourceId(resourceGroup().name,'Microsoft.KeyVault/vaults',parameters('sharedKeyVaultName'))]"
+            "value": "[resourceId(parameters('sharedManagementResourceGroup'),'Microsoft.KeyVault/vaults',parameters('sharedKeyVaultName'))]"
           },
           "privateDnsZoneId": {
             "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('keyVaultPrivateDnsZoneName'))]"
