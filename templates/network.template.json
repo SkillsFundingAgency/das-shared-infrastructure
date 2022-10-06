@@ -261,7 +261,7 @@
       "name": "[parameters('sharedSqlServerSubnetNamePrefix')]",
       "properties": {
         "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 35, 0, parameters('subnetAddressSpaceCIDR'))]",
-        "serviceEndpointList": [ "Microsoft.SqlServer" ],
+        "serviceEndpointList": [ "Microsoft.Sql" ],
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
         "routeTable": "[variables('emptyObject')]"
