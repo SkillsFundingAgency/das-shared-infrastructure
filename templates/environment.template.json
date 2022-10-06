@@ -114,7 +114,15 @@
       "defaultValue": 1,
       "maxValue": 1,
       "metadata": {
-        "description": "The number of shared Sql Server subnets to provision."
+        "description": "The number of shared sql server subnets to provision."
+      }
+    },
+    "sharedKeyVaultSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of shared kevault subnets to provision."
       }
     },
     "firewallsNsgName": {
@@ -258,6 +266,9 @@
           "sharedSqlServerSubnetCount": {
             "value": "[parameters('sharedSqlServerSubnetCount')]"
           },
+          "sharedKeyVaultSubnetCount": {
+            "value": "[parameters('sharedKeyVaultSubnetCount')]"
+          }
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
           },

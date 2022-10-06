@@ -134,7 +134,7 @@
       "type": "string",
       "defaultValue": "sharedkv-sn",
       "metadata": {
-        "description": "The prefix used for naming new shared keyvault subnets."
+        "description": "The prefix used for naming shared keyvault subnets."
       }
     },
     "sharedKeyVaultSubnetCount": {
