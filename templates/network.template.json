@@ -411,7 +411,7 @@
     },
     "sharedKeyVaultSubnetResourceId": {
       "type": "string",
-      "value": "[reference('subnet-sharedkv-sn').outputs.subnetResourceId]"
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('sharedKeyVaultSubnetObject').name)]"
     }
   }
 }
