@@ -778,9 +778,6 @@
           },
           "privateDnsZoneId": {
             "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
-          },
-          "manualApproval": {
-            "value": true
           }
         }
       },
@@ -792,7 +789,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('dc-sql-server-private-endpoint-', copyIndex('externalSqlServerPrivateEndpointsCopy'))]",
+      "name": "[concat('external-sql-server-private-endpoint-', copyIndex('externalSqlServerPrivateEndpointsCopy'))]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[variables('deployFailoverGroups')]",
       "properties": {

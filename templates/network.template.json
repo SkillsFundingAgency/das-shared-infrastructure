@@ -119,7 +119,7 @@
       "type": "string",
       "defaultValue": "sharedsql-sn",
       "metadata": {
-        "description": "The prefix used for naming new shared worker app subnets."
+        "description": "The prefix used for naming new shared sql subnets."
       }
     },
     "sharedSqlServerSubnetCount": {
@@ -127,7 +127,22 @@
       "defaultValue": 0,
       "maxValue": 1,
       "metadata": {
-        "description": "The number of shared worker app subnets to provision."
+        "description": "The number of shared sql subnets to provision."
+      }
+    },
+    "sharedKeyVaultSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "sharedkv-sn",
+      "metadata": {
+        "description": "The prefix used for naming new shared keyvault subnets."
+      }
+    },
+    "sharedKeyVaultSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of shared keyvault subnets to provision."
       }
     },
     "serviceEndpointList": {
@@ -254,14 +269,39 @@
               "routeTable": "[variables('emptyObject')]"
             }
           }
+        },
+      {
+        "name": "sharedKeyVaultServerSubnetCopy",
+        "count": "[if(greater(parameters('sharedKeyVaultSubnetCount'), 0), parameters('sharedKeyVaultSubnetCount'), 1)]",
+        "input": {
+          "name": "[concat(parameters('sharedKeyVaultSubnetNamePrefix'), '-', copyIndex('sharedKeyVaultServerSubnetCopy'))]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 36, copyIndex('sharedKeyVaultServerSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpointList": [ "Microsoft.KeyVault" ],
+            "delegations": "[variables('emptyArray')]",
+            "networkSecurityGroup": "[variables('emptyObject')]",
+            "routeTable": "[variables('emptyObject')]"
+          }
         }
+      }
     ],
+    "sharedKeyVaultSubnetObject": {
+      "name": "[parameters('sharedKeyVaultSubnetNamePrefix')]",
+      "properties": {
+        "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 36, 0, parameters('subnetAddressSpaceCIDR'))]",
+        "serviceEndpointList": [ "Microsoft.KeyVault" ],
+        "delegations": "[variables('emptyArray')]",
+        "networkSecurityGroup": "[variables('emptyObject')]",
+        "routeTable": "[variables('emptyObject')]"
+      }
+    },
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
     "sharedSqlServerSubnet": "[if(greater(parameters('sharedSqlServerSubnetCount'), 0), variables('sharedSqlServerSubnetCopy'), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'),variables('sharedSqlServerSubnet'))]"
+    "sharedKeyVaultSubnet": "[if(greater(parameters('sharedKeyVaultSubnetCount'), 0), variables('sharedKeyVaultSubnetObject'), variables('emptyArray'))]",
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'),variables('sharedSqlServerSubnet'),variables('sharedKeyVaultSubnet'))]"
   },
   "functions": [
     {
@@ -369,9 +409,9 @@
       "type": "array",
       "value": "[variables('frontendSubnet')]"
     },
-    "sharedSqlServerSubnetConfiguration": {
-      "type": "array",
-      "value": "[variables('sharedSqlServerSubnet')]"
+    "sharedKeyVaultSubnetResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('sharedKeyVaultSubnetObject').name)]"
     }
   }
 }
