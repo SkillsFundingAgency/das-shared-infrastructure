@@ -300,7 +300,7 @@
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
     "sharedSqlServerSubnet": "[if(greater(parameters('sharedSqlServerSubnetCount'), 0), variables('sharedSqlServerSubnetCopy'), variables('emptyArray'))]",
-    "sharedKeyVaultSubnet": "[if(greater(parameters('sharedKeyVaultSubnetCount'), 0), variables('sharedKeyVaultSubnetObject'), variables('emptyArray'))]",
+    "sharedKeyVaultSubnet": "[if(greater(parameters('sharedKeyVaultSubnetCount'), 0), array(variables('sharedKeyVaultSubnetObject')), variables('emptyArray'))]",
     "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'),variables('sharedSqlServerSubnet'),variables('sharedKeyVaultSubnet'))]"
   },
   "functions": [
