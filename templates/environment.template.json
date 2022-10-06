@@ -215,6 +215,7 @@
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
     "secondarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').secondary.nameSuffix))]",
     "sqlServerPrivateDnsZoneName": "privatelink.database.windows.net",
+    "keyVaultPrivateDnsZoneName": "privatelink.vaultcore.azure.net",
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "subnetServiceEndpointList": [
       "Microsoft.Web",
@@ -708,7 +709,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "private-dns-zone",
+      "name": "sql-server-private-dns-zone",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -760,7 +761,7 @@
       "dependsOn": [
         "sql-server-deployment",
         "[concat('virtual-network-west-europe-', variables('environmentName'))]",
-        "private-dns-zone"
+        "sql-server-private-dns-zone"
       ]
     },
     {
@@ -795,7 +796,7 @@
       "dependsOn": [
         "sql-server-deployment-replica",
         "[concat('virtual-network-west-europe-', variables('environmentName'))]",
-        "private-dns-zone"
+        "sql-server-private-dns-zone"
       ]
     },
     {
@@ -814,7 +815,7 @@
             "value": "[parameters('externalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName]"
           },
           "subnetId": {
-            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedSqlServerSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
             "value": [ "sqlServer" ]
@@ -836,7 +837,63 @@
       },
       "dependsOn": [
         "[concat('virtual-network-west-europe-', variables('environmentName'))]",
-        "private-dns-zone"
+        "sql-server-private-dns-zone"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "keyvault-private-dns-zone",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('keyVaultPrivateDnsZoneName')]"
+          },
+          "vnetId": {
+            "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "shared-keyvault-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(parameters('sharedKeyVaultName'),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedKeyVaultSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "keyVault" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.KeyVault/vaults',parameters('sharedKeyVaultName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('keyVaultPrivateDnsZoneName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "keyvault-private-dns-zone"
       ]
     }
   ],
