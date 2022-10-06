@@ -255,36 +255,18 @@
             "routeTable": "[variables('emptyObject')]"
           }
         }
-      },
-      {
-          "name": "sharedSqlServerSubnetCopy",
-          "count": "[if(greater(parameters('sharedSqlServerSubnetCount'), 0), parameters('sharedSqlServerSubnetCount'), 1)]",
-          "input": {
-            "name": "[concat(parameters('sharedSqlServerSubnetNamePrefix'), '-', copyIndex('sharedSqlServerSubnetCopy'))]",
-            "properties": {
-              "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 35, copyIndex('sharedSqlServerSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-              "serviceEndpointList": ["Microsoft.Sql"],
-              "delegations": "[variables('emptyArray')]",
-              "networkSecurityGroup": "[variables('emptyObject')]",
-              "routeTable": "[variables('emptyObject')]"
-            }
-          }
-        },
-      {
-        "name": "sharedKeyVaultServerSubnetCopy",
-        "count": "[if(greater(parameters('sharedKeyVaultSubnetCount'), 0), parameters('sharedKeyVaultSubnetCount'), 1)]",
-        "input": {
-          "name": "[concat(parameters('sharedKeyVaultSubnetNamePrefix'), '-', copyIndex('sharedKeyVaultServerSubnetCopy'))]",
-          "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 36, copyIndex('sharedKeyVaultServerSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpointList": [ "Microsoft.KeyVault" ],
-            "delegations": "[variables('emptyArray')]",
-            "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
-          }
-        }
       }
     ],
+    "sharedSqlServerSubnetObject": {
+      "name": "[parameters('sharedSqlServerSubnetNamePrefix')]",
+      "properties": {
+        "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 35, 0, parameters('subnetAddressSpaceCIDR'))]",
+        "serviceEndpointList": [ "Microsoft.SqlServer" ],
+        "delegations": "[variables('emptyArray')]",
+        "networkSecurityGroup": "[variables('emptyObject')]",
+        "routeTable": "[variables('emptyObject')]"
+      }
+    },
     "sharedKeyVaultSubnetObject": {
       "name": "[parameters('sharedKeyVaultSubnetNamePrefix')]",
       "properties": {
@@ -299,7 +281,7 @@
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
-    "sharedSqlServerSubnet": "[if(greater(parameters('sharedSqlServerSubnetCount'), 0), variables('sharedSqlServerSubnetCopy'), variables('emptyArray'))]",
+    "sharedSqlServerSubnet": "[if(greater(parameters('sharedSqlServerSubnetCount'), 0), array(variables('sharedSqlServerSubnetObject')), variables('emptyArray'))]",
     "sharedKeyVaultSubnet": "[if(greater(parameters('sharedKeyVaultSubnetCount'), 0), array(variables('sharedKeyVaultSubnetObject')), variables('emptyArray'))]",
     "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'),variables('sharedSqlServerSubnet'),variables('sharedKeyVaultSubnet'))]"
   },
@@ -408,6 +390,10 @@
     "frontendSubnetConfiguration": {
       "type": "array",
       "value": "[variables('frontendSubnet')]"
+    },
+    "sharedSqlServerSubnetResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('sharedSqlServerSubnetObject').name)]"
     },
     "sharedKeyVaultSubnetResourceId": {
       "type": "string",

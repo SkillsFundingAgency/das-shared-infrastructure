@@ -744,7 +744,7 @@
             "value": "[concat(if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName')),'-pe')]"
           },
           "subnetId": {
-            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedSqlServerSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
             "value": ["sqlServer"]
@@ -779,7 +779,7 @@
             "value": "[concat(variables('secondarySQLServerName'),'-pe')]"
           },
           "subnetId": {
-            "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',variables('virtualNetworkName'),'sharedsql-sn-0')]"
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedSqlServerSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
             "value": [ "sqlServer" ]
