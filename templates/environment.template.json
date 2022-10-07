@@ -800,7 +800,7 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2021-04-01",
       "name": "[concat('external-sql-server-private-endpoint-', copyIndex('externalSqlServerPrivateEndpointsCopy'))]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[greater(length(parameters('externalSqlServerPrivateEndpoints')),0)]",
