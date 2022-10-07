@@ -549,7 +549,7 @@
       }
     },
     {
-      "apiVersion": "2021-04-01",
+      "apiVersion": "2017-05-10",
       "name": "[toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))]",
       "type": "Microsoft.Resources/deployments",
       "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
