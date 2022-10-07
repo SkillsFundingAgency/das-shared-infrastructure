@@ -881,7 +881,7 @@
             "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedKeyVaultSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
-            "value": [ "keyVault" ]
+            "value": [ "vault" ]
           },
           "privateLinkServiceId": {
             "value": "[resourceId(parameters('sharedManagementResourceGroup'),'Microsoft.KeyVault/vaults',parameters('sharedKeyVaultName'))]"
