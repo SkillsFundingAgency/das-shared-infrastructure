@@ -803,7 +803,7 @@
       "apiVersion": "2017-05-10",
       "name": "[concat('external-sql-server-private-endpoint-', copyIndex('externalSqlServerPrivateEndpointsCopy'))]",
       "type": "Microsoft.Resources/deployments",
-      "condition": "[variables('deployFailoverGroups')]",
+      "condition": "[greater(length(parameters('externalSqlServerPrivateEndpoints')),0)]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
