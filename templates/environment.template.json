@@ -180,7 +180,7 @@
     "externalSqlServerPrivateEndpoints": {
       "type": "object",
       "metadata": {
-        "description": "An array of the external SQL Server resource ids to create private endpoints"
+        "description": "An object of the external SQL Server resource ids to create private endpoints"
       }
     }
   },
