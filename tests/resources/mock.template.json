@@ -221,7 +221,7 @@
       }
     },
     "externalSqlServerPrivateEndpoints": {
-      "type": "array",
+      "type": "object",
       "metadata": {
         "environmentVariable": "externalSqlServerPrivateEndpoints"
       }
