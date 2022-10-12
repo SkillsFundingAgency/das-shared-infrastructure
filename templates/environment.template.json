@@ -422,29 +422,6 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "sql-server-firewall-rule",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'sql-server-firewall-rules.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "serverName": {
-            "value": "[if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName'))]"
-          },
-          "subnetResourceIdList": {
-            "value": "[reference('get-subnet-resourceid-list').outputs.subnetResourceIdList.value]"
-          }
-        }
-      },
-      "dependsOn": [
-        "sql-server-deployment"
-      ]
-    },
-    {
-      "apiVersion": "2017-05-10",
       "name": "sql-server-deployment-replica",
       "type": "Microsoft.Resources/deployments",
       "condition": "[variables('deployFailoverGroups')]",
