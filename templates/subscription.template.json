@@ -461,7 +461,7 @@
             "value": "[parameters('keyVaultAllowedIpAddressesList')]"
           },
           "subnetResourceIdList": {
-            "value": []
+            "value": "[variables('keyVaultAllowedSubnetsArray')]"
           },
           "allowTrustedMicrosoftServices": {
             "value": true
