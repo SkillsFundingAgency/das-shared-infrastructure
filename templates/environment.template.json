@@ -185,8 +185,8 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-9680_private_endpoints/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-9680_private_endpoints_sql/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",

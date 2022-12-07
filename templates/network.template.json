@@ -168,7 +168,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-9680_private_endpoints/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "emptyArray": [],
     "emptyObject": {},
     "firewallNsgId": {
