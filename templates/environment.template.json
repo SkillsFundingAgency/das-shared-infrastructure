@@ -224,7 +224,7 @@
       "Microsoft.AzureCosmosDB",
       "Microsoft.KeyVault"
     ],
-    "envrionmentExternalSqlServerPrivateEndpoints": "[parameters('externalSqlServerPrivateEndpoints')[toUpper(variables('environmentName'))]]"
+    "environmentExternalSqlServerPrivateEndpoints": "[parameters('externalSqlServerPrivateEndpoints')[toUpper(variables('environmentName'))]]"
   },
   "resources": [
     {
@@ -781,7 +781,7 @@
       "apiVersion": "2021-04-01",
       "name": "[concat('external-sql-server-private-endpoint-', copyIndex('externalSqlServerPrivateEndpointsCopy'))]",
       "type": "Microsoft.Resources/deployments",
-      "condition": "[greater(length(variables('envrionmentExternalSqlServerPrivateEndpoints')),0)]",
+      "condition": "[greater(length(variables('environmentExternalSqlServerPrivateEndpoints')),0)]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -790,7 +790,7 @@
         },
         "parameters": {
           "privateEndpointName": {
-            "value": "[variables('envrionmentExternalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName]"
+            "value": "[variables('environmentExternalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName]"
           },
           "subnetId": {
             "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedSqlServerSubnetResourceId.value]"
@@ -799,7 +799,7 @@
             "value": [ "sqlServer" ]
           },
           "privateLinkServiceId": {
-            "value": "[resourceId(variables('envrionmentExternalSqlServerPrivateEndpoints')[copyIndex()].subscriptionId,variables('envrionmentExternalSqlServerPrivateEndpoints')[copyIndex()].resourceGroup,'Microsoft.Sql/servers',variables('envrionmentExternalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName)]"
+            "value": "[resourceId(variables('environmentExternalSqlServerPrivateEndpoints')[copyIndex()].subscriptionId,variables('environmentExternalSqlServerPrivateEndpoints')[copyIndex()].resourceGroup,'Microsoft.Sql/servers',variables('environmentExternalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName)]"
           },
           "privateDnsZoneId": {
             "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
@@ -811,7 +811,7 @@
       },
       "copy": {
         "name": "externalSqlServerPrivateEndpointsCopy",
-        "count": "[length(variables('envrionmentExternalSqlServerPrivateEndpoints'))]"
+        "count": "[length(variables('environmentExternalSqlServerPrivateEndpoints'))]"
       },
       "dependsOn": [
         "[concat('virtual-network-west-europe-', variables('environmentName'))]",
