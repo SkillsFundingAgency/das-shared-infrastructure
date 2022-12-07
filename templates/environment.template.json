@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "environmentName": {
@@ -109,6 +109,22 @@
         "description": "The number of shared worker app subnets to provision."
       }
     },
+    "sharedSqlServerSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of shared sql server subnets to provision."
+      }
+    },
+    "sharedKeyVaultSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of shared kevault subnets to provision."
+      }
+    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -160,6 +176,12 @@
     },
     "logAnalyticsWorkspaceResourceGroupName": {
       "type": "string"
+    },
+    "externalSqlServerPrivateEndpoints": {
+      "type": "object",
+      "metadata": {
+        "description": "An object of the external SQL Server resource ids to create private endpoints"
+      }
     }
   },
   "variables": {
@@ -192,6 +214,8 @@
     "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
     "secondarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').secondary.nameSuffix))]",
+    "sqlServerPrivateDnsZoneName": "privatelink.database.windows.net",
+    "keyVaultPrivateDnsZoneName": "privatelink.vaultcore.azure.net",
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "subnetServiceEndpointList": [
       "Microsoft.Web",
@@ -199,7 +223,8 @@
       "Microsoft.Storage",
       "Microsoft.AzureCosmosDB",
       "Microsoft.KeyVault"
-    ]
+    ],
+    "environmentExternalSqlServerPrivateEndpoints": "[parameters('externalSqlServerPrivateEndpoints')[toUpper(variables('environmentName'))]]"
   },
   "resources": [
     {
@@ -239,6 +264,12 @@
           },
           "sharedWorkerSubnetCount": {
             "value": "[parameters('sharedWorkerSubnetCount')]"
+          },
+          "sharedSqlServerSubnetCount": {
+            "value": "[parameters('sharedSqlServerSubnetCount')]"
+          },
+          "sharedKeyVaultSubnetCount": {
+            "value": "[parameters('sharedKeyVaultSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -387,29 +418,6 @@
       },
       "dependsOn": [
         "arm-shared-storage"
-      ]
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "sql-server-firewall-rule",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'sql-server-firewall-rules.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "serverName": {
-            "value": "[if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName'))]"
-          },
-          "subnetResourceIdList": {
-            "value": "[reference('get-subnet-resourceid-list').outputs.subnetResourceIdList.value]"
-          }
-        }
-      },
-      "dependsOn": [
-        "sql-server-deployment"
       ]
     },
     {
@@ -676,6 +684,195 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "sql-server-private-dns-zone",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('sqlServerPrivateDnsZoneName')]"
+          },
+          "vnetId": {
+            "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "sql-server-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName')),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedSqlServerSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": ["sqlServer"]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Sql/servers',if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName')))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "sql-server-deployment",
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "sql-server-private-dns-zone"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "replica-sql-server-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('deployFailoverGroups')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(variables('secondarySQLServerName'),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedSqlServerSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "sqlServer" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Sql/servers',variables('secondarySQLServerName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "sql-server-deployment-replica",
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "sql-server-private-dns-zone"
+      ]
+    },
+    {
+      "apiVersion": "2021-04-01",
+      "name": "[concat('external-sql-server-private-endpoint-', copyIndex('externalSqlServerPrivateEndpointsCopy'))]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[greater(length(variables('environmentExternalSqlServerPrivateEndpoints')),0)]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[variables('environmentExternalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName]"
+          },
+          "subnetId": {
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedSqlServerSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "sqlServer" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(variables('environmentExternalSqlServerPrivateEndpoints')[copyIndex()].subscriptionId,variables('environmentExternalSqlServerPrivateEndpoints')[copyIndex()].resourceGroup,'Microsoft.Sql/servers',variables('environmentExternalSqlServerPrivateEndpoints')[copyIndex()].sqlServerName)]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sqlServerPrivateDnsZoneName'))]"
+          },
+          "manualApproval": {
+            "value": true
+          }
+        }
+      },
+      "copy": {
+        "name": "externalSqlServerPrivateEndpointsCopy",
+        "count": "[length(variables('environmentExternalSqlServerPrivateEndpoints'))]"
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "sql-server-private-dns-zone"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "keyvault-private-dns-zone",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('keyVaultPrivateDnsZoneName')]"
+          },
+          "vnetId": {
+            "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "shared-keyvault-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(parameters('sharedKeyVaultName'),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedKeyVaultSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "vault" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(parameters('sharedManagementResourceGroup'),'Microsoft.KeyVault/vaults',parameters('sharedKeyVaultName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('keyVaultPrivateDnsZoneName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "keyvault-private-dns-zone"
+      ]
     }
   ],
   "outputs": {}
