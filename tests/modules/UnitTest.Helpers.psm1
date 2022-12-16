@@ -30,7 +30,6 @@ function Set-MockEnvironment {
     $ENV:databasesToExcludeFrom90PercentAlert = "das-prd-example-db"
     $ENV:databasesToIncludeIn100PercentAlert = "das-prd-example-db"
     $ENV:gatewaySubnetName = "subnet"
-    $ENV:externalSqlServerPrivateEndpoints = "{ 'DTA': [ { 'subscriptionId': 'fb0eac10-bda1-4410-9f8f-f4d381268d13', 'resourceGroup': 'resource-group1', 'sqlServerName': 'sql-server1' }, { 'subscriptionId': 'fb0eac10-bda1-4410-9f8f-f4d381268d13', 'resourceGroup': 'resoucre-group2', 'sqlServerName': 'sql-server2' } ] }"
 }
 
 function Clear-MockEnvironment {
@@ -66,7 +65,6 @@ function Clear-MockEnvironment {
         "ENV:databasesToExcludeFrom90PercentAlert"
         "ENV:databasesToIncludeIn100PercentAlert"
         "ENV:gatewaySubnetName"
-        "ENV:externalSqlServerPrivateEndpoints"
     ) -Force
 }
 
