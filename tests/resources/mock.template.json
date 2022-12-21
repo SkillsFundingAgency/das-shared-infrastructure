@@ -219,12 +219,6 @@
       "metadata": {
         "environmentVariable": "gatewaySubnetName"
       }
-    },
-    "externalSqlServerPrivateEndpoints": {
-      "type": "object",
-      "metadata": {
-        "environmentVariable": "externalSqlServerPrivateEndpoints"
-      }
     }
   },
   "variables": {},

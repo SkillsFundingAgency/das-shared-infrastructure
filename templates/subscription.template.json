@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "resourceEnvironmentName": {
@@ -268,13 +268,6 @@
         "description": "Gateway subnet to allow on shared keyvault used by variable keyVaultAllowedGatewaySubnetsCopy",
         "environmentVariable": "gatewaySubnetName"
       }
-    },
-    "externalSqlServerPrivateEndpoints": {
-      "type": "object",
-      "metadata": {
-        "description": "An object of the external SQL Server resource ids to create private endpoints",
-        "environmentVariable": "externalSqlServerPrivateEndpoints"
-      }
     }
   },
   "variables": {
@@ -371,8 +364,14 @@
             ]
           }
         }
+      },
+      {
+        "name": "keyVaultAllowedGatewaySubnetsCopy",
+        "count": "[length(parameters('environments'))]",
+        "input": "[resourceId(concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-rg'),'Microsoft.Network/virtualNetworks/subnets',concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),parameters('gatewaySubnetName'))]"
       }
-    ]
+    ],
+    "keyVaultAllowedSubnetsArray": "[concat(variables('keyVaultAllowedGatewaySubnetsCopy'),parameters('keyvaultAllowedSubnetsList'))]"
   },
   "functions": [
     {
@@ -455,7 +454,7 @@
             "value": "[parameters('keyVaultAllowedIpAddressesList')]"
           },
           "subnetResourceIdList": {
-            "value": "[parameters('keyvaultAllowedSubnetsList')]"
+            "value": "[variables('keyVaultAllowedSubnetsArray')]"
           },
           "allowTrustedMicrosoftServices": {
             "value": true
@@ -543,7 +542,7 @@
       }
     },
     {
-      "apiVersion": "2021-04-01",
+      "apiVersion": "2017-05-10",
       "name": "[toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))]",
       "type": "Microsoft.Resources/deployments",
       "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
@@ -622,9 +621,6 @@
           },
           "logAnalyticsWorkspaceResourceGroupName": {
             "value": "[resourceGroup().name]"
-          },
-          "externalSqlServerPrivateEndpoints": {
-            "value": "[parameters('externalSqlServerPrivateEndpoints')]"
           }
         }
       },

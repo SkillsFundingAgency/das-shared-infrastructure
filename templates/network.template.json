@@ -115,36 +115,6 @@
         "description": "The number of shared worker app subnets to provision."
       }
     },
-    "sharedSqlServerSubnetNamePrefix": {
-      "type": "string",
-      "defaultValue": "sharedsql-sn",
-      "metadata": {
-        "description": "The prefix used for naming new shared sql subnets."
-      }
-    },
-    "sharedSqlServerSubnetCount": {
-      "type": "int",
-      "defaultValue": 0,
-      "maxValue": 1,
-      "metadata": {
-        "description": "The number of shared sql subnets to provision."
-      }
-    },
-    "sharedKeyVaultSubnetNamePrefix": {
-      "type": "string",
-      "defaultValue": "sharedkv-sn",
-      "metadata": {
-        "description": "The prefix used for naming shared keyvault subnets."
-      }
-    },
-    "sharedKeyVaultSubnetCount": {
-      "type": "int",
-      "defaultValue": 0,
-      "maxValue": 1,
-      "metadata": {
-        "description": "The number of shared keyvault subnets to provision."
-      }
-    },
     "serviceEndpointList": {
       "type": "array",
       "defaultValue": [],
@@ -257,33 +227,11 @@
         }
       }
     ],
-    "sharedSqlServerSubnetObject": {
-      "name": "[parameters('sharedSqlServerSubnetNamePrefix')]",
-      "properties": {
-        "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 35, 0, parameters('subnetAddressSpaceCIDR'))]",
-        "serviceEndpointList": [ "Microsoft.Sql" ],
-        "delegations": "[variables('emptyArray')]",
-        "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
-      }
-    },
-    "sharedKeyVaultSubnetObject": {
-      "name": "[parameters('sharedKeyVaultSubnetNamePrefix')]",
-      "properties": {
-        "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 36, 0, parameters('subnetAddressSpaceCIDR'))]",
-        "serviceEndpointList": [ "Microsoft.KeyVault" ],
-        "delegations": "[variables('emptyArray')]",
-        "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
-      }
-    },
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
-    "sharedSqlServerSubnet": "[if(greater(parameters('sharedSqlServerSubnetCount'), 0), array(variables('sharedSqlServerSubnetObject')), variables('emptyArray'))]",
-    "sharedKeyVaultSubnet": "[if(greater(parameters('sharedKeyVaultSubnetCount'), 0), array(variables('sharedKeyVaultSubnetObject')), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'),variables('sharedSqlServerSubnet'),variables('sharedKeyVaultSubnet'))]"
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'))]"
   },
   "functions": [
     {
@@ -390,14 +338,6 @@
     "frontendSubnetConfiguration": {
       "type": "array",
       "value": "[variables('frontendSubnet')]"
-    },
-    "sharedSqlServerSubnetResourceId": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('sharedSqlServerSubnetObject').name)]"
-    },
-    "sharedKeyVaultSubnetResourceId": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('sharedKeyVaultSubnetObject').name)]"
     }
   }
 }
