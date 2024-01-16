@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "resourceEnvironmentName": {
@@ -164,36 +164,26 @@
     "frontEndAppServicePlanSku": {
       "type": "object",
       "defaultValue": {
-        "tier": "Standard",
-        "size": "2",
-        "instances": 2
       },
       "metadata": {
-        "description": "An object representing the sku of the app service plan.",
+        "description": "An object representing the sku of the app service plan(s).",
         "environmentVariable": "frontEndAppServicePlanSku"
       }
     },
     "backEndAppServicePlanSku": {
       "type": "object",
       "defaultValue": {
-        "tier": "Standard",
-        "size": "2",
-        "instances": 2
       },
       "metadata": {
-        "description": "An object representing the sku of the app service plan.",
+        "description": "An object representing the sku of the app service plan(s).",
         "environmentVariable": "backEndAppServicePlanSku"
       }
     },
     "sharedWorkerAppServicePlanSku": {
       "type": "object",
-      "defaultValue": {
-        "tier": "Standard",
-        "size": "1",
-        "instances": 1
-      },
+      "defaultValue": {},
       "metadata": {
-        "description": "An object representing the sku of the app service plan.",
+        "description": "An object representing the sku of the app service plan(s).",
         "environmentVariable": "sharedWorkerAppServicePlanSku"
       }
     },
@@ -605,13 +595,13 @@
             "value": "[parameters('firewallsNsgName')]"
           },
           "frontEndAppServicePlanSku": {
-            "value": "[parameters('frontEndAppServicePlanSku')]"
+            "value": "[parameters('frontEndAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
           },
           "backEndAppServicePlanSku": {
-            "value": "[parameters('backEndAppServicePlanSku')]"
+            "value": "[parameters('backEndAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
           },
           "sharedWorkerAppServicePlanSku": {
-            "value": "[parameters('sharedWorkerAppServicePlanSku')]"
+            "value": "[parameters('sharedWorkerAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
