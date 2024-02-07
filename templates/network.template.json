@@ -115,6 +115,21 @@
         "description": "The number of shared worker app subnets to provision."
       }
     },
+    "sharedAiSearchSubnetNamePrefix": {
+      "type": "string",
+      "defaultValue": "sharedsrch-sn",
+      "metadata": {
+        "description": "The prefix used for naming new shared sql subnets."
+      }
+    },
+    "sharedAiSearchSubnetCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of shared sql subnets to provision."
+      }
+    },
     "serviceEndpointList": {
       "type": "array",
       "defaultValue": [],
@@ -227,11 +242,22 @@
         }
       }
     ],
+    "sharedAiSearchSubnetObject": {
+      "name": "[parameters('sharedAiSearchSubnetNamePrefix')]",
+      "properties": {
+        "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 35, 0, parameters('subnetAddressSpaceCIDR'))]",
+        "serviceEndpointList": [ "Microsoft.Sql" ],
+        "delegations": "[variables('emptyArray')]",
+        "networkSecurityGroup": "[variables('emptyObject')]",
+        "routeTable": "[variables('emptyObject')]"
+      }
+    },
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'))]"
+    "sharedAiSearchSubnet": "[if(greater(parameters('sharedAiSearchSubnetCount'), 0), array(variables('sharedAiSearchSubnetObject')), variables('emptyArray'))]",
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'), variables('sharedAiSearchSubnet'))]"
   },
   "functions": [
     {
@@ -338,6 +364,10 @@
     "frontendSubnetConfiguration": {
       "type": "array",
       "value": "[variables('frontendSubnet')]"
+    },
+    "sharedAiSearchSubnetResourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('sharedAiSearchSubnetObject').name)]"
     }
   }
 }

@@ -160,6 +160,27 @@
     },
     "logAnalyticsWorkspaceResourceGroupName": {
       "type": "string"
+    },
+    "aiSearchSku": {
+      "type": "string",
+      "defaultValue": "basic",
+      "metadata": {
+        "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
+      }
+    },
+    "aiSearchReplicaCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Replicas distribute search workloads across the service. You need 2 or more to support high availability (applies to Basic and Standard only)."
+      }
+    },
+    "aiSearchPartitionCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Partitions allow for scaling of document count as well as faster indexing by sharding your index over multiple Azure Search units."
+      }
     }
   },
   "variables": {
@@ -175,6 +196,8 @@
     "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
+    "aiSearchName": "[concat(variables('resourceNamePrefix'),'-srch')]",
+    "aiSearchPrivateDnsZoneName": "privatelink.search.windows.net",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'configstr')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
     "sqlServerLocationMap": {
@@ -676,6 +699,88 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "name": "ai-search",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'azure-search.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "aiSearchName": {
+            "value": "[variables('aiSearchName')]"
+          },
+          "aiSearchSku": {
+            "value": "[parameters('aiSearchSku')]"
+          },
+          "aiSearchReplicaCount": {
+            "value": "[parameters('aiSearchReplicaCount')]"
+          },
+          "aiSearchPartitionCount": {
+            "value": "[parameters('aiSearchPartitionCount')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "name": "ai-search-private-dns-zone",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('aiSearchPrivateDnsZoneName')]"
+          },
+          "vnetId": {
+            "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "ai-search-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(variables('aiSearchName'),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedAiSearchSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "aiSearch" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Search/searchServices',variables('aiSearchName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('aiSearchPrivateDnsZoneName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "ai-search-private-dns-zone"
+      ]
     }
   ],
   "outputs": {}
