@@ -767,7 +767,7 @@
             "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedAiSearchSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
-            "value": [ "aiSearch" ]
+            "value": ["searchService"]
           },
           "privateLinkServiceId": {
             "value": "[resourceId(resourceGroup().name,'Microsoft.Search/searchServices',variables('aiSearchName'))]"
