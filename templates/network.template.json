@@ -119,7 +119,7 @@
       "type": "string",
       "defaultValue": "sharedsrch-sn",
       "metadata": {
-        "description": "The prefix used for naming new shared sql subnets."
+        "description": "The prefix used for naming new shared ai search subnets."
       }
     },
     "sharedAiSearchSubnetCount": {
@@ -127,7 +127,7 @@
       "defaultValue": 0,
       "maxValue": 1,
       "metadata": {
-        "description": "The number of shared sql subnets to provision."
+        "description": "The number of shared ai search subnets to provision."
       }
     },
     "serviceEndpointList": {
