@@ -245,8 +245,8 @@
     "sharedAiSearchSubnetObject": {
       "name": "[parameters('sharedAiSearchSubnetNamePrefix')]",
       "properties": {
-        "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 35, 0, parameters('subnetAddressSpaceCIDR'))]",
-        "serviceEndpointList": [ "Microsoft.Sql" ],
+        "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 37, 0, parameters('subnetAddressSpaceCIDR'))]",
+        "serviceEndpointList": [ "" ],
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
         "routeTable": "[variables('emptyObject')]"
