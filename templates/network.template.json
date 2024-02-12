@@ -124,7 +124,7 @@
     },
     "sharedAiSearchSubnetCount": {
       "type": "int",
-      "defaultValue": 0,
+      "defaultValue": 1,
       "maxValue": 1,
       "metadata": {
         "description": "The number of shared ai search subnets to provision."
@@ -246,7 +246,7 @@
       "name": "[parameters('sharedAiSearchSubnetNamePrefix')]",
       "properties": {
         "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 37, 0, parameters('subnetAddressSpaceCIDR'))]",
-        "serviceEndpointList": [ "" ],
+        "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
         "routeTable": "[variables('emptyObject')]"
