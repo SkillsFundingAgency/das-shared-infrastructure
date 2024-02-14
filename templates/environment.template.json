@@ -181,6 +181,10 @@
       "metadata": {
         "description": "Partitions allow for scaling of document count as well as faster indexing by sharding your index over multiple Azure Search units."
       }
+    },
+    "aiSearchDisableLocalAuth": {
+      "type" : "bool",
+      "defaultValue": true
     }
   },
   "variables": {
@@ -723,7 +727,9 @@
           "aiSearchPartitionCount": {
             "value": "[parameters('aiSearchPartitionCount')]"
           },
-          "disableLocalAuth": true
+          "disableLocalAuth": {
+            "value": "[parameters('aiSearchDisableLocalAuth')]"
+          }
         }
       }
     },
