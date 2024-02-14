@@ -722,7 +722,8 @@
           },
           "aiSearchPartitionCount": {
             "value": "[parameters('aiSearchPartitionCount')]"
-          }
+          },
+          "disableLocalAuth": true
         }
       }
     },
