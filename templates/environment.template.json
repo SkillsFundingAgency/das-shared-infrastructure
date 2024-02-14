@@ -109,6 +109,14 @@
         "description": "The number of shared worker app subnets to provision."
       }
     },
+    "sharedAiSearchSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "The number of shared sql server subnets to provision."
+      }
+    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -262,6 +270,9 @@
           },
           "sharedWorkerSubnetCount": {
             "value": "[parameters('sharedWorkerSubnetCount')]"
+          },
+          "sharedAiSearchSubnetCount": {
+            "value": "[parameters('sharedAiSearchSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
