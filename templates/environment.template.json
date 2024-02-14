@@ -263,6 +263,9 @@
           "sharedWorkerSubnetCount": {
             "value": "[parameters('sharedWorkerSubnetCount')]"
           },
+          "sharedAiSearchSubnetCount": {
+            "value": "[parameters('sharedAiSearchSubnetCount')]"
+          },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
           },

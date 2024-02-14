@@ -124,7 +124,7 @@
     },
     "sharedAiSearchSubnetCount": {
       "type": "int",
-      "defaultValue": 1,
+      "defaultValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "The number of shared ai search subnets to provision."
