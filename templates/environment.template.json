@@ -181,14 +181,10 @@
       "metadata": {
         "description": "Partitions allow for scaling of document count as well as faster indexing by sharding your index over multiple Azure Search units."
       }
-    },
-    "aiSearchDisableLocalAuth": {
-      "type" : "bool",
-      "defaultValue": true
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-10291-RBAC/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-10291-Azure-AI-Search/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
@@ -726,9 +722,6 @@
           },
           "aiSearchPartitionCount": {
             "value": "[parameters('aiSearchPartitionCount')]"
-          },
-          "disableLocalAuth": {
-            "value": "[parameters('aiSearchDisableLocalAuth')]"
           }
         }
       }

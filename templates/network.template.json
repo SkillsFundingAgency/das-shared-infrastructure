@@ -153,7 +153,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-10291-RBAC/templates/",
     "emptyArray": [],
     "emptyObject": {},
     "firewallNsgId": {
