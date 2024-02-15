@@ -169,12 +169,6 @@
     "logAnalyticsWorkspaceResourceGroupName": {
       "type": "string"
     },
-    "aiSearchSku": {
-      "type": "string",
-      "metadata": {
-        "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
-      }
-    },
     "aiSearchReplicaCount": {
       "type": "int",
       "defaultValue": 1,
@@ -723,9 +717,6 @@
         "parameters": {
           "aiSearchName": {
             "value": "[variables('aiSearchName')]"
-          },
-          "aiSearchSku": {
-            "value": "[parameters('aiSearchSku')]"
           },
           "aiSearchReplicaCount": {
             "value": "[parameters('aiSearchReplicaCount')]"
