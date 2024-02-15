@@ -189,7 +189,7 @@
     },
     "aiSearchSku": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "standard",
       "metadata": {
         "description": "The pricing tier of the search service you want to create (for example, basic or standard).",
         "environmentVariable": "aiSearchSku"
@@ -270,7 +270,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-10291-AI-search-SKU-fix/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -612,7 +612,7 @@
             "value": "[parameters('sharedWorkerAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
           },
           "aiSearchSku": {
-            "value": "[parameters('aiSearchSku')[toUpper(parameters('environments')[copyIndex()])]]"
+            "value": "[parameters('aiSearchSku')]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"

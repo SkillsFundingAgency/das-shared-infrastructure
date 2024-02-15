@@ -171,7 +171,7 @@
     },
     "aiSearchSku": {
       "type": "string",
-      "defaultValue": "basic",
+      "defaultValue": "standard",
       "metadata": {
         "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
       }
@@ -193,7 +193,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-10291-AI-search-SKU-fix/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
