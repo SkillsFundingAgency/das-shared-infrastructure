@@ -173,7 +173,8 @@
       "type": "string",
       "defaultValue": "basic",
       "metadata": {
-        "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
+        "description": "The pricing tier of the search service you want to create (for example, basic or standard).",
+        "environmentVariable": "aiSearchSku"
       }
     },
     "aiSearchReplicaCount": {
