@@ -187,6 +187,13 @@
         "environmentVariable": "sharedWorkerAppServicePlanSku"
       }
     },
+    "aiSearchSku": {
+      "type": "string",
+      "metadata": {
+        "description": "The pricing tier of the search service you want to create (for example, basic or standard).",
+        "environmentVariable": "aiSearchSku"
+      }
+    },
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
@@ -602,6 +609,9 @@
           },
           "sharedWorkerAppServicePlanSku": {
             "value": "[parameters('sharedWorkerAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
+          },
+          "aiSearchSku": {
+            "value": "[parameters('aiSearchSku')[toUpper(parameters('environments')[copyIndex()])]]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
