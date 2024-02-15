@@ -611,9 +611,6 @@
           "sharedWorkerAppServicePlanSku": {
             "value": "[parameters('sharedWorkerAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
           },
-          "aiSearchSku": {
-            "value": "[parameters('aiSearchSku')]"
-          },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
           },
