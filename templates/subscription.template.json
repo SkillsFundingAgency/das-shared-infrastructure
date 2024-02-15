@@ -189,6 +189,7 @@
     },
     "aiSearchSku": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "The pricing tier of the search service you want to create (for example, basic or standard).",
         "environmentVariable": "aiSearchSku"
@@ -571,9 +572,6 @@
           "sqlServerActiveDirectoryAdminObjectId": {
             "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
           },
-          "aiSearchSku": {
-            "value": "[parameters('aiSearchSku')]"
-          },
           "threatDetectionEmailAddress": {
             "value": "[parameters('threatDetectionEmailAddress')]"
           },
@@ -612,6 +610,9 @@
           },
           "sharedWorkerAppServicePlanSku": {
             "value": "[parameters('sharedWorkerAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
+          },
+          "aiSearchSku": {
+            "value": "[parameters('aiSearchSku')[toUpper(parameters('environments')[copyIndex()])]]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
