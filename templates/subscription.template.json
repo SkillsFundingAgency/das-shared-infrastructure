@@ -571,6 +571,9 @@
           "sqlServerActiveDirectoryAdminObjectId": {
             "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
           },
+          "aiSearchSku": {
+            "value": "[parameters('aiSearchSku')]"
+          },
           "threatDetectionEmailAddress": {
             "value": "[parameters('threatDetectionEmailAddress')]"
           },
@@ -609,9 +612,6 @@
           },
           "sharedWorkerAppServicePlanSku": {
             "value": "[parameters('sharedWorkerAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
-          },
-          "aiSearchSku": {
-            "value": "[parameters('aiSearchSku')]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
