@@ -171,7 +171,6 @@
     },
     "aiSearchSku": {
       "type": "string",
-      "defaultValue": "",
       "metadata": {
         "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
       }
