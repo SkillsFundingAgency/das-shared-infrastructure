@@ -451,6 +451,47 @@
           "allowedIpAddressesList": {
             "value": "[parameters('keyVaultAllowedIpAddressesList')]"
           },
+          "allowTrustedMicrosoftServices": {
+            "value": true
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceResourceGroupName": {
+            "value": "[resourceGroup().name]"
+          }
+        }
+      },
+      "dependsOn": [
+        "log-analytics-workspace"
+      ]
+    },
+    {
+      "apiVersion": "2019-05-10",
+      "name": "key-vault-vnet-acl",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'keyvault.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
+          },
+          "keyVaultAccessPolicies": {
+            "value": "[concat(variables('KeyVaultAccessPolicies'),variables('keyVaultGetAccessPoliciesCopy'),variables('keyVaultGetListAccessPoliciesCopy'))]"
+          },
+          "enabledForTemplateDeployment": {
+            "value": true
+          },
+          "enableFirewall": {
+            "value": true
+          },
+          "allowedIpAddressesList": {
+            "value": "[parameters('keyVaultAllowedIpAddressesList')]"
+          },
           "subnetResourceIdList": {
             "value": "[variables('keyVaultAllowedSubnetsArray')]"
           },
@@ -466,7 +507,8 @@
         }
       },
       "dependsOn": [
-        "log-analytics-workspace"
+        "log-analytics-workspace",
+        "environmentCopy"
       ]
     },
     {

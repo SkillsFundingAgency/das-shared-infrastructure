@@ -114,7 +114,15 @@
       "defaultValue": 1,
       "maxValue": 1,
       "metadata": {
-        "description": "The number of shared sql server subnets to provision."
+        "description": "Whether to deploy the shared AI search subnet."
+      }
+    },
+    "sharedRedisSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "Whether to deploy the shared redis subnet."
       }
     },
     "firewallsNsgName": {
@@ -206,6 +214,7 @@
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "aiSearchName": "[concat(variables('resourceNamePrefix'),'-srch')]",
     "aiSearchPrivateDnsZoneName": "privatelink.search.windows.net",
+    "sharedRedisPrivateDnsZoneName": "privatelink.redis.cache.windows.net",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'configstr')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
     "sqlServerLocationMap": {
@@ -273,6 +282,9 @@
           },
           "sharedAiSearchSubnetCount": {
             "value": "[parameters('sharedAiSearchSubnetCount')]"
+          },
+          "sharedRedisSubnetCount": {
+            "value": "[parameters('sharedRedisSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -791,6 +803,95 @@
       "dependsOn": [
         "[concat('virtual-network-west-europe-', variables('environmentName'))]",
         "ai-search-private-dns-zone"
+      ]
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "name": "shared-redis-private-dns-zone",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('sharedRedisPrivateDnsZoneName')]"
+          },
+          "vnetId": {
+            "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2020-08-01",
+      "name": "shared-redis-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(variables('redisCacheName'),'-pe')]"
+          },
+          "subnetId": {
+            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedRedisSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": ["redisCache"]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Cache/Redis',variables('redisCacheName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sharedRedisPrivateDnsZoneName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "shared-redis-private-dns-zone",
+        "redis-cache"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "redis-cache-reset-public-access",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'redis.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "redisCacheName": {
+            "value": "[variables('redisCacheName')]"
+          },
+          "redisCacheSKU": {
+            "value": "Standard"
+          },
+          "redisCacheFamily": {
+            "value": "C"
+          },
+          "redisCacheCapacity": {
+            "value": 1
+          },
+          "enableNonSslPort": {
+            "value": false
+          }
+        }
+      },
+      "dependsOn": [
+        "shared-redis-private-endpoint"
       ]
     }
   ],
