@@ -125,6 +125,14 @@
         "description": "Whether to deploy the shared redis subnet."
       }
     },
+    "loggingRedisSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "maxValue": 1,
+      "metadata": {
+        "description": "Whether to deploy the shared redis subnet."
+      }
+    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -214,7 +222,8 @@
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "aiSearchName": "[concat(variables('resourceNamePrefix'),'-srch')]",
     "aiSearchPrivateDnsZoneName": "privatelink.search.windows.net",
-    "sharedRedisPrivateDnsZoneName": "privatelink.redis.cache.windows.net",
+    "redisPrivateDnsZoneName": "privatelink.redis.cache.windows.net",
+    "redisPrivateDnsZoneId": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('redisPrivateDnsZoneName'))]",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'configstr')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
     "sqlServerLocationMap": {
@@ -285,6 +294,9 @@
           },
           "sharedRedisSubnetCount": {
             "value": "[parameters('sharedRedisSubnetCount')]"
+          },
+          "loggingRedisSubnetCount": {
+            "value": "[parameters('loggingRedisSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -807,7 +819,7 @@
     },
     {
       "apiVersion": "2020-08-01",
-      "name": "shared-redis-private-dns-zone",
+      "name": "redis-private-dns-zone",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -817,7 +829,7 @@
         },
         "parameters": {
           "dnsZoneName": {
-            "value": "[variables('sharedRedisPrivateDnsZoneName')]"
+            "value": "[variables('redisPrivateDnsZoneName')]"
           },
           "vnetId": {
             "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
@@ -852,13 +864,13 @@
             "value": "[resourceId(resourceGroup().name,'Microsoft.Cache/Redis',variables('redisCacheName'))]"
           },
           "privateDnsZoneId": {
-            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('sharedRedisPrivateDnsZoneName'))]"
+            "value": "[variables('redisPrivateDnsZoneId')]"
           }
         }
       },
       "dependsOn": [
         "[concat('virtual-network-west-europe-', variables('environmentName'))]",
-        "shared-redis-private-dns-zone",
+        "redis-private-dns-zone",
         "redis-cache"
       ]
     },
@@ -895,5 +907,18 @@
       ]
     }
   ],
-  "outputs": {}
+  "outputs": {
+    "sharedResourceGroupName": {
+      "type": "string",
+      "value": "[resourceGroup().name]"
+    },
+    "loggingRedisSubnetResourceId": {
+      "type": "string",
+      "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.loggingRedisSubnetResourceId.value]"
+    },
+    "redisPrivateDnsZoneId": {
+      "type": "string",
+      "value": "[variables('redisPrivateDnsZoneId')]"
+    }
+  }
 }

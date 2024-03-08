@@ -278,6 +278,7 @@
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
+    "redisPrivateDnsZoneName": "privatelink.redis.cache.windows.net",
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
@@ -722,6 +723,74 @@
           }
         }
       }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[toLower(concat(parameters('environments')[copyIndex()], '-logging-redis-private-endpoint'))]",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
+      "comments": "Private endpoint added here instead of environment template to reduce time publicNetworkAccess is set to Disabled",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[concat(variables('loggingRedisCacheName'), '-', toLower(parameters('environments')[copyIndex()]), '-pe')]"
+          },
+          "subnetId": {
+            "value": "[reference(toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))).outputs.loggingRedisSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": ["redisCache"]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(resourceGroup().name, 'Microsoft.Cache/Redis', variables('loggingRedisCacheName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[reference(toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))).outputs.redisPrivateDnsZoneId.value]"
+          }
+        }
+      },
+      "copy": {
+        "name": "loggingRedisPrivateEndpointCopy",
+        "count": "[length(parameters('environments'))]"
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "logging-redis-cache-reset-public-access",
+      "type": "Microsoft.Resources/deployments",
+      "comments": "Toggles public access to it's original value as soon as the private endpoint deployment succeeds",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'redis.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "redisCacheName": {
+            "value": "[variables('loggingRedisCacheName')]"
+          },
+          "redisCacheSKU": {
+            "value": "[parameters('loggingRedisCacheSKU')]"
+          },
+          "redisCacheFamily": {
+            "value": "[parameters('loggingRedisCacheFamily')]"
+          },
+          "redisCacheCapacity": {
+            "value": "[parameters('loggingRedisCacheCapacity')]"
+          },
+          "enableNonSslPort": {
+            "value": false
+          }
+        }
+      },
+      "dependsOn": [
+        "loggingRedisPrivateEndpointCopy"
+      ]
     }
   ],
   "outputs": {}
