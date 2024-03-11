@@ -50,6 +50,7 @@
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 0,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of gateway subnets to provision"
@@ -65,6 +66,7 @@
     "managementSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of management subnets to provision"
@@ -80,6 +82,7 @@
     "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 0,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared frontend app subnets to provision"
@@ -95,6 +98,7 @@
     "backendSubnetCount": {
       "type": "int",
       "defaultValue": 0,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared backend app subnets to provision."
@@ -110,6 +114,7 @@
     "sharedWorkerSubnetCount": {
       "type": "int",
       "defaultValue": 0,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared worker app subnets to provision."
@@ -125,6 +130,7 @@
     "sharedAiSearchSubnetCount": {
       "type": "int",
       "defaultValue": 0,
+      "minValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "The number of shared ai search subnets to provision."
@@ -140,6 +146,7 @@
     "sharedRedisSubnetCount": {
       "type": "int",
       "defaultValue": 0,
+      "minValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "The number of shared redis cache subnets to provision."
@@ -155,6 +162,7 @@
     "loggingRedisSubnetCount": {
       "type": "int",
       "defaultValue": 0,
+      "minValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "The number of logging redis cache subnets to provision."
@@ -344,14 +352,14 @@
   ],
   "resources": [
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "virtual-network",
       "condition": "[equals(parameters('virtualNetworkDeploy'), 'Enabled')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'virtual-network.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'virtual-network.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -365,7 +373,7 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "[concat('subnet-', variables('subnetConfiguration')[copyIndex()].name)]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
@@ -374,7 +382,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'subnet.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'subnet.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {

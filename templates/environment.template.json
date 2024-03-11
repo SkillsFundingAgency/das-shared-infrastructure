@@ -72,6 +72,7 @@
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "The number of gateway subnets to provision"
@@ -80,6 +81,7 @@
     "managementSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "The number of management subnets to provision"
@@ -88,6 +90,7 @@
     "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared frontend app subnets to provision."
@@ -96,6 +99,7 @@
     "backendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared backend app subnets to provision."
@@ -104,6 +108,7 @@
     "sharedWorkerSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared worker app subnets to provision."
@@ -112,6 +117,7 @@
     "sharedAiSearchSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "Whether to deploy the shared AI search subnet."
@@ -120,6 +126,7 @@
     "sharedRedisSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "Whether to deploy the shared redis subnet."
@@ -128,6 +135,7 @@
     "loggingRedisSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 1,
       "metadata": {
         "description": "Whether to deploy the shared redis subnet."
@@ -212,6 +220,7 @@
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
+    "resourceGroupName": "[resourceGroup().name]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
@@ -223,7 +232,7 @@
     "aiSearchName": "[concat(variables('resourceNamePrefix'),'-srch')]",
     "aiSearchPrivateDnsZoneName": "privatelink.search.windows.net",
     "redisPrivateDnsZoneName": "privatelink.redis.cache.windows.net",
-    "redisPrivateDnsZoneId": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('redisPrivateDnsZoneName'))]",
+    "redisPrivateDnsZoneId": "[resourceId(variables('resourceGroupName'),'Microsoft.Network/privateDnsZones',variables('redisPrivateDnsZoneName'))]",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'configstr')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
     "sqlServerLocationMap": {
@@ -242,6 +251,7 @@
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
     "secondarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').secondary.nameSuffix))]",
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
+    "virtualNetworkDeploymentName": "[concat('virtual-network-west-europe-', variables('environmentName'))]",
     "subnetServiceEndpointList": [
       "Microsoft.Web",
       "Microsoft.Sql",
@@ -252,13 +262,13 @@
   },
   "resources": [
     {
-      "apiVersion": "2017-05-10",
-      "name": "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('virtualNetworkDeploymentName')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('sharedDeploymentUrlBase'),'templates/network.template.json')]",
+          "uri": "[uri(variables('sharedDeploymentUrlBase'),'templates/network.template.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -308,13 +318,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "get-subnet-resourceid-list",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('sharedDeploymentUrlBase'),'utilities/getSubnetResourceIdList.json')]",
+          "uri": "[uri(variables('sharedDeploymentUrlBase'),'utilities/getSubnetResourceIdList.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -322,19 +332,19 @@
             "value": "[variables('virtualNetworkName')]"
           },
           "subnetConfiguration": {
-            "value": "[concat(reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.backendSubnetConfiguration.value, reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.frontendSubnetConfiguration.value)]"
+            "value": "[concat(reference(variables('virtualNetworkDeploymentName')).outputs.backendSubnetConfiguration.value, reference(variables('virtualNetworkDeploymentName')).outputs.frontendSubnetConfiguration.value)]"
           }
         }
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "configuration-storage-account",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'storage-account-arm.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'storage-account-arm.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -348,13 +358,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "arm-shared-storage",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'storage-account-arm.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'storage-account-arm.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -368,14 +378,14 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "[concat('shared-storage-account-container', parameters('sharedStorageAccountContainerArray')[copyIndex()])]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[greater(length(parameters('sharedStorageAccountContainerArray')), 0)]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'), 'storage-container.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'), 'storage-container.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -399,13 +409,13 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "sql-server-deployment",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'sql-server.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'sql-server.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -448,13 +458,13 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "sql-server-firewall-rule",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'sql-server-firewall-rules.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'sql-server-firewall-rules.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -471,14 +481,14 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "sql-server-deployment-replica",
       "type": "Microsoft.Resources/deployments",
       "condition": "[variables('deployFailoverGroups')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'sql-server.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'sql-server.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -521,14 +531,14 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "sql-server-failover-group",
       "type": "Microsoft.Resources/deployments",
       "condition": "[variables('deployFailoverGroups')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'sql-server-failover-group.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'sql-server-failover-group.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -552,13 +562,13 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "front-end-app-service-plan",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -578,13 +588,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "back-end-app-service-plan",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -604,13 +614,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "shared-worker-app-service-plan",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -630,13 +640,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "service-bus",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'service-bus.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'service-bus.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -658,13 +668,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "redis-cache",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'redis.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'redis.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -687,13 +697,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "cdn-profile",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'cdn-profile.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'cdn-profile.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -707,13 +717,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "event-hub-namespace",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'event-hub-namespace.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'event-hub-namespace.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -736,13 +746,13 @@
       }
     },
     {
-      "apiVersion": "2020-08-01",
+      "apiVersion": "2022-09-01",
       "name": "ai-search",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'azure-search.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'azure-search.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -762,13 +772,13 @@
       }
     },
     {
-      "apiVersion": "2020-08-01",
+      "apiVersion": "2022-09-01",
       "name": "ai-search-private-dns-zone",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'private-dns-zone.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -776,22 +786,22 @@
             "value": "[variables('aiSearchPrivateDnsZoneName')]"
           },
           "vnetId": {
-            "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+            "value": "[resourceId(variables('resourceGroupName'), 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
           }
         }
       },
       "dependsOn": [
-        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+        "[variables('virtualNetworkDeploymentName')]"
       ]
     },
     {
-      "apiVersion": "2020-08-01",
+      "apiVersion": "2022-09-01",
       "name": "ai-search-private-endpoint",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'private-endpoint.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -799,32 +809,32 @@
             "value": "[concat(variables('aiSearchName'),'-pe')]"
           },
           "subnetId": {
-            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedAiSearchSubnetResourceId.value]"
+            "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.sharedAiSearchSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
             "value": ["searchService"]
           },
           "privateLinkServiceId": {
-            "value": "[resourceId(resourceGroup().name,'Microsoft.Search/searchServices',variables('aiSearchName'))]"
+            "value": "[resourceId(variables('resourceGroupName'),'Microsoft.Search/searchServices',variables('aiSearchName'))]"
           },
           "privateDnsZoneId": {
-            "value": "[resourceId(resourceGroup().name,'Microsoft.Network/privateDnsZones',variables('aiSearchPrivateDnsZoneName'))]"
+            "value": "[resourceId(variables('resourceGroupName'),'Microsoft.Network/privateDnsZones',variables('aiSearchPrivateDnsZoneName'))]"
           }
         }
       },
       "dependsOn": [
-        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "[variables('virtualNetworkDeploymentName')]",
         "ai-search-private-dns-zone"
       ]
     },
     {
-      "apiVersion": "2020-08-01",
+      "apiVersion": "2022-09-01",
       "name": "redis-private-dns-zone",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'private-dns-zone.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -832,22 +842,22 @@
             "value": "[variables('redisPrivateDnsZoneName')]"
           },
           "vnetId": {
-            "value": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+            "value": "[resourceId(variables('resourceGroupName'), 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
           }
         }
       },
       "dependsOn": [
-        "[concat('virtual-network-west-europe-', variables('environmentName'))]"
+        "[variables('virtualNetworkDeploymentName')]"
       ]
     },
     {
-      "apiVersion": "2020-08-01",
+      "apiVersion": "2022-09-01",
       "name": "shared-redis-private-endpoint",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'private-endpoint.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -855,13 +865,13 @@
             "value": "[concat(variables('redisCacheName'),'-pe')]"
           },
           "subnetId": {
-            "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.sharedRedisSubnetResourceId.value]"
+            "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.sharedRedisSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
             "value": ["redisCache"]
           },
           "privateLinkServiceId": {
-            "value": "[resourceId(resourceGroup().name,'Microsoft.Cache/Redis',variables('redisCacheName'))]"
+            "value": "[resourceId(variables('resourceGroupName'),'Microsoft.Cache/Redis',variables('redisCacheName'))]"
           },
           "privateDnsZoneId": {
             "value": "[variables('redisPrivateDnsZoneId')]"
@@ -869,19 +879,19 @@
         }
       },
       "dependsOn": [
-        "[concat('virtual-network-west-europe-', variables('environmentName'))]",
+        "[variables('virtualNetworkDeploymentName')]",
         "redis-private-dns-zone",
         "redis-cache"
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "redis-cache-reset-public-access",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'redis.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'redis.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -910,11 +920,11 @@
   "outputs": {
     "sharedResourceGroupName": {
       "type": "string",
-      "value": "[resourceGroup().name]"
+      "value": "[variables('resourceGroupName')]"
     },
     "loggingRedisSubnetResourceId": {
       "type": "string",
-      "value": "[reference(concat('virtual-network-west-europe-', variables('environmentName'))).outputs.loggingRedisSubnetResourceId.value]"
+      "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.loggingRedisSubnetResourceId.value]"
     },
     "redisPrivateDnsZoneId": {
       "type": "string",

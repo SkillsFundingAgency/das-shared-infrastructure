@@ -112,6 +112,7 @@
     "gatewaySubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of gateway subnets to provision",
@@ -121,6 +122,7 @@
     "managementSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 50,
       "metadata": {
         "description": "The number of management subnets to provision",
@@ -130,6 +132,7 @@
     "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared frontend app subnets to provision.",
@@ -139,6 +142,7 @@
     "backendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared backend app subnets to provision.",
@@ -148,6 +152,7 @@
     "sharedWorkerSubnetCount": {
       "type": "int",
       "defaultValue": 1,
+      "minValue": 0,
       "maxValue": 5,
       "metadata": {
         "description": "The number of shared worker app subnets to provision.",
@@ -278,7 +283,7 @@
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
-    "redisPrivateDnsZoneName": "privatelink.redis.cache.windows.net",
+    "resourceGroupName": "[resourceGroup().name]",
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
@@ -401,13 +406,13 @@
   ],
   "resources": [
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "[concat('virtual-network-west-europe-', variables('resourceNamePrefix'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('sharedDeploymentUrlBase'),'templates/network.template.json')]",
+          "uri": "[uri(variables('sharedDeploymentUrlBase'),'templates/network.template.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -427,13 +432,13 @@
       }
     },
     {
-      "apiVersion": "2019-05-10",
+      "apiVersion": "2022-09-01",
       "name": "key-vault",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'keyvault.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'keyvault.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -459,7 +464,7 @@
             "value": "[parameters('logAnalyticsWorkspaceName')]"
           },
           "logAnalyticsWorkspaceResourceGroupName": {
-            "value": "[resourceGroup().name]"
+            "value": "[variables('resourceGroupName')]"
           }
         }
       },
@@ -468,13 +473,13 @@
       ]
     },
     {
-      "apiVersion": "2019-05-10",
+      "apiVersion": "2022-09-01",
       "name": "key-vault-vnet-acl",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'keyvault.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'keyvault.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -503,7 +508,7 @@
             "value": "[parameters('logAnalyticsWorkspaceName')]"
           },
           "logAnalyticsWorkspaceResourceGroupName": {
-            "value": "[resourceGroup().name]"
+            "value": "[variables('resourceGroupName')]"
           }
         }
       },
@@ -513,13 +518,13 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "[concat('sql-server-key-vault-secrets-', parameters('environments')[copyIndex()])]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'keyvault-secret.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'keyvault-secret.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -543,13 +548,13 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "log-analytics-workspace",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'log-analytics-workspace.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'log-analytics-workspace.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -566,13 +571,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "classic-storage-account",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'storage-account-classic.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'storage-account-classic.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -583,14 +588,14 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "[toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))]",
       "type": "Microsoft.Resources/deployments",
       "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('sharedDeploymentUrlBase'), 'templates/environment.template.json')]",
+          "uri": "[uri(variables('sharedDeploymentUrlBase'), 'templates/environment.template.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -598,7 +603,7 @@
             "value": "[toUpper(parameters('environments')[copyIndex()])]"
           },
           "sharedManagementResourceGroup": {
-            "value": "[resourceGroup().name]"
+            "value": "[variables('resourceGroupName')]"
           },
           "sharedKeyVaultName": {
             "value": "[variables('keyVaultName')]"
@@ -664,7 +669,7 @@
             "value": "[parameters('logAnalyticsWorkspaceName')]"
           },
           "logAnalyticsWorkspaceResourceGroupName": {
-            "value": "[resourceGroup().name]"
+            "value": "[variables('resourceGroupName')]"
           }
         }
       },
@@ -679,13 +684,13 @@
       ]
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "azure-automation",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'automation-account.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'automation-account.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -696,13 +701,13 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "logging-redis-cache",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'redis.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'redis.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -725,7 +730,7 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "[toLower(concat(parameters('environments')[copyIndex()], '-logging-redis-private-endpoint'))]",
       "type": "Microsoft.Resources/deployments",
       "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
@@ -733,21 +738,21 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'private-endpoint.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "privateEndpointName": {
-            "value": "[concat(variables('loggingRedisCacheName'), '-', toLower(parameters('environments')[copyIndex()]), '-pe')]"
+            "value": "[concat(variables('loggingRedisCacheName'), if(equals(toLower(parameters('resourceEnvironmentName')), 'dev'), concat( '-', toLower(parameters('environments')[copyIndex()])), ''), '-pe')]"
           },
           "subnetId": {
             "value": "[reference(toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))).outputs.loggingRedisSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
-            "value": ["redisCache"]
+            "value": [ "redisCache" ]
           },
           "privateLinkServiceId": {
-            "value": "[resourceId(resourceGroup().name, 'Microsoft.Cache/Redis', variables('loggingRedisCacheName'))]"
+            "value": "[resourceId(variables('resourceGroupName'), 'Microsoft.Cache/Redis', variables('loggingRedisCacheName'))]"
           },
           "privateDnsZoneId": {
             "value": "[reference(toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))).outputs.redisPrivateDnsZoneId.value]"
@@ -760,14 +765,14 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
+      "apiVersion": "2022-09-01",
       "name": "logging-redis-cache-reset-public-access",
       "type": "Microsoft.Resources/deployments",
       "comments": "Toggles public access to it's original value as soon as the private endpoint deployment succeeds",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'redis.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'redis.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
