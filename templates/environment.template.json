@@ -141,6 +141,15 @@
         "description": "Whether to deploy the shared redis subnet."
       }
     },
+    "amplsSubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "Whether to deploy the shared redis subnet."
+      }
+    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -213,6 +222,28 @@
       "metadata": {
         "description": "Partitions allow for scaling of document count as well as faster indexing by sharding your index over multiple Azure Search units."
       }
+    },
+    "amplsQueryAccessMode": {
+      "type": "string",
+      "defaultValue": "Open",
+      "allowedValues": [
+        "PrivateOnly",
+        "Open"
+      ],
+      "metadata": {
+        "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
+      }
+    },
+    "amplsIngestionAccessMode": {
+      "type": "string",
+      "defaultValue": "Open",
+      "allowedValues": [
+        "PrivateOnly",
+        "Open"
+      ],
+      "metadata": {
+        "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
+      }
     }
   },
   "variables": {
@@ -226,10 +257,12 @@
     "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
-    "redisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
+    "sharedRedisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
+    "sharedRedisPrivateEndpointName": "[concat(variables('sharedRedisCacheName'),'-pe')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "aiSearchName": "[concat(variables('resourceNamePrefix'),'-srch')]",
+    "aiSearchPrivateEndpointName": "[concat(variables('aiSearchName'),'-pe')]",
     "aiSearchPrivateDnsZoneName": "privatelink.search.windows.net",
     "redisPrivateDnsZoneName": "privatelink.redis.cache.windows.net",
     "redisPrivateDnsZoneId": "[resourceId(variables('resourceGroupName'),'Microsoft.Network/privateDnsZones',variables('redisPrivateDnsZoneName'))]",
@@ -258,7 +291,10 @@
       "Microsoft.Storage",
       "Microsoft.AzureCosmosDB",
       "Microsoft.KeyVault"
-    ]
+    ],
+    "amplsName": "[concat(variables('resourceNamePrefix'), '-ampls')]",
+    "amplsPrivateEndpointName": "[concat(variables('amplsName'),'-pe')]",
+    "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ]
   },
   "resources": [
     {
@@ -307,6 +343,9 @@
           },
           "loggingRedisSubnetCount": {
             "value": "[parameters('loggingRedisSubnetCount')]"
+          },
+          "amplsSubnetCount": {
+            "value": "[parameters('amplsSubnetCount')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -679,7 +718,7 @@
         },
         "parameters": {
           "redisCacheName": {
-            "value": "[variables('redisCacheName')]"
+            "value": "[variables('sharedRedisCacheName')]"
           },
           "redisCacheSKU": {
             "value": "Standard"
@@ -806,13 +845,13 @@
         },
         "parameters": {
           "privateEndpointName": {
-            "value": "[concat(variables('aiSearchName'),'-pe')]"
+            "value": "[variables('aiSearchPrivateEndpointName')]"
           },
           "subnetId": {
             "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.sharedAiSearchSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
-            "value": ["searchService"]
+            "value": [ "searchService" ]
           },
           "privateLinkServiceId": {
             "value": "[resourceId(variables('resourceGroupName'),'Microsoft.Search/searchServices',variables('aiSearchName'))]"
@@ -862,16 +901,16 @@
         },
         "parameters": {
           "privateEndpointName": {
-            "value": "[concat(variables('redisCacheName'),'-pe')]"
+            "value": "[variables('sharedRedisPrivateEndpointName')]"
           },
           "subnetId": {
             "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.sharedRedisSubnetResourceId.value]"
           },
           "privateLinkGroupIds": {
-            "value": ["redisCache"]
+            "value": [ "redisCache" ]
           },
           "privateLinkServiceId": {
-            "value": "[resourceId(variables('resourceGroupName'),'Microsoft.Cache/Redis',variables('redisCacheName'))]"
+            "value": "[resourceId(variables('resourceGroupName'),'Microsoft.Cache/Redis',variables('sharedRedisCacheName'))]"
           },
           "privateDnsZoneId": {
             "value": "[variables('redisPrivateDnsZoneId')]"
@@ -896,7 +935,7 @@
         },
         "parameters": {
           "redisCacheName": {
-            "value": "[variables('redisCacheName')]"
+            "value": "[variables('sharedRedisCacheName')]"
           },
           "redisCacheSKU": {
             "value": "Standard"
@@ -914,6 +953,123 @@
       },
       "dependsOn": [
         "shared-redis-private-endpoint"
+      ]
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "azure-monitor-private-link-scope",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "type": "Microsoft.Insights/privateLinkScopes",
+              "apiVersion": "2021-07-01-preview",
+              "name": "[variables('amplsName')]",
+              "location": "global",
+              "properties": {
+                "accessModeSettings": {
+                  "queryAccessMode": "[parameters('amplsQueryAccessMode')]",
+                  "ingestionAccessMode": "[parameters('amplsIngestionAccessMode')]"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "ampls-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[variables('amplsPrivateEndpointName')]"
+          },
+          "subnetId": {
+            "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.amplsSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "azuremonitor" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(variables('resourceGroupName'), 'Microsoft.Insights/privateLinkScopes', variables('amplsName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[variables('virtualNetworkDeploymentName')]",
+        "azure-monitor-private-link-scope"
+      ]
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "[concat('ampls-private-dns-zone-', variables('amplsPrivateDnsZones')[copyIndex()])]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'), 'private-dns-zone.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('amplsPrivateDnsZones')[copyIndex()]]"
+          },
+          "vnetId": {
+            "value": "[resourceId(variables('resourceGroupName'), 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+          }
+        }
+      },
+      "copy": {
+        "name": "amplsPrivateDnsZoneCopy",
+        "count": "[length(variables('amplsPrivateDnsZones'))]"
+      }
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "ampls-private-dns-zone-groups",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "name": "[concat(variables('amplsPrivateEndpointName'),'/default')]",
+              "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+              "apiVersion": "2022-01-01",
+              "properties": {
+                "copy": [
+                  {
+                    "name": "privateDnsZoneConfigs",
+                    "count": "[length(variables('amplsPrivateDnsZones'))]",
+                    "input": {
+                      "name": "[variables('amplsPrivateDnsZones')[copyIndex('privateDnsZoneConfigs')]]",
+                      "properties": {
+                        "privateDnsZoneId": "[resourceId(variables('resourceGroupName'), 'Microsoft.Network/privateDnsZones', variables('amplsPrivateDnsZones')[copyIndex('privateDnsZoneConfigs')])]"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "amplsPrivateDnsZoneCopy",
+        "ampls-private-endpoint"
       ]
     }
   ],
