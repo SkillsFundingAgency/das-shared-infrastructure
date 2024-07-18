@@ -200,6 +200,20 @@
         "environmentVariable": "aiSearchSku"
       }
     },
+    "aiSearchReplicaCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Replicas distribute search workloads across the service. You need 2 or more to support high availability (applies to Basic and Standard only)."
+      }
+    },
+    "aiSearchPartitionCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Partitions allow for scaling of document count as well as faster indexing by sharding your index over multiple Azure Search units."
+      }
+    },
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
@@ -275,7 +289,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-11255-add-ai-srch-params/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -661,6 +675,12 @@
           },
           "aiSearchSku": {
             "value": "[parameters('aiSearchSku')]"
+          },
+          "aiSearchReplicaCount": {
+            "value": "[parameters('aiSearchReplicaCount')]"
+          },
+          "aiSearchPartitionCount": {
+            "value": "[parameters('aiSearchPartitionCount')]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
