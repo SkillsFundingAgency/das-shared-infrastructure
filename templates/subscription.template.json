@@ -200,6 +200,22 @@
         "environmentVariable": "aiSearchSku"
       }
     },
+    "aiSearchReplicaCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Replicas distribute search workloads across the service. You need 2 or more to support high availability (applies to Basic and Standard only).",
+        "environmentVariable": "aiSearchReplicaCount"
+      }
+    },
+    "aiSearchPartitionCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Partitions allow for scaling of document count as well as faster indexing by sharding your index over multiple Azure Search units.",
+        "environmentVariable": "aiSearchPartitionCount"
+      }
+    },
     "sharedStorageAccountContainerArray": {
       "type": "array",
       "metadata": {
@@ -661,6 +677,12 @@
           },
           "aiSearchSku": {
             "value": "[parameters('aiSearchSku')]"
+          },
+          "aiSearchReplicaCount": {
+            "value": "[parameters('aiSearchReplicaCount')]"
+          },
+          "aiSearchPartitionCount": {
+            "value": "[parameters('aiSearchPartitionCount')]"
           },
           "sharedStorageAccountContainerArray": {
             "value": "[parameters('sharedStorageAccountContainerArray')]"
