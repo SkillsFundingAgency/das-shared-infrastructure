@@ -209,7 +209,7 @@
       "type": "string",
       "defaultValue": "nat-sn",
       "metadata": {
-        "description": "The prefix used for naming new NAT gateway subnets."
+        "description": "The prefix used for naming the NAT gateway subnet."
       }
     },
     "natGatewaySubnetCount": {
@@ -220,6 +220,13 @@
       "metadata": {
         "description": "The number of NAT gateway subnets to provision"
       }
+    },
+    "natGatewayName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "NAT gateway name"
+      }
     }
   },
   "variables": {
@@ -228,6 +235,9 @@
     "emptyObject": {},
     "firewallNsgId": {
       "id": "[if(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), resourceId(parameters('firewallsResourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('firewallsNsgName')),'')]"
+    },
+    "natGatewayId": {
+      "id": "[if(not(bool(empty(parameters('natGatewayName')))), resourceId('Microsoft.Network/natGateways', parameters('natGatewayName')),'')]"
     },
     "subnetDelegations": [
       {
@@ -359,7 +369,8 @@
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "routeTable": "[variables('emptyObject')]",
+        "natGateway": "[if(not(bool(empty(parameters('natGatewayName')))), variables('natGatewayId'), json('null'))]"
       }
     },
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
@@ -460,6 +471,9 @@
           },
           "routeTable": {
             "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.routeTable), variables('emptyObject'), variables('subnetConfiguration')[copyIndex()].properties.routeTable)]"
+          },
+          "natGatewayId": {
+            "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.natGateway), variables('emptyObject'), variables('subnetConfiguration')[copyIndex()].properties.natGateway)]"
           }
         }
       },
@@ -497,8 +511,7 @@
     },
     "natGatewaySubnetAddressPrefix": {
       "type": "string",
-    //   "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('natGatewaySubnetObject').properties.addressPrefix)]"
-      "value": "[reference(resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('natGatewaySubnetObject').name), '2020-11-01').addressPrefix]"
+      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('natGatewaySubnetObject').name)]"
     }
   }
 }
