@@ -261,7 +261,8 @@
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('emptyArray')]",
             "networkSecurityGroup": "[if(and(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), bool(equals(copyIndex('gatewaySubnetCopy'), 0))), variables('firewallNsgId'), json('null'))]",
-            "routeTable": "[variables('emptyObject')]"
+            "routeTable": "[variables('emptyObject')]",
+            "natGateway": "[variables('emptyObject')]"
           }
         }
       },
@@ -275,7 +276,8 @@
             "serviceEndpointList": "[variables('emptyArray')]",
             "delegations": "[variables('emptyArray')]",
             "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
+            "routeTable": "[variables('emptyObject')]",
+            "natGateway": "[variables('emptyObject')]"
           }
         }
       },
@@ -289,7 +291,8 @@
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
             "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
+            "routeTable": "[variables('emptyObject')]",
+            "natGateway": "[variables('emptyObject')]"
           }
         }
       },
@@ -303,7 +306,8 @@
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
             "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
+            "routeTable": "[variables('emptyObject')]",
+            "natGateway": "[variables('emptyObject')]"
           }
         }
       },
@@ -317,7 +321,8 @@
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
             "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
+            "routeTable": "[variables('emptyObject')]",
+            "natGateway": "[variables('emptyObject')]"
           }
         }
       }
@@ -329,7 +334,8 @@
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "routeTable": "[variables('emptyObject')]",
+        "natGateway": "[variables('emptyObject')]"
       }
     },
     "sharedRedisSubnetObject": {
@@ -339,7 +345,8 @@
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "routeTable": "[variables('emptyObject')]",
+        "natGateway": "[variables('emptyObject')]"
       }
     },
     "loggingRedisSubnetObject": {
@@ -349,7 +356,8 @@
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "routeTable": "[variables('emptyObject')]",
+        "natGateway": "[variables('emptyObject')]"
       }
     },
     "amplsSubnetObject": {
@@ -359,7 +367,8 @@
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "routeTable": "[variables('emptyObject')]",
+        "natGateway": "[variables('emptyObject')]"
       }
     },
     "natGatewaySubnetObject": {
