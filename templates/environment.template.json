@@ -594,29 +594,29 @@
         "arm-shared-storage"
       ]
     },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "sql-server-firewall-rule",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'sql-server-firewall-rules.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "serverName": {
-            "value": "[if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName'))]"
-          },
-          "subnetResourceIdList": {
-            "value": "[reference('get-subnet-resourceid-list').outputs.subnetResourceIdList.value]"
-          }
-        }
-      },
-      "dependsOn": [
-        "sql-server-deployment"
-      ]
-    },
+    // {
+    //   "apiVersion": "2022-09-01",
+    //   "name": "sql-server-firewall-rule",
+    //   "type": "Microsoft.Resources/deployments",
+    //   "properties": {
+    //     "mode": "Incremental",
+    //     "templateLink": {
+    //       "uri": "[uri(variables('deploymentUrlBase'),'sql-server-firewall-rules.json')]",
+    //       "contentVersion": "1.0.0.0"
+    //     },
+    //     "parameters": {
+    //       "serverName": {
+    //         "value": "[if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName'))]"
+    //       },
+    //       "subnetResourceIdList": {
+    //         "value": "[reference('get-subnet-resourceid-list').outputs.subnetResourceIdList.value]"
+    //       }
+    //     }
+    //   },
+    //   "dependsOn": [
+    //     "sql-server-deployment"
+    //   ]
+    // },
     {
       "apiVersion": "2022-09-01",
       "name": "sql-server-deployment-replica",
