@@ -370,7 +370,7 @@
     "sharedRedisSubnet": "[if(greater(parameters('sharedRedisSubnetCount'), 0), array(variables('sharedRedisSubnetObject')), variables('emptyArray'))]",
     "loggingRedisSubnet": "[if(greater(parameters('loggingRedisSubnetCount'), 0), array(variables('loggingRedisSubnetObject')), variables('emptyArray'))]",
     "amplsSubnet": "[if(greater(parameters('amplsSubnetCount'), 0), array(variables('amplsSubnetObject')), variables('emptyArray'))]",
-    "natGatewaySubnet": "[if(greater(parameters('amplsSubnetCount'), 0), array(variables('natGatewaySubnetObject')), variables('emptyArray'))]",
+    "natGatewaySubnet": "[if(greater(parameters('natGatewaySubnetCount'), 0), array(variables('natGatewaySubnetObject')), variables('emptyArray'))]",
     "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'), variables('sharedAiSearchSubnet'), variables('sharedRedisSubnet'), variables('loggingRedisSubnet'), variables('amplsSubnet'), variables('natGatewaySubnet'))]"
   },
   "functions": [
@@ -494,10 +494,11 @@
     "amplsSubnetResourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('amplsSubnetObject').name)]"
-    }
-    // "natGatewaySubnetAddressPrefix": {
-    //   "type": "string",
+    },
+    "natGatewaySubnetAddressPrefix": {
+      "type": "string",
     //   "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('natGatewaySubnetObject').properties.addressPrefix)]"
-    // }
+      "value": "[reference(resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), variables('natGatewaySubnetObject').name), '2020-11-01').addressPrefix]"
+    }
   }
 }
