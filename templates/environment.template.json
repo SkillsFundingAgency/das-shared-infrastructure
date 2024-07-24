@@ -301,7 +301,7 @@
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
     "sqlServerLocationMap": {
       "primary": {
-        "location": "westeurope",
+        "location": "uksouth",
         "nameSuffix": "we"
       },
       "secondary": {
@@ -961,7 +961,8 @@
       },
       "dependsOn": [
         "[variables('virtualNetworkDeploymentName')]",
-        "ai-search-private-dns-zone"
+        "ai-search-private-dns-zone",
+        "ai-search"
       ]
     },
     {

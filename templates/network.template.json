@@ -494,10 +494,10 @@
     "amplsSubnetResourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('amplsSubnetObject').name)]"
-    },
-    "natGatewaySubnetAddressPrefix": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('natGatewaySubnetObject').properties.addressPrefix)]"
     }
+    // "natGatewaySubnetAddressPrefix": {
+    //   "type": "string",
+    //   "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('natGatewaySubnetObject').properties.addressPrefix)]"
+    // }
   }
 }
