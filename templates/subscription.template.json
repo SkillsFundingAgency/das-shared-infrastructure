@@ -292,8 +292,8 @@
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
-    "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
-    "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
+    "resourceNamePrefix": "[toLower(concat('sn-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+    "loggingRedisCacheName": "[toLower(concat('sn-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "classicStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'deploystr')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
@@ -388,7 +388,7 @@
       {
         "name": "keyVaultAllowedGatewaySubnetsCopy",
         "count": "[length(parameters('environments'))]",
-        "input": "[resourceId(concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-rg'),'Microsoft.Network/virtualNetworks/subnets',concat('das-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),parameters('gatewaySubnetName'))]"
+        "input": "[resourceId(concat('sn-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-rg'),'Microsoft.Network/virtualNetworks/subnets',concat('sn-',parameters('environments')[copyIndex('keyVaultAllowedGatewaySubnetsCopy')],'-shared-vnet'),parameters('gatewaySubnetName'))]"
       }
     ],
     "keyVaultAllowedSubnetsArray": "[concat(variables('keyVaultAllowedGatewaySubnetsCopy'),parameters('keyvaultAllowedSubnetsList'))]"
@@ -548,10 +548,10 @@
             "value": "[variables('keyVaultName')]"
           },
           "secretName": {
-            "value": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql'))]"
+            "value": "[toLower(concat('sn-', parameters('environments')[copyIndex()], '-shared-sql'))]"
           },
           "secretValue": {
-            "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql')), uniqueString(parameters('environments')[copyIndex()]))]"
+            "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat('sn-', parameters('environments')[copyIndex()], '-shared-sql')), uniqueString(parameters('environments')[copyIndex()]))]"
           }
         }
       },
@@ -586,28 +586,28 @@
         }
       }
     },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "classic-storage-account",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'storage-account-classic.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "storageAccountName": {
-            "value": "[variables('classicStorageName')]"
-          }
-        }
-      }
-    },
+    // {
+    //   "apiVersion": "2022-09-01",
+    //   "name": "classic-storage-account",
+    //   "type": "Microsoft.Resources/deployments",
+    //   "properties": {
+    //     "mode": "Incremental",
+    //     "templateLink": {
+    //       "uri": "[uri(variables('deploymentUrlBase'),'storage-account-classic.json')]",
+    //       "contentVersion": "1.0.0.0"
+    //     },
+    //     "parameters": {
+    //       "storageAccountName": {
+    //         "value": "[variables('classicStorageName')]"
+    //       }
+    //     }
+    //   }
+    // },
     {
       "apiVersion": "2022-09-01",
       "name": "[toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))]",
       "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
+      "resourceGroup": "[toLower(concat('sn-', parameters('environments')[copyIndex()], '-shared-rg'))]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -628,7 +628,7 @@
             "value": "[reference('key-vault').outputs.KeyVaultResourceId.value]"
           },
           "sqlServerAdminPasswordSecretName": {
-            "value": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql'))]"
+            "value": "[toLower(concat('sn-', parameters('environments')[copyIndex()], '-shared-sql'))]"
           },
           "sqlServerActiveDirectoryAdminLogin": {
             "value": "[parameters('sqlServerActiveDirectoryAdminLogin')]"
@@ -755,7 +755,7 @@
       "apiVersion": "2022-09-01",
       "name": "[toLower(concat(parameters('environments')[copyIndex()], '-logging-redis-private-endpoint'))]",
       "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
+      "resourceGroup": "[toLower(concat('sn-', parameters('environments')[copyIndex()], '-shared-rg'))]",
       "comments": "Private endpoint added here instead of environment template to reduce time publicNetworkAccess is set to Disabled",
       "properties": {
         "mode": "Incremental",

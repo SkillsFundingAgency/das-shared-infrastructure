@@ -150,6 +150,37 @@
         "description": "Whether to deploy the shared redis subnet."
       }
     },
+    "natGatewaySubnetCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 0,
+      "maxValue": 1,
+      "metadata": {
+        "description": "Whether to deploy the NAT Gateway subnet."
+      }
+    },
+    "natGatewaySku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Standard"
+      ],
+      "metadata": {
+        "description": "SKU of the NAT Gateway. Only standard available currently."
+      }
+    },
+    "natGatewayZone": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "metadata": {
+        "description": "SKU of the NAT Gateway. Only standard available currently."
+      }
+    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -250,12 +281,12 @@
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
-    "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
+    "resourceNamePrefix": "[toLower(concat('sn-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
-    "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
+    "firewallsResourceGroup": "[toLower(concat('sn-', variables('environmentName'),'-firewall-rg'))]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "sharedRedisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "sharedRedisPrivateEndpointName": "[concat(variables('sharedRedisCacheName'),'-pe')]",
@@ -279,7 +310,7 @@
       }
     },
     "sqlServerMinimalTlsVersion": "1.2",
-    "baseSqlServerName": "[toLower(concat('das-',variables('environmentName'),'-shared-sql'))]",
+    "baseSqlServerName": "[toLower(concat('sn-',variables('environmentName'),'-shared-sql'))]",
     "deployFailoverGroups": "[contains(createArray('pp', 'prd') , toLower(variables('environmentName')))]",
     "primarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').primary.nameSuffix))]",
     "secondarySQLServerName": "[toLower(concat(variables('baseSQLServerName'), '-', variables('sqlServerLocationMap').secondary.nameSuffix))]",
@@ -294,7 +325,9 @@
     ],
     "amplsName": "[concat(variables('resourceNamePrefix'), '-ampls')]",
     "amplsPrivateEndpointName": "[concat(variables('amplsName'),'-pe')]",
-    "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ]
+    "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ],
+    "natGatewayName": "[concat(variables('resourceNamePrefix'), '-nat')]",
+    "natPublicIPAddressName": "[concat(variables('resourceNamePrefix'), '-nat-pip-0')]"
   },
   "resources": [
     {
@@ -347,6 +380,9 @@
           "amplsSubnetCount": {
             "value": "[parameters('amplsSubnetCount')]"
           },
+          "natGatewaySubnetCount": {
+            "value": "[parameters('natGatewaySubnetCount')]"
+          },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
           },
@@ -356,6 +392,65 @@
         }
       }
     },
+    {
+      "apiVersion": "2019-09-01",
+      "type": "Microsoft.Network/natGateways",
+      "name": "[variables('natGatewayName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "sku": {
+        "name": "[parameters('natGatewaySku')]"
+      },
+      "zones": "[parameters('natGatewayZone')]",
+      "properties": {
+        "publicIPAddresses": [
+          {
+            "id": "[reference('nat-gateway-pip').outputs.PublicIpAddressResourceId.value]"
+          }
+        ],
+        "publicIPPrefixes": [],
+        "idleTimeoutInMinutes": 4
+      },
+      "dependsOn": [
+        "[variables('virtualNetworkDeploymentName')]"
+      ]
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "nat-gateway-pip",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'public-ip-address.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "publicIPAddressName": {
+            "value": "[variables('natPublicIPAddressName')]"
+          },
+          "sku": {
+            "value": "Standard"
+          }
+        }
+      }
+    },
+    // {
+    //   "type": "Microsoft.Network/virtualNetworks/subnets",
+    //   "apiVersion": "2020-11-01",
+    //   "name": "[concat(variables('virtualNetworkName'), '/', variables('subnetName'))]",
+    //   "properties": {
+    //     // "addressPrefix": "[reference(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '2020-11-01').subnets[variables('subnetName')].addressPrefix]",
+    //     "addressPrefix": "[reference(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '2020-11-01').subnets[0].addressPrefix]",
+    //     // "addressPrefix": "[reference(concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetName')), '2018-11-01').addressPrefix]",
+    //     "natGateway": {
+    //       "id": "[resourceId('Microsoft.Network/natGateways', variables('natGatewayName'))]"
+    //     }
+    //   },
+    //   "dependsOn": [
+    //     "[resourceId('Microsoft.Network/natGateways', variables('natGatewayName'))]"
+    //   ]
+    // },
     {
       "apiVersion": "2022-09-01",
       "name": "get-subnet-resourceid-list",
@@ -392,6 +487,9 @@
           },
           "allowSharedKeyAccess": {
             "value": true
+          },
+          "minimumTlsVersion": {
+            "value": "TLS1_2"
           }
         }
       }
