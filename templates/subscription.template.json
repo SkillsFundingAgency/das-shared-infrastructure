@@ -287,11 +287,18 @@
         "description": "Gateway subnet to allow on shared keyvault used by variable keyVaultAllowedGatewaySubnetsCopy",
         "environmentVariable": "gatewaySubnetName"
       }
+    },
+    "deployNatGateway": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Whether to deploy the NAT gateway, subnet and PIP."
+      }
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-11309-AddNATGateway/templates/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-11309-AddNATGateway/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -586,23 +593,23 @@
         }
       }
     },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "classic-storage-account",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'storage-account-classic.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "storageAccountName": {
-            "value": "[variables('classicStorageName')]"
-          }
-        }
-      }
-    },
+    // {
+    //   "apiVersion": "2022-09-01",
+    //   "name": "classic-storage-account",
+    //   "type": "Microsoft.Resources/deployments",
+    //   "properties": {
+    //     "mode": "Incremental",
+    //     "templateLink": {
+    //       "uri": "[uri(variables('deploymentUrlBase'),'storage-account-classic.json')]",
+    //       "contentVersion": "1.0.0.0"
+    //     },
+    //     "parameters": {
+    //       "storageAccountName": {
+    //         "value": "[variables('classicStorageName')]"
+    //       }
+    //     }
+    //   }
+    // },
     {
       "apiVersion": "2022-09-01",
       "name": "[toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))]",
@@ -692,6 +699,9 @@
           },
           "logAnalyticsWorkspaceResourceGroupName": {
             "value": "[variables('resourceGroupName')]"
+          },
+          "deployNatGateway": {
+            "value": "[parameters('deployNatGateway')]"
           }
         }
       },

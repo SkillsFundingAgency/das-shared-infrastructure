@@ -150,6 +150,28 @@
         "description": "Whether to deploy the shared redis subnet."
       }
     },
+    "natGatewaySku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "allowedValues": [
+        "Standard"
+      ],
+      "metadata": {
+        "description": "SKU of the NAT Gateway. Only standard available currently."
+      }
+    },
+    "natGatewayZone": {
+      "type": "array",
+      "defaultValue": [],
+      "allowedValues": [
+        "1",
+        "2",
+        "3"
+      ],
+      "metadata": {
+        "description": "SKU of the NAT Gateway. Only standard available currently."
+      }
+    },
     "firewallsNsgName": {
       "type": "string",
       "defaultValue": "Disabled",
@@ -244,11 +266,18 @@
       "metadata": {
         "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
       }
+    },
+    "deployNatGateway": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Whether to deploy the NAT gateway, subnet and PIP."
+      }
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-11309-AddNATGateway/templates/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-11309-AddNATGateway/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
@@ -294,7 +323,10 @@
     ],
     "amplsName": "[concat(variables('resourceNamePrefix'), '-ampls')]",
     "amplsPrivateEndpointName": "[concat(variables('amplsName'),'-pe')]",
-    "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ]
+    "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ],
+    "natGatewayName": "[concat(variables('resourceNamePrefix'), '-nat')]",
+    "natGatewaySubnetCount": "[if(parameters('deployNatGateway'), 1, 0)]",
+    "natGatewayPublicIPAddressName": "[concat(variables('natGatewayName'), '-pip-0')]"
   },
   "resources": [
     {
@@ -347,11 +379,79 @@
           "amplsSubnetCount": {
             "value": "[parameters('amplsSubnetCount')]"
           },
+          "natGatewaySubnetCount": {
+            "value": "[variables('natGatewaySubnetCount')]"
+          },
+          "natGatewayName": {
+            "value": "[if(parameters('deployNatGateway'), reference('nat-gateway').outputs.natGatewayName.value, '')]"
+          },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
           },
           "firewallsResourceGroup": {
             "value": "[variables('firewallsResourceGroup')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('deployNatGateway')]",
+      "apiVersion": "2022-09-01",
+      "name": "nat-gateway",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "apiVersion": "2019-09-01",
+              "type": "Microsoft.Network/natGateways",
+              "name": "[variables('natGatewayName')]",
+              "location": "[resourceGroup().location]",
+              "tags": {},
+              "sku": {
+                "name": "[parameters('natGatewaySku')]"
+              },
+              "zones": "[parameters('natGatewayZone')]",
+              "properties": {
+                "publicIPAddresses": [
+                  {
+                    "id": "[if(parameters('deployNatGateway'), reference('nat-gateway-pip').outputs.PublicIpAddressResourceId.value, '')]"
+                  }
+                ],
+                "publicIPPrefixes": [],
+                "idleTimeoutInMinutes": 4
+              }
+            }
+          ],
+          "outputs": {
+            "natGatewayName": {
+              "type": "string",
+              "value": "[variables('natGatewayName')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('deployNatGateway')]",
+      "apiVersion": "2022-09-01",
+      "name": "nat-gateway-pip",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'public-ip-address.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "publicIPAddressName": {
+            "value": "[variables('natGatewayPublicIPAddressName')]"
+          },
+          "sku": {
+            "value": "Standard"
           }
         }
       }
@@ -392,6 +492,9 @@
           },
           "allowSharedKeyAccess": {
             "value": true
+          },
+          "minimumTlsVersion": {
+            "value": "TLS1_2"
           }
         }
       }
@@ -863,7 +966,8 @@
       },
       "dependsOn": [
         "[variables('virtualNetworkDeploymentName')]",
-        "ai-search-private-dns-zone"
+        "ai-search-private-dns-zone",
+        "ai-search"
       ]
     },
     {
