@@ -388,6 +388,9 @@
           },
           "firewallsResourceGroup": {
             "value": "[variables('firewallsResourceGroup')]"
+          },
+          "natGatewayName": {
+            "value": "[variables('natGatewayName')]"
           }
         }
       }

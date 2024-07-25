@@ -237,7 +237,7 @@
       "id": "[if(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), resourceId(parameters('firewallsResourceGroup'), 'Microsoft.Network/networkSecurityGroups', parameters('firewallsNsgName')),'')]"
     },
     "natGatewayId": {
-      "id": "[if(not(bool(empty(parameters('natGatewayName')))), resourceId('Microsoft.Network/natGateways', parameters('natGatewayName')),'')]"
+      "id": "[if(empty(parameters('natGatewayName')), '', resourceId('Microsoft.Network/natGateways', parameters('natGatewayName')))]"
     },
     "subnetDelegations": [
       {
@@ -379,7 +379,7 @@
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
         "routeTable": "[variables('emptyObject')]",
-        "natGateway": "[if(not(bool(empty(parameters('natGatewayName')))), variables('natGatewayId'), json('null'))]"
+        "natGateway": "[if(empty(parameters('natGatewayName')), json('null'), variables('natGatewayId'))]"
       }
     },
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
