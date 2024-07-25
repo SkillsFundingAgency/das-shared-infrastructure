@@ -269,7 +269,7 @@
     },
     "deployNatGateway": {
       "type": "bool",
-      "defaultValue": false,
+      "defaultValue": true,
       "metadata": {
         "description": "Whether to deploy the NAT gateway, subnet and PIP."
       }
