@@ -379,7 +379,7 @@
         "delegations": "[variables('emptyArray')]",
         "networkSecurityGroup": "[variables('emptyObject')]",
         "routeTable": "[variables('emptyObject')]",
-        "natGateway": "[if(empty(parameters('natGatewayName')), json('null'), variables('natGatewayId'))]"
+        "natGateway": "[if(greater(parameters('natGatewaySubnetCount'), 0), json('null'), variables('natGatewayId'))]"
       }
     },
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
