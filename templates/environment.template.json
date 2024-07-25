@@ -271,7 +271,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
+        "description": "Whether to deploy the NAT gateway, subnet and PIP."
       }
     }
   },
