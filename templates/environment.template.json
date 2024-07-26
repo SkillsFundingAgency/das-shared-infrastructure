@@ -408,7 +408,7 @@
       "properties": {
         "publicIPAddresses": [
           {
-            "id": "[reference('nat-gateway-pip').outputs.PublicIpAddressResourceId.value]"
+            "id": "[if(parameters('deployNatGateway'), reference('nat-gateway-pip').outputs.PublicIpAddressResourceId.value, '')]"
           }
         ],
         "publicIPPrefixes": [],
