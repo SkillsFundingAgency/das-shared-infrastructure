@@ -287,6 +287,13 @@
         "description": "Gateway subnet to allow on shared keyvault used by variable keyVaultAllowedGatewaySubnetsCopy",
         "environmentVariable": "gatewaySubnetName"
       }
+    },
+    "deployNatGateway": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Whether to deploy the NAT gateway, subnet and PIP."
+      }
     }
   },
   "variables": {
@@ -692,6 +699,9 @@
           },
           "logAnalyticsWorkspaceResourceGroupName": {
             "value": "[variables('resourceGroupName')]"
+          },
+          "deployNatGateway": {
+            "value": "[parameters('deployNatGateway')]"
           }
         }
       },

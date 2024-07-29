@@ -269,7 +269,7 @@
     },
     "deployNatGateway": {
       "type": "bool",
-      "defaultValue": true,
+      "defaultValue": false,
       "metadata": {
         "description": "Whether to deploy the NAT gateway, subnet and PIP."
       }
@@ -383,7 +383,7 @@
             "value": "[variables('natGatewaySubnetCount')]"
           },
           "natGatewayName": {
-            "value": "[if(parameters('deployNatGateway'), variables('natGatewayName'), '')]"
+            "value": "[if(parameters('deployNatGateway'), reference('nat-gateway').outputs.natGatewayName.value, '')]"
           },
           "firewallsNsgName": {
             "value": "[parameters('firewallsNsgName')]"
@@ -394,29 +394,67 @@
         }
       }
     },
+    // {
+    //   "condition": "[parameters('deployNatGateway')]",
+    //   "apiVersion": "2019-09-01",
+    //   "type": "Microsoft.Network/natGateways",
+    //   "name": "[variables('natGatewayName')]",
+    //   "location": "[resourceGroup().location]",
+    //   "tags": {},
+    //   "sku": {
+    //     "name": "[parameters('natGatewaySku')]"
+    //   },
+    //   "zones": "[parameters('natGatewayZone')]",
+    //   "properties": {
+    //     "publicIPAddresses": [
+    //       {
+    //         "id": "[if(parameters('deployNatGateway'), reference('nat-gateway-pip').outputs.PublicIpAddressResourceId.value, '')]"
+    //       }
+    //     ],
+    //     "publicIPPrefixes": [],
+    //     "idleTimeoutInMinutes": 4
+    //   }
+    // },
     {
       "condition": "[parameters('deployNatGateway')]",
-      "apiVersion": "2019-09-01",
-      "type": "Microsoft.Network/natGateways",
-      "name": "[variables('natGatewayName')]",
-      "location": "[resourceGroup().location]",
-      "tags": {},
-      "sku": {
-        "name": "[parameters('natGatewaySku')]"
-      },
-      "zones": "[parameters('natGatewayZone')]",
+      "apiVersion": "2022-09-01",
+      "name": "nat-gateway",
+      "type": "Microsoft.Resources/deployments",
       "properties": {
-        "publicIPAddresses": [
-          {
-            "id": "[if(parameters('deployNatGateway'), reference('nat-gateway-pip').outputs.PublicIpAddressResourceId.value, '')]"
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": [
+            {
+              "apiVersion": "2019-09-01",
+              "type": "Microsoft.Network/natGateways",
+              "name": "[variables('natGatewayName')]",
+              "location": "[resourceGroup().location]",
+              "tags": {},
+              "sku": {
+                "name": "[parameters('natGatewaySku')]"
+              },
+              "zones": "[parameters('natGatewayZone')]",
+              "properties": {
+                "publicIPAddresses": [
+                  {
+                    "id": "[if(parameters('deployNatGateway'), reference('nat-gateway-pip').outputs.PublicIpAddressResourceId.value, '')]"
+                  }
+                ],
+                "publicIPPrefixes": [],
+                "idleTimeoutInMinutes": 4
+              }
+            }
+          ],
+          "outputs": {
+            "natGatewayName": {
+              "type": "string",
+              "value": "[variables('natGatewayName')]"
+            }
           }
-        ],
-        "publicIPPrefixes": [],
-        "idleTimeoutInMinutes": 4
-      },
-      "dependsOn": [
-        "[variables('virtualNetworkDeploymentName')]"
-      ]
+        }
+      }
     },
     {
       "condition": "[parameters('deployNatGateway')]",
@@ -439,22 +477,6 @@
         }
       }
     },
-    // {
-    //   "type": "Microsoft.Network/virtualNetworks/subnets",
-    //   "apiVersion": "2020-11-01",
-    //   "name": "[concat(variables('virtualNetworkName'), '/', variables('subnetName'))]",
-    //   "properties": {
-    //     // "addressPrefix": "[reference(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '2020-11-01').subnets[variables('subnetName')].addressPrefix]",
-    //     "addressPrefix": "[reference(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '2020-11-01').subnets[0].addressPrefix]",
-    //     // "addressPrefix": "[reference(concat(resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName')), '/subnets/', variables('subnetName')), '2018-11-01').addressPrefix]",
-    //     "natGateway": {
-    //       "id": "[resourceId('Microsoft.Network/natGateways', variables('natGatewayName'))]"
-    //     }
-    //   },
-    //   "dependsOn": [
-    //     "[resourceId('Microsoft.Network/natGateways', variables('natGatewayName'))]"
-    //   ]
-    // },
     {
       "apiVersion": "2022-09-01",
       "name": "get-subnet-resourceid-list",
