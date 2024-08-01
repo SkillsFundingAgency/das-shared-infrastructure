@@ -276,8 +276,8 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-11309-AddNATGateway/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-11309-AddNATGateway/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-11309-AddNATGateway.SN/templates/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-11309-AddNATGateway.SN/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('sn-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",

@@ -230,7 +230,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-11309-AddNATGateway/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-11309-AddNATGateway.SN/templates/",
     "emptyArray": [],
     "emptyObject": {},
     "firewallNsgId": {

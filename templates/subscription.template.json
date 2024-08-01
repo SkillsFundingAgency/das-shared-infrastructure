@@ -297,8 +297,8 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-11309-AddNATGateway/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-11309-AddNATGateway/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-11309-AddNATGateway.SN/templates/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-11309-AddNATGateway.SN/",
     "resourceNamePrefix": "[toLower(concat('sn-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('sn-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
