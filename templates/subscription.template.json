@@ -14,6 +14,7 @@
       "defaultValue": "Standard",
       "metadata": {
         "description": "The type of Redis cache to deploy"
+        "environmentVariable": "redisCacheSKU"
       }
     },
     "redisCacheFamily": {
@@ -21,6 +22,7 @@
       "defaultValue": "C",
       "metadata": {
         "description": "The SKU family to use"
+        "environmentVariable": "redisCacheFamily"
       }
     },
     "redisCacheCapacity": {
