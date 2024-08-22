@@ -6,6 +6,26 @@
       "type": "string",
       "metadata": {
         "description": "Abbreviated name for the environment, eg: AT, TEST, PP, PRD"
+    },
+    "redisCacheSKU": {
+      "type": "string",
+      "defaultValue": "Standard"
+      "metadata": {
+        "description": "The type of Redis cache to deploy"
+      }
+    },
+    "redisCacheFamily": {
+      "type": "string",
+      "defaultValue": "C"
+      "metadata": {
+        "description": "The SKU family to use"
+      }
+    },
+    "redisCacheCapacity": {
+      "type": "int",
+      "defaultValue": 1
+      "metadata": {
+        "description": "The size of the Redis cache to deploy"
       }
     },
     "sharedManagementResourceGroup": {
@@ -721,13 +741,13 @@
             "value": "[variables('sharedRedisCacheName')]"
           },
           "redisCacheSKU": {
-            "value": "Standard"
+              "value": "[parameters('redisCacheSKU')]"
           },
           "redisCacheFamily": {
-            "value": "C"
+              "value": "[parameters('redisCacheFamily')]"
           },
           "redisCacheCapacity": {
-            "value": 1
+              "value": "[parameters('redisCacheCapacity')]"
           },
           "enableNonSslPort": {
             "value": false
