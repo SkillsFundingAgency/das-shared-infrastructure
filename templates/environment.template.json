@@ -741,13 +741,13 @@
             "value": "[variables('sharedRedisCacheName')]"
           },
           "redisCacheSKU": {
-              "value": "[parameters('redisCacheSKU')]"
+            "value": "[parameters('redisCacheSKU')]"
           },
           "redisCacheFamily": {
-              "value": "[parameters('redisCacheFamily')]"
+            "value": "[parameters('redisCacheFamily')]"
           },
           "redisCacheCapacity": {
-              "value": "[parameters('redisCacheCapacity')]"
+            "value": "[parameters('redisCacheCapacity')]"
           },
           "enableNonSslPort": {
             "value": false
