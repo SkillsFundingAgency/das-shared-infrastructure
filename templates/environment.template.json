@@ -9,21 +9,21 @@
     },
     "redisCacheSKU": {
       "type": "string",
-      "defaultValue": "Standard"
+      "defaultValue": "Standard",
       "metadata": {
         "description": "The type of Redis cache to deploy"
       }
     },
     "redisCacheFamily": {
       "type": "string",
-      "defaultValue": "C"
+      "defaultValue": "C",
       "metadata": {
         "description": "The SKU family to use"
       }
     },
     "redisCacheCapacity": {
       "type": "int",
-      "defaultValue": 1
+      "defaultValue": 1,
       "metadata": {
         "description": "The size of the Redis cache to deploy"
       }
