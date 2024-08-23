@@ -9,6 +9,30 @@
         "environmentVariable": "resourceEnvironmentName"
       }
     },
+    "sharedRedisCacheSKU": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "The type of Redis cache to deploy",
+        "environmentVariable": "sharedRedisCacheSKU"
+      }
+    },
+    "sharedRedisCacheFamily": {
+      "type": "string",
+      "defaultValue": "C",
+      "metadata": {
+        "description": "The SKU family to use",
+        "environmentVariable": "sharedRedisCacheFamily"
+      }
+    },
+    "sharedRedisCacheCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "The size of the Redis cache to deploy",
+        "environmentVariable": "sharedRedisCacheCapacity"
+      }
+    },
     "serviceName": {
       "type": "string",
       "defaultValue": "shared",
@@ -617,6 +641,15 @@
         "parameters": {
           "environmentName": {
             "value": "[toUpper(parameters('environments')[copyIndex()])]"
+          },
+          "sharedRedisCacheSKU": {
+            "value": "[parameters('sharedRedisCacheSKU')]"
+          },
+          "sharedRedisCacheFamily": {
+            "value": "[parameters('sharedRedisCacheFamily')]"
+          },
+          "sharedRedisCacheCapacity": {
+            "value": "[parameters('sharedRedisCacheCapacity')]"
           },
           "sharedManagementResourceGroup": {
             "value": "[variables('resourceGroupName')]"
