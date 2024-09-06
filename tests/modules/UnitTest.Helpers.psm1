@@ -19,6 +19,7 @@ function Set-MockEnvironment {
     $ENV:sharedWorkerSubnetCount = 1
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
+    $ENV:backendAppServicePlanSkus = "[]"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
     $ENV:keyVaultAllowedIpAddressesList = "['111.1.1.1/32']"
     $ENV:keyVaultAllowedSubnetsList = "[]"
@@ -54,6 +55,7 @@ function Clear-MockEnvironment {
         "ENV:backendSubnetCount",
         "ENV:sharedWorkerSubnetCount",
         "ENV:sqlAdminPasswordSeed",
+        "ENV:backendAppServicePlanSkus",
         "ENV:sharedStorageAccountContainerArray",
         "ENV:keyVaultAllowedIpAddressesList",
         "ENV:keyVaultAllowedSubnetsList",
