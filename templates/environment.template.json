@@ -207,6 +207,13 @@
         "description": "Takes an array of objects: '[{\"identifier\": 0,\"tier\": \"Basic\",\"size\": \"1\",\"instances\": 1}]. Removing the backslash. The identifier helps map the values to the deployed ASP."
       }
     },
+    "frontendAppServicePlanSkus": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Takes an array of objects: '[{\"identifier\": 0,\"tier\": \"Basic\",\"size\": \"1\",\"instances\": 1}]. Removing the backslash. The identifier helps map the values to the deployed ASP."
+      }
+    },
     "sharedWorkerAppServicePlanSku": {
       "type": "object",
       "defaultValue": {
@@ -287,6 +294,7 @@
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "backEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'be-asp-')]",
+    "frontEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'fe-asp-')]",
     "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
@@ -655,6 +663,37 @@
           },
           "nonASETier": {
             "value": "[parameters('frontEndAppServicePlanSku').tier]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[concat('front-end-app-service-plan-', copyIndex(), '-', parameters('utcValue'))]",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "copy": {
+        "name": "frontendAppServicePlanLoop",
+        "count": "[length(parameters('frontendAppServicePlanSkus'))]"
+      },
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appServicePlanName": {
+            "value": "[concat(variables('frontEndAppServicePlanNamePrefix'), copyIndex())]"
+          },
+          "aspSize": {
+            "value": "[parameters('frontendAppServicePlanSkus')[copyIndex()].size]"
+          },
+          "aspInstances": {
+            "value": "[parameters('frontendAppServicePlanSkus')[copyIndex()].instances]"
+          },
+          "nonASETier": {
+            "value": "[parameters('frontendAppServicePlanSkus')[copyIndex()].tier]"
           }
         }
       }

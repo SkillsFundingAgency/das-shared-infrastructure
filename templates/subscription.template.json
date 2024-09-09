@@ -199,6 +199,14 @@
         "environmentVariable": "frontEndAppServicePlanSku"
       }
     },
+    "frontendAppServicePlanSkus": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Takes an array of objects: '[{\"identifier\": 0,\"tier\": \"Basic\", \"size\": \"1\",\"instances\": 1}]. Removing the backslash. The identifier helps map the values to the deployed ASP.",
+        "environmentVariable": "frontendAppServicePlanSkus"
+      }
+    },
     "backEndAppServicePlanSku": {
       "type": "object",
       "defaultValue": {
@@ -715,6 +723,9 @@
           },
           "backendAppServicePlanSkus": {
             "value": "[parameters('backendAppServicePlanSkus')]"
+          },
+          "frontendAppServicePlanSkus": {
+            "value": "[parameters('frontendAppServicePlanSkus')]"
           },
           "sharedWorkerAppServicePlanSku": {
             "value": "[parameters('sharedWorkerAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
