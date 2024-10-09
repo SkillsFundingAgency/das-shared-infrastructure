@@ -1,0 +1,204 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "publicIPAddressName": {
+      "type": "string",
+      "defaultValue": "das-dat-hub-nat-pip-0"
+    },
+    "natGatewayName": {
+      "type": "string",
+      "defaultValue": "das-dat-nat-gateway"
+    },
+    "firewallName": {
+      "type": "string",
+      "defaultValue": "das-dat-firewall"
+    },
+    "firewallPublicIpName": {
+      "type": "string",
+      "defaultValue": "das-dat-hub-fw-pip-0"
+    },
+    "vnetName": {
+      "type": "string",
+      "defaultValue": "das-dat-hub-vnet"
+    },
+    "subnets": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "AzureFirewallSubnet",
+          "properties": {
+            "addressPrefix": "10.0.1.0/24"
+          }
+        },
+        {
+          "name": "AppSubnet",
+          "properties": {
+            "addressPrefix": "10.0.2.0/24"
+          }
+        }
+      ]
+    },
+    "firewallPolicies": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "das-dat-firewall-policy-1"
+        },
+        {
+          "name": "das-dat-firewall-policy-2"
+        }
+      ]
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "VNetDeployment",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/vnet.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "vnetName": { "value": "[parameters('vnetName')]" },
+          "location": { "value": "[parameters('location')]" },
+          "subnets": { "value": "[parameters('subnets')]" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "PublicIPDeployment",
+      "dependsOn": [ "VNetDeployment" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/pip.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "publicIPAddressName": { "value": "[parameters('publicIPAddressName')]" },
+          "sku": { "value": "Standard" },
+          "publicIPAllocationMethod": { "value": "Static" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "NatGatewayDeployment",
+      "dependsOn": [ "PublicIPDeployment" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/nat_gateway.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "natGatewayName": { "value": "[parameters('natGatewayName')]" },
+          "location": { "value": "[parameters('location')]" },
+          "publicIpId": { "value": "[reference('PublicIPDeployment').outputs.publicIpAddressResourceId.value]" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "SubnetUpdateDeployment",
+      "dependsOn": [ "NatGatewayDeployment" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/vnet.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "vnetName": { "value": "[parameters('vnetName')]" },
+          "location": { "value": "[parameters('location')]" },
+          "subnets": {
+            "value": [
+              {
+                "name": "AzureFirewallSubnet",
+                "properties": {
+                  "addressPrefix": "10.0.1.0/24",
+                  "natGateway": {
+                    "id": "[reference('NatGatewayDeployment').outputs.natGatewayId.value]"
+                  }
+                }
+              },
+              {
+                "name": "AppSubnet",
+                "properties": {
+                  "addressPrefix": "10.0.2.0/24"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "FirewallPublicIPDeployment",
+      "dependsOn": [ "VNetDeployment" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/pip.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "publicIPAddressName": { "value": "[parameters('firewallPublicIpName')]" },
+          "sku": { "value": "Standard" },
+          "publicIPAllocationMethod": { "value": "Static" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "FirewallPoliciesDeployment",
+      "dependsOn": [ "VNetDeployment" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/firewall_policies.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "firewallPolicies": { "value": "[parameters('firewallPolicies')]" },
+          "location": { "value": "[parameters('location')]" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "AzureFirewallDeployment",
+      "dependsOn": [ "FirewallPublicIPDeployment", "NatGatewayDeployment", "FirewallPoliciesDeployment", "VNetDeployment" ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/azure_firewall.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "firewallName": { "value": "[parameters('firewallName')]" },
+          "location": { "value": "[parameters('location')]" },
+          "firewallSubnetId": { "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'AzureFirewallSubnet')]" },
+          "firewallPublicIpId": { "value": "[reference('FirewallPublicIPDeployment').outputs.publicIpAddressResourceId.value]" },
+          "firewallPolicyId": { "value": "[resourceId('Microsoft.Network/firewallPolicies', parameters('firewallPolicies')[0].name)]" }
+        }
+      }
+    }
+  ]
+}
