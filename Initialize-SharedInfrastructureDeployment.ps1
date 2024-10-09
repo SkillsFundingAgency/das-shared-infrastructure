@@ -52,8 +52,8 @@ param(
     [string]$Location = "West Europe"
 )
 
-$TemplateFilePath = "$PSScriptRoot/templates/subscription.template.json"
-$TemplateParametersFilePath = "$PSScriptRoot/templates/subscription.parameters.json"
+$TemplateFilePath = "$PSScriptRoot/templates/hub.template.json"
+# $TemplateParametersFilePath = "$PSScriptRoot/templates/subscription.parameters.json"
 
 try {
     # --- Are We Logged in?
