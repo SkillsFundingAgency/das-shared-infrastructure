@@ -63,7 +63,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/vnet.json",
+          "uri": "https://raw.githubusercontent.com/nibraz-habeeb-rft/azure/main/templates/vnet.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -81,7 +81,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/pip.json",
+          "uri": "https://raw.githubusercontent.com/nibraz-habeeb-rft/azure/main/templates/pip.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -99,7 +99,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/nat_gateway.json",
+          "uri": "https://raw.githubusercontent.com/nibraz-habeeb-rft/azure/main/templates/nat_gateway.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -117,7 +117,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/vnet.json",
+          "uri": "https://raw.githubusercontent.com/nibraz-habeeb-rft/azure/main/templates/vnet.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -153,7 +153,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/pip.json",
+          "uri": "https://raw.githubusercontent.com/nibraz-habeeb-rft/azure/main/templates/pip.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -171,7 +171,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/firewall_policies.json",
+          "uri": "https://raw.githubusercontent.com/nibraz-habeeb-rft/azure/main/templates/firewall_policies.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -188,7 +188,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://github.com/nibraz-habeeb-rft/azure/blob/8e9e109518ffc0366f89f161915d0cb22ae86f46/templates/azure_firewall.json",
+          "uri": "https://raw.githubusercontent.com/nibraz-habeeb-rft/azure/main/templates/azure_firewall.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
