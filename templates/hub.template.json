@@ -2,6 +2,16 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+   "resourceGroupLocation": {
+     "type": "string",
+     "defaultValue": "West Europe"
+    },
+    
+    "resourceGroupName": {
+     "type": "string",
+      "defaultValue": "das-dta-hub-rg"
+    },
+
     "publicIPAddressName": {
       "type": "string",
       "defaultValue": "das-dat-hub-nat-pip-0"
@@ -55,7 +65,16 @@
       "defaultValue": "eastus"
     }
   },
+  
   "resources": [
+    {
+      "apiVersion": "2021-04-01",
+      "name": "[parameters('resourceGroupName')]",
+      "type": "Microsoft.Resources/resourceGroups",
+      "location": "[parameters('resourceGroupLocation')]",
+      "properties": {}
+    },
+
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
