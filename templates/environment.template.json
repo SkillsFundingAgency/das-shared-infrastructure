@@ -9,11 +9,11 @@
       }
     },
     "sharedRedisCacheSKU": {
-        "type": "string",
-        "defaultValue": "Standard",
-        "metadata": {
-          "description": "The type of Redis cache to deploy"
-        }
+      "type": "string",
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "The type of Redis cache to deploy"
+      }
     },
     "sharedRedisCacheFamily": {
       "type": "string",
@@ -283,6 +283,16 @@
     "utcValue": {
       "type": "string",
       "defaultValue": "[utcNow()]"
+    },
+    // "products": {
+    //   "type": "string",
+    //   "defaultValue":  "faa"
+    //   }
+    "products": {
+      "type": "array",
+      "defaultValue": [
+        "faa"
+      ]
     }
   },
   "variables": {
@@ -1174,7 +1184,52 @@
         "amplsPrivateDnsZoneCopy",
         "ampls-private-endpoint"
       ]
+    },
+    {
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('products')[copyIndex()], '-application-insights-', parameters('utcValue'))]",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "appInsightsName": {
+            "value": "[concat(variables('resourceNamePrefix'),'-', parameters('products')[copyIndex()], '-ai')]"
+          },
+          "logAnalyticsWorkspaceId": {
+            "value": "[resourceId(parameters('logAnalyticsWorkspaceResourceGroupName'),'Microsoft.OperationalInsights/workspaces',parameters('logAnalyticsWorkspaceName'))]"
+          }
+        }
+      },
+       "copy": {
+        "name": "productsLoop",
+        "count": "[length(parameters('products'))]"
+      }
     }
+    // {
+    //   "apiVersion": "2021-04-01",
+    //   "name": "[concat(parameters('products'), '-application-insights-', parameters('utcValue'))]",
+    //   "type": "Microsoft.Resources/deployments",
+    //   "properties": {
+    //     "mode": "Incremental",
+    //     "templateLink": {
+    //       "uri": "[concat(variables('deploymentUrlBase'),'application-insights.json')]",
+    //       "contentVersion": "1.0.0.0"
+    //     },
+    //     "parameters": {
+    //       "appInsightsName": {
+    //         "value": "[concat(variables('resourceNamePrefix'),'-', parameters('products'), '-ai')]"
+    //       },
+    //       "logAnalyticsWorkspaceId": {
+    //         "value": "[resourceId(parameters('logAnalyticsWorkspaceResourceGroupName'),'Microsoft.OperationalInsights/workspaces',parameters('logAnalyticsWorkspaceName'))]"
+    //       }
+    //     }
+    //   }
+    // }
   ],
   "outputs": {
     "sharedResourceGroupName": {
