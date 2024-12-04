@@ -327,6 +327,12 @@
         "description": "Gateway subnet to allow on shared keyvault used by variable keyVaultAllowedGatewaySubnetsCopy",
         "environmentVariable": "gatewaySubnetName"
       }
+    },
+    "products": {
+      "type": "array",
+      "metadata": {
+       "environmentVariable": "products"
+      }
     }
   },
   "variables": {
@@ -729,6 +735,9 @@
           },
           "logAnalyticsWorkspaceResourceGroupName": {
             "value": "[variables('resourceGroupName')]"
+          },
+          "products": {
+            "value": "[parameters('products')]"
           }
         }
       },

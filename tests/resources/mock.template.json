@@ -219,6 +219,12 @@
       "metadata": {
         "environmentVariable": "gatewaySubnetName"
       }
+    },
+    "products": {
+      "type": "array",
+      "metadata": {
+        "environmentVariable": "products"
+      }
     }
   },
   "variables": {},
