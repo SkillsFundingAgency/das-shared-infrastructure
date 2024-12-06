@@ -294,6 +294,7 @@
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
+    "routeTableName": "[toLower(concat('rt-shared-', variables('environmentName'), '-0'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "backEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'be-asp-')]",
@@ -1201,6 +1202,26 @@
        "copy": {
         "name": "productsLoop",
         "count": "[length(parameters('products'))]"
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "route-table",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'route-table.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "routeTableName": {
+            "value": "[variables('routeTableName')]"
+          },
+          "disableBgpRoutePropagation": {
+            "value": false
+          }
+        }
       }
     }
   ],
