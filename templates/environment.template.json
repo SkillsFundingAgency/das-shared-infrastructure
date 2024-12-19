@@ -9,11 +9,11 @@
       }
     },
     "sharedRedisCacheSKU": {
-        "type": "string",
-        "defaultValue": "Standard",
-        "metadata": {
-          "description": "The type of Redis cache to deploy"
-        }
+      "type": "string",
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "The type of Redis cache to deploy"
+      }
     },
     "sharedRedisCacheFamily": {
       "type": "string",
@@ -280,6 +280,18 @@
         "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
       }
     },
+    "routeTableRoutes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The route objects for the route table"
+      }
+    },
+    "disableBgpRoutePropagation" : {
+      "type": "bool",
+      "defaultValue": false,
+      "description": "Indicates whether BGP route propagation is disabled"
+    },
     "utcValue": {
       "type": "string",
       "defaultValue": "[utcNow()]"
@@ -294,7 +306,7 @@
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
-    "routeTableName": "[toLower(concat('das-rt-shared-', variables('environmentName'), '-0'))]",
+    "routeTableName": "[toLower(concat('das-', variables('environmentName'),'-shared-rt-0'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "backEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'be-asp-')]",
@@ -1218,8 +1230,11 @@
           "routeTableName": {
             "value": "[variables('routeTableName')]"
           },
+          "routeTableRoutes": {
+            "value": "[parameters('routeTableRoutes')]"
+          },
           "disableBgpRoutePropagation": {
-            "value": false
+            "value": "[parameters('disableBgpRoutePropagation')]"
           }
         }
       }
