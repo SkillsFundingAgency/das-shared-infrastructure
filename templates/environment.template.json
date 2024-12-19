@@ -283,6 +283,7 @@
     "routeTableRoutes": {
       "type": "array",
       "metadata": {
+        "environmentVariable": "routeTableRoutes",
         "description": "The route objects for the route table"
       }
     },
