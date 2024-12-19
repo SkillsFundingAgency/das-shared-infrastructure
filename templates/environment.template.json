@@ -282,8 +282,8 @@
     },
     "routeTableRoutes": {
       "type": "array",
+      "defaultValue": [],
       "metadata": {
-        "environmentVariable": "routeTableRoutes",
         "description": "The route objects for the route table"
       }
     },
