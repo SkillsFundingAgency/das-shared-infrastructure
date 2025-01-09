@@ -886,6 +886,12 @@
           },
           "maximumThroughputUnits": {
             "value": 20
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceResourceGroupName": {
+            "value": "[parameters('logAnalyticsWorkspaceResourceGroupName')]"
           }
         }
       }
