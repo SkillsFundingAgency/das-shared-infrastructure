@@ -287,10 +287,12 @@
         "description": "The route objects for the route table"
       }
     },
-    "disableBgpRoutePropagation" : {
+    "disableBgpRoutePropagation": {
       "type": "bool",
       "defaultValue": false,
-      "description": "Indicates whether BGP route propagation is disabled"
+      "metadata": {
+        "description": "Indicates whether BGP route propagation is disabled"
+      }
     },
     "utcValue": {
       "type": "string",
@@ -854,26 +856,26 @@
         }
       }
     },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "cdn-profile",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'cdn-profile.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "cdnProfileName": {
-            "value": "[variables('cdnProfileName')]"
-          },
-          "cdnSKU": {
-            "value": "Standard_Verizon"
-          }
-        }
-      }
-    },
+    // {
+    //   "apiVersion": "2022-09-01",
+    //   "name": "cdn-profile",
+    //   "type": "Microsoft.Resources/deployments",
+    //   "properties": {
+    //     "mode": "Incremental",
+    //     "templateLink": {
+    //       "uri": "[uri(variables('deploymentUrlBase'),'cdn-profile.json')]",
+    //       "contentVersion": "1.0.0.0"
+    //     },
+    //     "parameters": {
+    //       "cdnProfileName": {
+    //         "value": "[variables('cdnProfileName')]"
+    //       },
+    //       "cdnSKU": {
+    //         "value": "Standard_Verizon"
+    //       }
+    //     }
+    //   }
+    // },
     {
       "apiVersion": "2022-09-01",
       "name": "event-hub-namespace",
@@ -1211,7 +1213,7 @@
           }
         }
       },
-       "copy": {
+      "copy": {
         "name": "productsLoop",
         "count": "[length(parameters('products'))]"
       }
