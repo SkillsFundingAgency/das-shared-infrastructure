@@ -1065,13 +1065,13 @@
             "value": "[variables('sharedRedisCacheName')]"
           },
           "redisCacheSKU": {
-            "value": "Standard"
+            "value": "[parameters('sharedRedisCacheSKU')]"
           },
           "redisCacheFamily": {
-            "value": "C"
+            "value": "[parameters('sharedRedisCacheFamily')]"
           },
           "redisCacheCapacity": {
-            "value": 1
+            "value": "[parameters('sharedRedisCacheCapacity')]"
           },
           "enableNonSslPort": {
             "value": false
