@@ -224,14 +224,6 @@
         "environmentVariable": "backendAppServicePlanSkus"
       }
     },
-    "routeTableRoutes": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "The route objects for the route table",
-        "environmentVariable": "routeTableRoutes"
-      }
-    },
     "sharedWorkerAppServicePlanSku": {
       "type": "object",
       "defaultValue": {},
@@ -719,9 +711,6 @@
           },
           "backendAppServicePlanSkus": {
             "value": "[parameters('backendAppServicePlanSkus')]"
-          },
-          "routeTableRoutes": {
-            "value": "[parameters('routeTableRoutes')]"
           },
           "frontendAppServicePlanSkus": {
             "value": "[parameters('frontendAppServicePlanSkus')]"
