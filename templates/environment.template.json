@@ -280,13 +280,6 @@
         "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
       }
     },
-    "routeTableRoutes": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "The route objects for the route table"
-      }
-    },
     "disableBgpRoutePropagation": {
       "type": "bool",
       "defaultValue": false,
@@ -304,6 +297,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentBicepUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates-bicep/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
@@ -1231,15 +1225,12 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'route-table.json')]",
+          "uri": "[concat(variables('deploymentBicepUrlBase'),'route-table.bicep')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "routeTableName": {
             "value": "[variables('routeTableName')]"
-          },
-          "routeTableRoutes": {
-            "value": "[parameters('routeTableRoutes')]"
           },
           "disableBgpRoutePropagation": {
             "value": "[parameters('disableBgpRoutePropagation')]"
