@@ -296,8 +296,8 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-12525-FIX/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-12525-FIX/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
