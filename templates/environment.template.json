@@ -1224,7 +1224,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'route-table.bicep')]",
+          "uri": "[concat(variables('deploymentUrlBase'),'route-table.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
