@@ -27,11 +27,6 @@ resources:
     name: SkillsFundingAgency/das-platform-automation
     ref: refs/tags/5.1.15
     endpoint: SkillsFundingAgency
-  pipelines:
-  - pipeline: das-employer-config
-    project: Digital Apprenticeship Service
-    source: das-employer-config
-    branch: master
 
 stages:
 - stage: Build
