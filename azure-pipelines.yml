@@ -4,8 +4,15 @@ trigger:
     include:
       - "master"
 
-workspace:
-  clean: all
+variables:
+- name: BuildConfiguration
+  value: release
+- name: BuildPlatform
+  value: any cpu
+- group: RELEASE Management Resources
+- group: RELEASE das-shared-infrastructure
+- name: Deploy
+  value: $[or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'PullRequest'))]
 
 resources:
   repositories:
@@ -13,48 +20,133 @@ resources:
   - repository: das-platform-building-blocks
     type: github
     name: SkillsFundingAgency/das-platform-building-blocks
-    ref: refs/tags/2.1.15
+    ref: refs/tags/2.1.28
+    endpoint: SkillsFundingAgency
+  - repository: das-platform-automation
+    type: github
+    name: SkillsFundingAgency/das-platform-automation
+    ref: refs/tags/5.1.15
     endpoint: SkillsFundingAgency
 
-pool:
-  name: DAS - Continuous Integration
-  demands:
-    - npm
-    - node.js
-    - LATEST_DOTNET_VERSION -equals 3.1
-    - Agent.OS -equals Windows_NT
+stages:
+- stage: Build
+  jobs:
+  - template: pipeline-templates/job/build.yml
+    parameters:
+      BuildConfiguration: $(BuildConfiguration)
 
-steps:
-  - template: azure-pipelines-templates/build/step/gitversion.yml@das-platform-building-blocks
-  - script: |
-      npm install eclint
-      node ./node_modules/eclint/bin/eclint.js check
-    displayName: "Validate editorconfig"
-    workingDirectory: $(System.DefaultWorkingDirectory)
-  - task: PowerShell@2
-    displayName: "Execute unit tests"
-    inputs:
-      filePath: ./tests/Start-UnitTest.ps1
-      failOnStderr: true
-      pwsh: true
-      workingDirectory:  $(System.DefaultWorkingDirectory)
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'NUnit'
-      testResultsFiles: $(System.DefaultWorkingDirectory)\tests\Test-Pester.XML
-    condition: succeededOrFailed()
-  - task: CopyFiles@2
-    displayName: "Copy Files to: $(build.artifactstagingdirectory)"
-    inputs:
-      Contents: |
-        modules/**
-        templates/**
-        utilities/**
-        tests/Remove-Environment.ps1
-        Initialize-SharedInfrastructureDeployment.ps1
-      TargetFolder: "$(build.artifactstagingdirectory)/publish"
-      OverWrite: true
-  - task: PublishBuildArtifacts@1
-    displayName: "Publish Artifact"
-    inputs:
-      PathtoPublish: "$(build.artifactstagingdirectory)/publish"
+- stage: Deploy_DTA
+  dependsOn: Build
+  displayName: Deploy to DTA
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
+  variables:
+  - group: AT DevTest Shared Resources
+  - group: DTA das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: DTA
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      SubscriptionAbbreviation: DTA
+      Location: West Europe
+
+- stage: Deploy_AT
+  displayName: Deploy to AT
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
+  variables:
+  - group: AT DevTest Shared Resources
+  - group: AT das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: AT
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      SubscriptionAbbreviation: DTA
+      Location: West Europe
+
+- stage: Deploy_TEST
+  dependsOn: Deploy_AT
+  displayName: Deploy to TEST
+  variables:
+  - group: TEST DevTest Shared Resources
+  - group: TEST das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: TEST
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      SubscriptionAbbreviation: DTA
+      Location: West Europe
+
+- stage: Deploy_TEST2
+  dependsOn: Deploy_TEST
+  displayName: Deploy to TEST2
+  variables:
+  - group: TEST2 DevTest Shared Resources
+  - group: TEST2 das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: TEST2
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      SubscriptionAbbreviation: DTA
+      Location: West Europe
+
+- stage: Deploy_DEMO
+  dependsOn: Deploy_TEST2
+  displayName: Deploy to DEMO
+  variables:
+  - group: DEMO DevTest Shared Resources
+  - group: DEMO das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: DEMO
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      SubscriptionAbbreviation: DTA
+      Location: West Europe
+
+- stage: Deploy_PP
+  dependsOn: Deploy_DEMO
+  displayName: Deploy to PP
+  variables:
+  - group: PreProd Management Resources
+  - group: PreProd Shared Resources
+  - group: PREPROD das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: PP
+      ServiceConnection: SFA-DIG-PreProd-ARM
+      SubscriptionAbbreviation: PP
+      Location: West Europe
+
+- stage: Deploy_MO
+  dependsOn: Deploy_PP
+  displayName: Deploy to MO
+  variables:
+  - group: MO Management Resources
+  - group: MO Shared Resources
+  - group: MO das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: MO
+      ServiceConnection: SFA-ASM-ModelOffice-ARM
+      SubscriptionAbbreviation: MO
+      Location: West Europe
+
+- stage: Deploy_PROD
+  dependsOn: Deploy_MO
+  displayName: Deploy to PROD
+  variables:
+  - group: PROD Management Resources
+  - group: PROD Shared Resources
+  - group: PROD das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/job/deploy.yml
+    parameters:
+      Environment: PROD
+      ServiceConnection: SFA-DIG-Prod-ARM
+      SubscriptionAbbreviation: PRD
+      Location: West Europe

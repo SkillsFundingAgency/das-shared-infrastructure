@@ -1,0 +1,32 @@
+parameters:
+  Environment: ''  # Environment name (e.g., AT, TEST, TEST2, DEMO, PP, MO, PROD)
+  ServiceConnection: ''  # Service connection for Azure
+
+jobs:
+- job: Deploy_${{ parameters.Environment }}
+  displayName: 'Deploy to ${{ parameters.Environment }}'
+  pool:
+    name: DAS - Continuous Integration
+    demands:
+      - Agent.OS -equals Windows_NT
+
+  steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '3.1.x'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: AzurePowerShell@5
+    displayName: 'Deploy Shared Infrastructure'
+    inputs:
+      azureSubscription: '${{ parameters.ServiceConnection }}'
+      ScriptType: 'FilePath'
+      ScriptPath: '$(Build.SourcesDirectory)/scripts/Deploy-SharedInfrastructure.ps1'
+      ScriptArguments: >-
+        -SubscriptionAbbreviation "${{ parameters.SubscriptionAbbreviation }}"
+        -EnvironmentNames "${{ parameters.Environment }}"
+        -Location "${{ parameters.Location }}"
+      azurePowerShellVersion: 'LatestVersion'
+      pwsh: true
