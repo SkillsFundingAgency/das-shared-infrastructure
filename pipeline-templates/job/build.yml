@@ -1,0 +1,54 @@
+parameters:
+  BuildConfiguration: ''
+  BuildPlatform: ''
+
+jobs:
+- job: Build
+  displayName: 'Build Job'
+  pool:
+    name: DAS - Continuous Integration
+    demands:
+      - npm
+      - node.js
+      - LATEST_DOTNET_VERSION -equals 3.1
+      - Agent.OS -equals Windows_NT
+
+  steps:
+  - template: azure-pipelines-templates/build/step/gitversion.yml@das-platform-building-blocks
+
+  - script: |
+      npm install eclint
+      node ./node_modules/eclint/bin/eclint.js check
+    displayName: "Validate editorconfig"
+    workingDirectory: $(System.DefaultWorkingDirectory)
+
+  - task: PowerShell@2
+    displayName: "Execute unit tests"
+    inputs:
+      filePath: ./tests/Start-UnitTest.ps1
+      failOnStderr: true
+      pwsh: true
+      workingDirectory:  $(System.DefaultWorkingDirectory)
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: 'NUnit'
+      testResultsFiles: $(System.DefaultWorkingDirectory)\tests\Test-Pester.XML
+    condition: succeededOrFailed()
+
+  - task: CopyFiles@2
+    displayName: "Copy Files to: $(build.artifactstagingdirectory)"
+    inputs:
+      Contents: |
+        modules/**
+        templates/**
+        utilities/**
+        tests/Remove-Environment.ps1
+        Initialize-SharedInfrastructureDeployment.ps1
+      TargetFolder: "$(build.artifactstagingdirectory)/publish"
+      OverWrite: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish Artifact"
+    inputs:
+      PathtoPublish: "$(build.artifactstagingdirectory)/publish"
