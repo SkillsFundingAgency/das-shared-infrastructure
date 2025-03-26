@@ -438,33 +438,6 @@
     ],
     "keyVaultAllowedSubnetsArray": "[concat(variables('keyVaultAllowedGatewaySubnetsCopy'),parameters('keyvaultAllowedSubnetsList'))]"
   },
-  "functions": [
-    {
-      "namespace": "blocks",
-      "members": {
-        "getPasswordFromSeed": {
-          "parameters": [
-            {
-              "name": "seed",
-              "type": "string"
-            },
-            {
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "name": "environment",
-              "type": "string"
-            }
-          ],
-          "output": {
-            "type": "string",
-            "value": "[concat(toUpper(substring(parameters('environment'),0,1)), uniqueString(resourceGroup().id, parameters('name'), parameters('seed')), toLower(parameters('environment')), '!')]"
-          }
-        }
-      }
-    }
-  ],
   "resources": [
     {
       "apiVersion": "2022-09-01",
@@ -578,36 +551,7 @@
         "environmentCopy"
       ]
     },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "[concat('sql-server-key-vault-secrets-', parameters('environments')[copyIndex()])]",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'keyvault-secret.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "keyVaultName": {
-            "value": "[variables('keyVaultName')]"
-          },
-          "secretName": {
-            "value": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql'))]"
-          },
-          "secretValue": {
-            "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql')), uniqueString(parameters('environments')[copyIndex()]))]"
-          }
-        }
-      },
-      "copy": {
-        "name": "secretsCopy",
-        "count": "[length(parameters('environments'))]"
-      },
-      "dependsOn": [
-        "key-vault"
-      ]
-    },
+
     {
       "apiVersion": "2022-09-01",
       "name": "log-analytics-workspace",
@@ -663,9 +607,6 @@
           },
           "sharedKeyVaultId": {
             "value": "[reference('key-vault').outputs.KeyVaultResourceId.value]"
-          },
-          "sqlServerAdminPasswordSecretName": {
-            "value": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-sql'))]"
           },
           "sqlServerActiveDirectoryAdminLogin": {
             "value": "[parameters('sqlServerActiveDirectoryAdminLogin')]"
@@ -738,6 +679,9 @@
           },
           "products": {
             "value": "[parameters('products')]"
+          },
+          "sqlAdminPasswordSeed": {
+            "value": "[parameters('sqlAdminPasswordSeed')]"
           }
         }
       },
@@ -747,7 +691,6 @@
       },
       "dependsOn": [
         "key-vault",
-        "secretsCopy",
         "log-analytics-workspace"
       ]
     },

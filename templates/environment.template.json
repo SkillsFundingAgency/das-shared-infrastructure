@@ -47,12 +47,6 @@
         "description": "This is necessary because the 'dependsOn' in the subscription template is not waiting for the keyvault to deploy"
       }
     },
-    "sqlServerAdminPasswordSecretName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the Key Vault secret which contains the SQL Admin password for this environment"
-      }
-    },
     "sqlServerActiveDirectoryAdminLogin": {
       "type": "string",
       "metadata": {
@@ -293,6 +287,13 @@
     },
     "products": {
       "type": "array"
+    },
+    "sqlAdminPasswordSeed": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The seed used to generate passwords for sql server deployments.",
+        "environmentVariable": "sqlAdminPasswordSeed"
+      }
     }
   },
   "variables": {
@@ -348,6 +349,33 @@
     "amplsPrivateEndpointName": "[concat(variables('amplsName'),'-pe')]",
     "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ]
   },
+  "functions": [
+    {
+      "namespace": "blocks",
+      "members": {
+        "getPasswordFromSeed": {
+          "parameters": [
+            {
+              "name": "seed",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "environment",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[concat(toUpper(substring(parameters('environment'),0,1)), uniqueString(resourceGroup().id, parameters('name'), parameters('seed')), toLower(parameters('environment')), '!')]"
+          }
+        }
+      }
+    }
+  ],
   "resources": [
     {
       "apiVersion": "2022-09-01",
@@ -501,6 +529,55 @@
     },
     {
       "apiVersion": "2022-09-01",
+      "name": "sql-server-key-vault-secret-primary",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('sharedManagementResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'keyvault-secret.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('sharedKeyVaultName')]"
+          },
+          "secretName": {
+            "value": "[if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName'))]"
+          },
+          "secretValue": {
+            "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat('das-', parameters('environmentName'), '-shared-sql')), uniqueString(parameters('environmentName')))]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "sql-server-key-vault-secret-secondary",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('deployFailoverGroups')]",
+      "resourceGroup": "[parameters('sharedManagementResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'keyvault-secret.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('sharedKeyVaultName')]"
+          },
+          "secretName": {
+            "value": "[if(variables('deployFailoverGroups'), variables('secondarySQLServerName'), variables('baseSQLServerName'))]"
+          },
+          "secretValue": {
+            "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat('das-', parameters('environmentName'), '-shared-sql-ne')), uniqueString(parameters('environmentName')))]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2022-09-01",
       "name": "sql-server-deployment",
       "type": "Microsoft.Resources/deployments",
       "properties": {
@@ -524,7 +601,7 @@
               "keyVault": {
                 "id": "[resourceId(parameters('sharedManagementResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
               },
-              "secretName": "[parameters('sqlServerAdminPasswordSecretName')]"
+              "secretName": "[if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName'))]"
             }
           },
           "sqlServerActiveDirectoryAdminLogin": {
@@ -545,7 +622,8 @@
         }
       },
       "dependsOn": [
-        "arm-shared-storage"
+        "arm-shared-storage",
+        "sql-server-key-vault-secret-primary"
       ]
     },
     {
@@ -597,7 +675,7 @@
               "keyVault": {
                 "id": "[resourceId(parameters('sharedManagementResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
               },
-              "secretName": "[parameters('sqlServerAdminPasswordSecretName')]"
+              "secretName": "[if(variables('deployFailoverGroups'), variables('secondarySQLServerName'), variables('baseSQLServerName'))]"
             }
           },
           "sqlServerActiveDirectoryAdminLogin": {
@@ -618,7 +696,8 @@
         }
       },
       "dependsOn": [
-        "arm-shared-storage"
+        "arm-shared-storage",
+        "sql-server-key-vault-secret-secondary"
       ]
     },
     {
