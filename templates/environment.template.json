@@ -529,7 +529,7 @@
     },
     {
       "apiVersion": "2022-09-01",
-      "name": "sql-server-key-vault-secret",
+      "name": "sql-server-key-vault-secret-primary",
       "type": "Microsoft.Resources/deployments",
       "resourceGroup": "[parameters('sharedManagementResourceGroup')]",
       "properties": {
@@ -547,6 +547,31 @@
           },
           "secretValue": {
             "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat('das-', parameters('environmentName'), '-shared-sql')), uniqueString(parameters('environmentName')))]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "sql-server-key-vault-secret-secondary",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[variables('deployFailoverGroups')]",
+      "resourceGroup": "[parameters('sharedManagementResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'keyvault-secret.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('sharedKeyVaultName')]"
+          },
+          "secretName": {
+            "value": "[if(variables('deployFailoverGroups'), variables('secondarySQLServerName'), variables('baseSQLServerName'))]"
+          },
+          "secretValue": {
+            "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat('das-', parameters('environmentName'), '-shared-sql-ne')), uniqueString(parameters('environmentName')))]"
           }
         }
       }
@@ -598,7 +623,7 @@
       },
       "dependsOn": [
         "arm-shared-storage",
-        "sql-server-key-vault-secret"
+        "sql-server-key-vault-secret-primary"
       ]
     },
     {
@@ -650,7 +675,7 @@
               "keyVault": {
                 "id": "[resourceId(parameters('sharedManagementResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
               },
-              "secretName": "[if(variables('deployFailoverGroups'), variables('primarySQLServerName'), variables('baseSQLServerName'))]"
+              "secretName": "[if(variables('deployFailoverGroups'), variables('secondarySQLServerName'), variables('baseSQLServerName'))]"
             }
           },
           "sqlServerActiveDirectoryAdminLogin": {
@@ -672,7 +697,7 @@
       },
       "dependsOn": [
         "arm-shared-storage",
-        "sql-server-key-vault-secret"
+        "sql-server-key-vault-secret-secondary"
       ]
     },
     {
