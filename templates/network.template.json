@@ -234,8 +234,7 @@
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 0, copyIndex('gatewaySubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('emptyArray')]",
-            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), bool(equals(copyIndex('gatewaySubnetCopy'), 0))), variables('firewallNsgId'), json('null'))]",
-            "routeTable": "[variables('emptyObject')]"
+            "networkSecurityGroup": "[if(and(not(bool(equals(parameters('firewallsNsgName'),'Disabled'))), bool(equals(copyIndex('gatewaySubnetCopy'), 0))), variables('firewallNsgId'), json('null'))]"
           }
         }
       },
@@ -248,8 +247,7 @@
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 5, copyIndex('managementSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[variables('emptyArray')]",
             "delegations": "[variables('emptyArray')]",
-            "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
+            "networkSecurityGroup": "[variables('emptyObject')]"
           }
         }
       },
@@ -262,8 +260,7 @@
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 15, copyIndex('frontendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
-            "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
+            "networkSecurityGroup": "[variables('emptyObject')]"
           }
         }
       },
@@ -276,8 +273,7 @@
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 20, copyIndex('backendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
-            "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
+            "networkSecurityGroup": "[variables('emptyObject')]"
           }
         }
       },
@@ -290,8 +286,7 @@
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 30, copyIndex('sharedWorkerSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
-            "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[variables('emptyObject')]"
+            "networkSecurityGroup": "[variables('emptyObject')]"
           }
         }
       }
@@ -302,8 +297,7 @@
         "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 37, 0, parameters('subnetAddressSpaceCIDR'))]",
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
-        "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "networkSecurityGroup": "[variables('emptyObject')]"
       }
     },
     "sharedRedisSubnetObject": {
@@ -312,8 +306,7 @@
         "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 38, 0, parameters('subnetAddressSpaceCIDR'))]",
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
-        "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "networkSecurityGroup": "[variables('emptyObject')]"
       }
     },
     "loggingRedisSubnetObject": {
@@ -322,8 +315,7 @@
         "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 39, 0, parameters('subnetAddressSpaceCIDR'))]",
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
-        "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "networkSecurityGroup": "[variables('emptyObject')]"
       }
     },
     "amplsSubnetObject": {
@@ -332,8 +324,7 @@
         "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 40, 0, parameters('subnetAddressSpaceCIDR'))]",
         "serviceEndpointList": "[variables('emptyArray')]",
         "delegations": "[variables('emptyArray')]",
-        "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[variables('emptyObject')]"
+        "networkSecurityGroup": "[variables('emptyObject')]"
       }
     },
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
@@ -430,9 +421,6 @@
           },
           "networkSecurityGroup": {
             "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.networkSecurityGroup), variables('emptyObject'), variables('subnetConfiguration')[copyIndex()].properties.networkSecurityGroup)]"
-          },
-          "routeTable": {
-            "value": "[if(empty(variables('subnetConfiguration')[copyIndex()].properties.routeTable), variables('emptyObject'), variables('subnetConfiguration')[copyIndex()].properties.routeTable)]"
           }
         }
       },

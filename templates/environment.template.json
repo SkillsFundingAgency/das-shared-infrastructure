@@ -1295,26 +1295,6 @@
         "name": "productsLoop",
         "count": "[length(parameters('products'))]"
       }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "route-table",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'route-table.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "routeTableName": {
-            "value": "[variables('routeTableName')]"
-          },
-          "disableBgpRoutePropagation": {
-            "value": "[parameters('disableBgpRoutePropagation')]"
-          }
-        }
-      }
     }
   ],
   "outputs": {
