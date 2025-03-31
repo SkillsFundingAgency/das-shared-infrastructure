@@ -56,7 +56,6 @@ class ParametersFileBuilder {
                         (ConvertFrom-Json $ParameterVariableValue).psobject.properties | ForEach-Object { $HashTable[$_.Name] = $_.Value }
                         $ParameterVariableValue = @($HashTable.SyncRoot)
                     }
-                    
                     break
                 }
                 'int' {

@@ -225,6 +225,12 @@
       "metadata": {
         "environmentVariable": "products"
       }
+    },
+    "routeTableRoutes": {
+      "type": "object",
+      "metadata": {
+        "environmentVariable": "routeTableRoutes"
+      }
     }
   },
   "variables": {},

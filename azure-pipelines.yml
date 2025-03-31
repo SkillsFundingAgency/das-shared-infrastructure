@@ -50,6 +50,7 @@ steps:
         modules/**
         templates/**
         utilities/**
+        config/**
         tests/Remove-Environment.ps1
         Initialize-SharedInfrastructureDeployment.ps1
       TargetFolder: "$(build.artifactstagingdirectory)/publish"

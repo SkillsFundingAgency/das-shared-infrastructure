@@ -274,13 +274,6 @@
         "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
       }
     },
-    "disableBgpRoutePropagation": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "Indicates whether BGP route propagation is disabled"
-      }
-    },
     "utcValue": {
       "type": "string",
       "defaultValue": "[utcNow()]"
@@ -294,6 +287,12 @@
         "description": "The seed used to generate passwords for sql server deployments.",
         "environmentVariable": "sqlAdminPasswordSeed"
       }
+    },
+    "routeTableRoutes": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of routes to be added to route table"
+      }
     }
   },
   "variables": {
@@ -302,7 +301,6 @@
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
-    "routeTableName": "[toLower(concat('das-', variables('environmentName'),'-shared-rt'))]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "backEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'be-asp-')]",
@@ -319,6 +317,7 @@
     "aiSearchPrivateDnsZoneName": "privatelink.search.windows.net",
     "redisPrivateDnsZoneName": "privatelink.redis.cache.windows.net",
     "redisPrivateDnsZoneId": "[resourceId(variables('resourceGroupName'),'Microsoft.Network/privateDnsZones',variables('redisPrivateDnsZoneName'))]",
+    "routeTableName": "[toLower(concat(variables('resourceNamePrefix'),'-rt'))]",
     "configurationStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'configstr')]",
     "sharedARMStorageName": "[concat(replace(variables('resourceNamePrefix'), '-',''), 'str')]",
     "sqlServerLocationMap": {
@@ -347,7 +346,8 @@
     ],
     "amplsName": "[concat(variables('resourceNamePrefix'), '-ampls')]",
     "amplsPrivateEndpointName": "[concat(variables('amplsName'),'-pe')]",
-    "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ]
+    "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ],
+    "enableRouteTableAssociation": "[contains(createArray('dta', 'at', 'test') , toLower(variables('environmentName')))]"
   },
   "functions": [
     {
@@ -432,6 +432,15 @@
           },
           "firewallsResourceGroup": {
             "value": "[variables('firewallsResourceGroup')]"
+          },
+          "routeTableName": {
+            "value": "[variables('routeTableName')]"
+          },
+          "routeTableRoutes": {
+            "value": "[parameters('routeTableRoutes')]"
+          },
+          "enableRouteTableAssociation": {
+            "value": "[variables('enableRouteTableAssociation')]"
           }
         }
       }
@@ -1294,26 +1303,6 @@
       "copy": {
         "name": "productsLoop",
         "count": "[length(parameters('products'))]"
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "route-table",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'route-table.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "routeTableName": {
-            "value": "[variables('routeTableName')]"
-          },
-          "disableBgpRoutePropagation": {
-            "value": "[parameters('disableBgpRoutePropagation')]"
-          }
-        }
       }
     }
   ],
