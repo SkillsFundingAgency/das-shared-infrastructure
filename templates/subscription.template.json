@@ -331,7 +331,15 @@
     "products": {
       "type": "array",
       "metadata": {
-       "environmentVariable": "products"
+        "environmentVariable": "products"
+      }
+    },
+    "routeTableRoutes": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Array of routes to be added to route table",
+        "environmentVariable": "routeTableRoutes"
       }
     }
   },
@@ -682,6 +690,9 @@
           },
           "sqlAdminPasswordSeed": {
             "value": "[parameters('sqlAdminPasswordSeed')]"
+          },
+          "routeTableRoutes": {
+            "value": "[parameters('routeTableRoutes')[toLower(parameters('environments')[copyIndex()])]]"
           }
         }
       },
