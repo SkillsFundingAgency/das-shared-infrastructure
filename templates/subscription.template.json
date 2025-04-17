@@ -329,8 +329,14 @@
       }
     },
     "deployPrivateLinkedScopedResource": {
-      "type": "bool",
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Enabled"
+      ],
       "metadata": {
+        "description": ""description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"",
         "environmentVariable": "deployPrivateLinkedScopedResource"
       }
     },
