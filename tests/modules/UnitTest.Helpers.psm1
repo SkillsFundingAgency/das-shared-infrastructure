@@ -33,7 +33,7 @@ function Set-MockEnvironment {
     $ENV:databasesToIncludeIn100PercentAlert = "das-prd-example-db"
     $ENV:gatewaySubnetName = "subnet"
     $ENV:products = "['faa']"
-    $ENV:deployPrivateLinkedScopedResource = "false"
+    $ENV:deployPrivateLinkedScopedResource = "Enabled"
     $ENV:routeTableRoutes = "{}"
 }
 
