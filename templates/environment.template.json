@@ -293,6 +293,9 @@
       "metadata": {
         "description": "Array of routes to be added to route table"
       }
+    },
+    "deployPrivateLinkedScopedResource": {
+            "type": "bool"
     }
   },
   "variables": {
@@ -301,6 +304,7 @@
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
+    "sharedEnvResourceGroup": "[concat(variables('resourceNamePrefix'),'-rg')]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "backEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'be-asp-')]",
@@ -1307,11 +1311,11 @@
       }
     },
     {
-      "condition": "condition": "[and(not(equals(parameters('ResourceEnvironmentname'), 'prd')), not(equals(parameters('ResourceEnvironmentname'), 'mo')))]",
+      "condition": "[parameters('deployPrivateLinkedScopedResource')]",
       "apiVersion": "2021-04-01",
       "name": "[concat(variables('resourceNamePrefix'),'-', parameters('products')[copyIndex()], '-ai', '-private-link-scoped-', parameters('utcValue'))]",
       "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
+      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
