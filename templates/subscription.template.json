@@ -336,7 +336,7 @@
         "Enabled"
       ],
       "metadata": {
-        "description": ""description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"",
+        "description": "description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope",
         "environmentVariable": "deployPrivateLinkedScopedResource"
       }
     },
