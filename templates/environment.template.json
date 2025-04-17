@@ -293,7 +293,13 @@
       "metadata": {
         "description": "Array of routes to be added to route table"
       }
-    }
+    },
+    "deployPrivateLinkedScopedResource": {
+      "type": "string",
+      "metadata": {
+        "description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"
+      }
+    },
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
@@ -301,6 +307,7 @@
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
+    "sharedEnvResourceGroup": "[concat(variables('resourceNamePrefix'),'-rg')]",
     "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
     "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
     "backEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'be-asp-')]",
@@ -347,7 +354,8 @@
     "amplsName": "[concat(variables('resourceNamePrefix'), '-ampls')]",
     "amplsPrivateEndpointName": "[concat(variables('amplsName'),'-pe')]",
     "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ],
-    "enableRouteTableAssociation": "[contains(createArray('dta', 'at', 'test', 'test2') , toLower(variables('environmentName')))]"
+    "enableRouteTableAssociation": "[contains(createArray('dta', 'at', 'test', 'test2') , toLower(variables('environmentName')))]",
+    "privateLinkScopeName": "[toLower(concat('das-', variables('environmentName'),'-shared-ampls'))]"
   },
   "functions": [
     {
@@ -1297,6 +1305,35 @@
           },
           "logAnalyticsWorkspaceId": {
             "value": "[resourceId(parameters('logAnalyticsWorkspaceResourceGroupName'),'Microsoft.OperationalInsights/workspaces',parameters('logAnalyticsWorkspaceName'))]"
+          }
+        }
+      },
+      "copy": {
+        "name": "productsLoop",
+        "count": "[length(parameters('products'))]"
+      }
+    },
+    {
+      "condition": "[equals(parameters('deployPrivateLinkedScopedResource'), 'Enabled')]",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(variables('resourceNamePrefix'),'-', parameters('products')[copyIndex()], '-ai', '-private-link-scoped-', parameters('utcValue'))]",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'private-linked-scoped-resource.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateLinkScopeName": {
+            "value": "[variables('privateLinkScopeName')]"
+          },
+          "scopedResourceName": {
+            "value": "[concat(variables('resourceNamePrefix'),'-', parameters('products')[copyIndex()], '-ai')]"
+          },
+          "scopedResourceId": {
+            "value": "[reference(concat(parameters('products')[copyIndex()], '-application-insights-', parameters('utcValue'))).outputs.AppInsightsResourceId.value]"
           }
         }
       },
