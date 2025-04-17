@@ -328,6 +328,12 @@
         "environmentVariable": "gatewaySubnetName"
       }
     },
+    "deployPrivateLinkedScopedResource": {
+      "type": "bool",
+      "metadata": {
+        "environmentVariable": "deployPrivateLinkedScopedResource"
+      }
+    },
     "products": {
       "type": "array",
       "metadata": {
@@ -687,6 +693,9 @@
           },
           "products": {
             "value": "[parameters('products')]"
+          },
+          "deployPrivateLinkedScopedResource": {
+            "value": "[parameters('deployPrivateLinkedScopedResource')]"
           },
           "sqlAdminPasswordSeed": {
             "value": "[parameters('sqlAdminPasswordSeed')]"
