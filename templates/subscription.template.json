@@ -33,6 +33,17 @@
         "environmentVariable": "sharedRedisCacheCapacity"
       }
     },
+    "amplsIngestionAccessMode": {
+      "type": "string",
+      "defaultValue": "Open",
+      "allowedValues": [
+        "PrivateOnly",
+        "Open"
+      ],
+      "metadata": {
+        "description": "The pricing tier of the search service you want to create (for example, basic or standard)."
+      }
+    },
     "serviceName": {
       "type": "string",
       "defaultValue": "shared",
@@ -639,6 +650,9 @@
           },
           "databaseConfiguration": {
             "value": "[parameters('databaseConfiguration')]"
+          },
+          "amplsIngestionAccessMode": {
+            "value": "[parameters('amplsIngestionAccessMode')]"
           },
           "virtualNetworkAddressSpacePrefix": {
             "value": "[concat('10.', copyIndex(1))]"
