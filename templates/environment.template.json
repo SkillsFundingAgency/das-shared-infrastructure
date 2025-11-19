@@ -300,6 +300,12 @@
         "description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"
       }
     },
+    "automationAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the shared automation account"
+      }
+    }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-14177-AA-MI/templates/",
@@ -929,7 +935,7 @@
         },
         "parameters": {
           "principalId": {
-            "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
+            "value": "[reference(resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName')), '2021-06-22', 'Full').identity.principalId]"
           },
           "assignmentType": {
             "value": "ServiceBusReader"

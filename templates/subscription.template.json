@@ -352,6 +352,13 @@
         "environmentVariable": "deployPrivateLinkedScopedResource"
       }
     },
+    "automationAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the shared automation account",
+        "environmentVariable": "automationAccountName"
+      }
+    },
     "products": {
       "type": "array",
       "metadata": {
@@ -717,6 +724,9 @@
           },
           "deployPrivateLinkedScopedResource": {
             "value": "[parameters('deployPrivateLinkedScopedResource')]"
+          },
+          "automationAccountName": {
+            "value": "[parameters('automationAccountName')]"
           },
           "sqlAdminPasswordSeed": {
             "value": "[parameters('sqlAdminPasswordSeed')]"
