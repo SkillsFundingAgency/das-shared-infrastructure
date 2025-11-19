@@ -917,6 +917,30 @@
       }
     },
     {
+      "apiVersion": "2021-04-01",
+      "name": "[concat('role-assignment-azure-automation-account-', parameters('utcValue'))]",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-service-bus.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "principalId": {
+            "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
+          },
+          "assignmentType": {
+            "value": "ServiceBusReader"
+          },
+          "resourceName": {
+            "value": "[variables('serviceBusNamespaceName')]"
+          }
+        }
+      }
+    },
+    {
       "apiVersion": "2022-09-01",
       "name": "redis-cache",
       "type": "Microsoft.Resources/deployments",
