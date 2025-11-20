@@ -70,6 +70,7 @@ function Clear-MockEnvironment {
         "ENV:logAnalyticsWorkspaceDataRetentionDays",
         "ENV:products",
         "ENV:deployPrivateLinkedScopedResource",
+        "ENV:automationAccountName",
         "ENV:routeTableRoutes",
         "ENV:actionGroupName",
         "ENV:actionGroupResourceGroupName"
