@@ -34,7 +34,7 @@ function Set-MockEnvironment {
     $ENV:gatewaySubnetName = "subnet"
     $ENV:products = "['faa']"
     $ENV:deployPrivateLinkedScopedResource = "Enabled",
-    $ENV:automationAccountName = "das-dev-example-aa"
+    $ENV:automationAccountName = "das-dev-example-aa",
     $ENV:routeTableRoutes = "{}"
 }
 
