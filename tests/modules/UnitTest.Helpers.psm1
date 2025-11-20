@@ -34,7 +34,7 @@ function Set-MockEnvironment {
     $ENV:gatewaySubnetName = "subnet"
     $ENV:products = "['faa']"
     $ENV:deployPrivateLinkedScopedResource = "Enabled"
-    $ENV:automationAccountName = "das-dev-example-aa"
+    $ENV:sharedAutomationAccountName = "das-dev-example-aa"
     $ENV:routeTableRoutes = "{}"
 }
 
@@ -70,7 +70,7 @@ function Clear-MockEnvironment {
         "ENV:logAnalyticsWorkspaceDataRetentionDays",
         "ENV:products",
         "ENV:deployPrivateLinkedScopedResource",
-        "ENV:automationAccountName",
+        "ENV:sharedAutomationAccountName",
         "ENV:routeTableRoutes",
         "ENV:actionGroupName",
         "ENV:actionGroupResourceGroupName"
