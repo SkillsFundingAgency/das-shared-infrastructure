@@ -792,8 +792,8 @@
         }
       },
       "dependsOn": [
-      "azure-automation"
-      ],
+        "azure-automation"
+      ]
     },
     {
       "apiVersion": "2022-09-01",
