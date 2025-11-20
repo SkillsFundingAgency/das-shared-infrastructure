@@ -367,7 +367,7 @@
       }
     },
     "deployAutomationRole": {
-      "type": "bool",
+      "type": "string",
       "defaultValue": "Disabled",
       "metadata": {
         "description": "Toggle to deploy Azure Automation Service Bus Role assignment",
