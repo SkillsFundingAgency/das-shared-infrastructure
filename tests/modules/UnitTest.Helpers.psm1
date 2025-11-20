@@ -35,7 +35,7 @@ function Set-MockEnvironment {
     $ENV:products = "['faa']"
     $ENV:deployPrivateLinkedScopedResource = "Enabled"
     $ENV:routeTableRoutes = "{}"
-    $ENV:deployAutomationRole = $false
+    $ENV:deployAutomationRole = "Disabled"
 }
 
 function Clear-MockEnvironment {
