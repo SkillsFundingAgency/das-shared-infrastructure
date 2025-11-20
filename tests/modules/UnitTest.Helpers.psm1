@@ -35,6 +35,7 @@ function Set-MockEnvironment {
     $ENV:products = "['faa']"
     $ENV:deployPrivateLinkedScopedResource = "Enabled"
     $ENV:sharedAutomationAccountName = "das-dev-example-aa"
+    $ENV:mgmtResourceGroupName = "das-ex-mgmt-rg"
     $ENV:routeTableRoutes = "{}"
 }
 
@@ -71,6 +72,7 @@ function Clear-MockEnvironment {
         "ENV:products",
         "ENV:deployPrivateLinkedScopedResource",
         "ENV:sharedAutomationAccountName",
+        "ENV:mgmtResourceGroupName",
         "ENV:routeTableRoutes",
         "ENV:actionGroupName",
         "ENV:actionGroupResourceGroupName"

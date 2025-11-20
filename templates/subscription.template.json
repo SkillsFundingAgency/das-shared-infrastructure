@@ -359,6 +359,13 @@
         "environmentVariable": "sharedAutomationAccountName"
       }
     },
+    "mgmtResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Management Resource Group",
+        "environmentVariable": "mgmtResourceGroupName"
+      }
+    },
     "products": {
       "type": "array",
       "metadata": {
@@ -725,7 +732,7 @@
           "deployPrivateLinkedScopedResource": {
             "value": "[parameters('deployPrivateLinkedScopedResource')]"
           },
-          "automationAccountName": {
+          "sharedAutomationAccountName": {
             "value": "[parameters('sharedAutomationAccountName')]"
           },
           "sqlAdminPasswordSeed": {
@@ -749,6 +756,7 @@
       "apiVersion": "2022-09-01",
       "name": "azure-automation",
       "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[parameters('mgmtResourceGroupName')]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
