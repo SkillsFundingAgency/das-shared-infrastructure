@@ -365,7 +365,15 @@
         "description": "Array of routes to be added to route table",
         "environmentVariable": "routeTableRoutes"
       }
-    }
+    },
+    "deployAutomationRole": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Toggle to deploy Azure Automation Service Bus Role assignment",
+        "environmentVariable": "deployAutomationRole"
+      }
+    },
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-14177-AA-MI/templates/",
@@ -755,6 +763,7 @@
       }
     },
     {
+      "condition": "[equals(parameters('deployAutomationRole'), true())]",
       "apiVersion": "2021-04-01",
       "name": "service-bus-role-assignment-azure-automation-account",
       "type": "Microsoft.Resources/deployments",
