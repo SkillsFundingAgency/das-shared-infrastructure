@@ -368,7 +368,7 @@
     },
     "deployAutomationRole": {
       "type": "bool",
-      "defaultValue": false,
+      "defaultValue": "Disabled",
       "metadata": {
         "description": "Toggle to deploy Azure Automation Service Bus Role assignment",
         "environmentVariable": "deployAutomationRole"
@@ -763,7 +763,7 @@
       }
     },
     {
-      "condition": "[equals(parameters('deployAutomationRole'), true())]",
+      "condition": "[equals(parameters('deployAutomationRole'), 'Enabled')]",
       "apiVersion": "2021-04-01",
       "name": "service-bus-role-assignment-azure-automation-account",
       "type": "Microsoft.Resources/deployments",
