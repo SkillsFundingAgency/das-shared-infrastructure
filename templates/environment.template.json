@@ -299,7 +299,7 @@
       "metadata": {
         "description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"
       }
-    }
+    },
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-14177-AA-MI/templates/",

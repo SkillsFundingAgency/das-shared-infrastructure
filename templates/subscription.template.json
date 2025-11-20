@@ -373,7 +373,7 @@
         "description": "Toggle to deploy Azure Automation Service Bus Role assignment",
         "environmentVariable": "deployAutomationRole"
       }
-    },
+    }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-14177-AA-MI/templates/",
