@@ -352,20 +352,6 @@
         "environmentVariable": "deployPrivateLinkedScopedResource"
       }
     },
-    "sharedAutomationAccountName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the shared automation account",
-        "environmentVariable": "sharedAutomationAccountName"
-      }
-    },
-    "mgmtResourceGroupName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the Management Resource Group",
-        "environmentVariable": "mgmtResourceGroupName"
-      }
-    },
     "products": {
       "type": "array",
       "metadata": {
