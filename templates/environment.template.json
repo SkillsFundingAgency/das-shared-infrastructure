@@ -299,13 +299,7 @@
       "metadata": {
         "description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"
       }
-    },
-    "sharedAutomationAccountName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the shared automation account"
-      }
-    },
+    }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-14177-AA-MI/templates/",
@@ -918,30 +912,6 @@
           },
           "logAnalyticsWorkspaceResourceGroupName": {
             "value": "[parameters('logAnalyticsWorkspaceResourceGroupName')]"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2021-04-01",
-      "name": "[concat('role-assignment-azure-automation-account-', parameters('utcValue'))]",
-      "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-service-bus.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "principalId": {
-            "value": "[reference(resourceId('Microsoft.Automation/automationAccounts', parameters('sharedAutomationAccountName')), '2021-06-22', 'Full').identity.principalId]"
-          },
-          "assignmentType": {
-            "value": "ServiceBusReader"
-          },
-          "resourceName": {
-            "value": "[variables('serviceBusNamespaceName')]"
           }
         }
       }
