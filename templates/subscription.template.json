@@ -790,7 +790,10 @@
             "value": "[variables('serviceBusNamespaceName')]"
           }
         }
-      }
+      },
+      "dependsOn": [
+      "azure-automation"
+      ],
     },
     {
       "apiVersion": "2022-09-01",
