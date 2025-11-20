@@ -784,7 +784,7 @@
             "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
           },
           "assignmentType": {
-              "value": "ServiceBusOwner"
+            "value": "ServiceBusOwner"
           },
           "resourceName": {
             "value": "[variables('serviceBusNamespaceName')]"
