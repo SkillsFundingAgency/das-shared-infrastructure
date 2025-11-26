@@ -365,6 +365,14 @@
         "description": "Array of routes to be added to route table",
         "environmentVariable": "routeTableRoutes"
       }
+    },
+    "deployAutomationRole": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Toggle to deploy Azure Automation Service Bus Role assignment",
+        "environmentVariable": "deployAutomationRole"
+      }
     }
   },
   "variables": {
@@ -374,9 +382,11 @@
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
+    "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "resourceGroupName": "[resourceGroup().name]",
+    "sharedEnvResourceGroup": "[concat(variables('resourceNamePrefix'),'-rg')]",
     "keyVaultAccessPolicies": [
       {
         "objectId": "[parameters('microsoftAzureWebsitesRPObjectId')]",
@@ -751,6 +761,34 @@
           }
         }
       }
+    },
+    {
+      "condition": "[equals(parameters('deployAutomationRole'), 'Enabled')]",
+      "apiVersion": "2021-04-01",
+      "name": "service-bus-role-assignment-azure-automation-account",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-service-bus.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "principalId": {
+            "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
+          },
+          "assignmentType": {
+            "value": "ServiceBusReader"
+          },
+          "resourceName": {
+            "value": "[variables('serviceBusNamespaceName')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "azure-automation"
+      ]
     },
     {
       "apiVersion": "2022-09-01",
