@@ -383,6 +383,7 @@
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
+    "sqlServerName": "[concat(variables('resourceNamePrefix'),'-sql')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "resourceGroupName": "[resourceGroup().name]",
@@ -783,6 +784,62 @@
           },
           "resourceName": {
             "value": "[variables('serviceBusNamespaceName')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "azure-automation"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployAutomationRole'), 'Enabled')]",
+      "apiVersion": "2021-04-01",
+      "name": "sql-server-role-assignment-azure-automation-account",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-sql-server.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "principalId": {
+            "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
+          },
+          "assignmentType": {
+            "value": "SqlDbContributor"
+          },
+          "resourceName": {
+            "value": "[parameters('sqlServerName')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "azure-automation"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deploySqlAutomationRole'), 'Enabled')]",
+      "apiVersion": "2021-04-01",
+      "name": "secondary-sql-server-role-assignment-azure-automation-account",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-sql-server.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "principalId": {
+            "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
+          },
+          "assignmentType": {
+            "value": "SqlDbContributor"
+          },
+          "resourceName": {
+            "value": "[parameters('secondarySqlServerName')]"
           }
         }
       },
