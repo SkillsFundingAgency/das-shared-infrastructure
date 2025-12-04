@@ -235,7 +235,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-14177-SQL-role/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "emptyArray": [],
     "emptyObject": {},
     "firewallNsgId": {
