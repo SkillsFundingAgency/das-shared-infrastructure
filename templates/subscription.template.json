@@ -373,6 +373,28 @@
         "description": "Toggle to deploy Azure Automation Service Bus Role assignment",
         "environmentVariable": "deployAutomationRole"
       }
+    },
+    "sqlServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Shared SQL Servers ",
+        "environmentVariable": "sqlServerName"
+      }
+    },
+    "secondarySqlServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Shared SQL Servers ",
+        "environmentVariable": "secondarySqlServerName"
+      }
+    },
+    "deploySqlAutomationRole": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "metadata": {
+        "description": "Toggle to deploy Azure Automation Secondary SQL Server Role assignment",
+        "environmentVariable": "deploySqlAutomationRole"
+      }
     }
   },
   "variables": {
@@ -783,6 +805,62 @@
           },
           "resourceName": {
             "value": "[variables('serviceBusNamespaceName')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "azure-automation"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployAutomationRole'), 'Enabled')]",
+      "apiVersion": "2021-04-01",
+      "name": "sql-server-role-assignment-azure-automation-account",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-sql-server.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "principalId": {
+            "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
+          },
+          "assignmentType": {
+            "value": "SqlDbContributor"
+          },
+          "resourceName": {
+            "value": "[parameters('sqlServerName')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "azure-automation"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deploySqlAutomationRole'), 'Enabled')]",
+      "apiVersion": "2021-04-01",
+      "name": "secondary-sql-server-role-assignment-azure-automation-account",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-sql-server.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "principalId": {
+            "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
+          },
+          "assignmentType": {
+            "value": "SqlDbContributor"
+          },
+          "resourceName": {
+            "value": "[parameters('secondarySqlServerName')]"
           }
         }
       },

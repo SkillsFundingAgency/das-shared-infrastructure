@@ -36,6 +36,9 @@ function Set-MockEnvironment {
     $ENV:deployPrivateLinkedScopedResource = "Enabled"
     $ENV:routeTableRoutes = "{}"
     $ENV:deployAutomationRole = "Disabled"
+    $ENV:sqlServerName = "das-foo-shared-sql"
+    $ENV:secondarySqlServerName = "das-foo-shared-sql-ne"
+    $ENV:deploySqlAutomationRole = "Disabled"
 }
 
 function Clear-MockEnvironment {
@@ -71,6 +74,9 @@ function Clear-MockEnvironment {
         "ENV:products",
         "ENV:deployPrivateLinkedScopedResource",
         "ENV:deployAutomationRole",
+        "ENV:sqlServerName",
+        "ENV:secondarySqlServerName",
+        "ENV:deploySqlAutomationRole",
         "ENV:routeTableRoutes",
         "ENV:actionGroupName",
         "ENV:actionGroupResourceGroupName"
