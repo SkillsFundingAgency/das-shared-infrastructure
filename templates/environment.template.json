@@ -315,6 +315,7 @@
     "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
+    "premiumServiceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-sbns')]",
     "sharedRedisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "sharedRedisPrivateEndpointName": "[concat(variables('sharedRedisCacheName'),'-pe')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
@@ -928,7 +929,7 @@
         },
         "parameters": {
           "serviceBusNamespaceName": {
-            "value": "[variables('serviceBusNamespaceName')]"
+            "value": "[variables('premiumServiceBusNamespaceName')]"
           },
           "serviceBusSku": {
             "value": "Premium"
