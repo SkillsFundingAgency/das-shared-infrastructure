@@ -918,6 +918,37 @@
     },
     {
       "apiVersion": "2022-09-01",
+      "name": "service-bus-premium",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'service-bus.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "serviceBusNamespaceName": {
+            "value": "[variables('serviceBusNamespaceName')]"
+          },
+          "serviceBusSku": {
+            "value": "Premium"
+          }, 
+          "serviceBusQueues": {
+            "value": [
+              "deadletters"
+            ]
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceResourceGroupName": {
+            "value": "[parameters('logAnalyticsWorkspaceResourceGroupName')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2022-09-01",
       "name": "redis-cache",
       "type": "Microsoft.Resources/deployments",
       "properties": {
