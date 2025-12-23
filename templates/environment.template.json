@@ -315,6 +315,7 @@
     "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
+    "premiumServiceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-sbns')]",
     "sharedRedisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "sharedRedisPrivateEndpointName": "[concat(variables('sharedRedisCacheName'),'-pe')]",
     "cdnProfileName": "[concat(variables('resourceNamePrefix'),'-cdn')]",
@@ -902,6 +903,38 @@
           "serviceBusNamespaceName": {
             "value": "[variables('serviceBusNamespaceName')]"
           },
+          "serviceBusQueues": {
+            "value": [
+              "deadletters"
+            ]
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceResourceGroupName": {
+            "value": "[parameters('logAnalyticsWorkspaceResourceGroupName')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "service-bus-premium",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[contains(createArray('test'), toLower(variables('environmentName')))]",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'service-bus.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "serviceBusNamespaceName": {
+            "value": "[variables('premiumServiceBusNamespaceName')]"
+          },
+          "serviceBusSku": {
+            "value": "Premium"
+          }, 
           "serviceBusQueues": {
             "value": [
               "deadletters"
