@@ -921,6 +921,7 @@
       "apiVersion": "2022-09-01",
       "name": "service-bus-premium",
       "type": "Microsoft.Resources/deployments",
+      "condition": "[contains(createArray('test'), toLower(variables('environmentName')))]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
