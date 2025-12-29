@@ -320,9 +320,9 @@
         "name": "backendServiceSubnetCopy",
         "count": "[length(parameters('backendServiceSubnetNames'))]",
         "input": {
-          "name": "[parameters('backendServiceSubnetNames')[copyIndex('backendServiceSubnetCopy')]]",
+          "name": "[concat(parameters('backendServiceSubnetNamePrefix'), '-', copyIndex('backendServiceSubnetCopy'))]",
           "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 220, copyIndex('backendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 220, copyIndex('backendServiceSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
             "networkSecurityGroup": "[variables('emptyObject')]",
@@ -393,7 +393,7 @@
     "sharedRedisSubnet": "[if(greater(parameters('sharedRedisSubnetCount'), 0), array(variables('sharedRedisSubnetObject')), variables('emptyArray'))]",
     "loggingRedisSubnet": "[if(greater(parameters('loggingRedisSubnetCount'), 0), array(variables('loggingRedisSubnetObject')), variables('emptyArray'))]",
     "amplsSubnet": "[if(greater(parameters('amplsSubnetCount'), 0), array(variables('amplsSubnetObject')), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('sharedWorkerSubnet'), variables('sharedAiSearchSubnet'), variables('sharedRedisSubnet'), variables('loggingRedisSubnet'), variables('amplsSubnet'))]",
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('backendServiceSubnet'), variables('sharedWorkerSubnet'), variables('sharedAiSearchSubnet'), variables('sharedRedisSubnet'), variables('loggingRedisSubnet'), variables('amplsSubnet'))]",
     "routeTableId": {
       "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTableName'))]"
     },
