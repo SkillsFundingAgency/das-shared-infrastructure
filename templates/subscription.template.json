@@ -175,6 +175,14 @@
         "environmentVariable": "frontendSubnetCount"
       }
     },
+    "backendServiceSubnetNames": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The names of backend service subnets to be used.",
+        "environmentVariable": "backendServiceSubnetNames"
+      }
+    },
     "backendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -217,6 +225,13 @@
       "metadata": {
         "description": "Takes an array of objects: '[{\"identifier\": 0,\"tier\": \"Basic\", \"size\": \"1\",\"instances\": 1}]. Removing the backslash. The identifier helps map the values to the deployed ASP.",
         "environmentVariable": "frontendAppServicePlanSkus"
+      }
+    },
+    "backendServiceAppServicePlanSuffixes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "An array of suffixes to be used for backend service app service plans."
       }
     },
     "backEndAppServicePlanSku": {
@@ -702,6 +717,9 @@
           "frontendSubnetCount": {
             "value": "[parameters('frontendSubnetCount')]"
           },
+          "backendServiceSubnetNames": {
+            "value": "[parameters('backendServiceSubnetNames')]"
+          },
           "backendSubnetCount": {
             "value": "[parameters('backendSubnetCount')]"
           },
@@ -716,6 +734,9 @@
           },
           "backEndAppServicePlanSku": {
             "value": "[parameters('backEndAppServicePlanSku')[toUpper(parameters('environments')[copyIndex()])]]"
+          },
+          "backendServiceAppServicePlanSuffixes": {
+            "value": "[parameters('backendServiceAppServicePlanSuffixes')]"
           },
           "backendAppServicePlanSkus": {
             "value": "[parameters('backendAppServicePlanSkus')]"
