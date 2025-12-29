@@ -81,9 +81,7 @@ try {
         $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
     }
 
-    # --- Ensure parameters resolver has defaults for optional array parameters used by templates
-    if (-not $ENV:backendServiceSubnetNames) { $ENV:backendServiceSubnetNames = '[]' }
-    if (-not $ENV:backendServiceAppServicePlanSuffixes) { $ENV:backendServiceAppServicePlanSuffixes = '[]' }
+    # --- No script-level fallbacks needed; templates include defaultValue for optional parameters
 
     # --- Create parameters file
     $ParametersFileBuilder = [ParametersFileBuilder]::New()
