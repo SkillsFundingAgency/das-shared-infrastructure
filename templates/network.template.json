@@ -95,6 +95,13 @@
         "description": "The prefix used for naming new shared backend app subnets."
       }
     },
+    "backendServiceSubnetNames": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The names of backend service subnets to be used."
+      }
+    },
     "backendSubnetCount": {
       "type": "int",
       "defaultValue": 0,
@@ -302,6 +309,20 @@
           "name": "[concat(parameters('backendSubnetNamePrefix'), '-', copyIndex('backendSubnetCopy'))]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 20, copyIndex('backendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "serviceEndpointList": "[parameters('serviceEndpointList')]",
+            "delegations": "[variables('subnetDelegations')]",
+            "networkSecurityGroup": "[variables('emptyObject')]",
+            "routeTable": "[if(and(greater(length( parameters('routeTableName')),0), parameters('enableRouteTableAssociation')), variables('routeTableId'), variables('emptyObject'))]"
+          }
+        }
+      },
+      {
+        "name": "backendServiceSubnetCopy",
+        "count": "[length(parameters('backendServiceSubnetNames'))]",
+        "input": {
+          "name": "[parameters('backendServiceSubnetNames')[copyIndex('backendServiceSubnetCopy')]]",
+          "properties": {
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 220, copyIndex('backendSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
             "networkSecurityGroup": "[variables('emptyObject')]",

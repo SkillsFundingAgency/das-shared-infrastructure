@@ -111,6 +111,13 @@
         "description": "The number of shared frontend app subnets to provision."
       }
     },
+    "backendServiceSubnetNames": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The names of backend service subnets to be used."
+      }
+    },
     "backendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -192,6 +199,13 @@
       },
       "metadata": {
         "description": "An object representing the sku of the app service plan."
+      }
+    },
+    "backendServiceAppServicePlanSuffixes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "An array of suffixes to be used for backend service app service plans."
       }
     },
     "backendAppServicePlanSkus": {
@@ -299,7 +313,7 @@
       "metadata": {
         "description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"
       }
-    },
+    }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
@@ -417,6 +431,9 @@
           },
           "frontendSubnetCount": {
             "value": "[parameters('frontendSubnetCount')]"
+          },
+          "backendServiceSubnetNames": {
+            "value": "[parameters('backendServiceSubnetNames')]"
           },
           "backendSubnetCount": {
             "value": "[parameters('backendSubnetCount')]"
@@ -835,6 +852,37 @@
     {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
+      "name": "[concat( parameters('backendServiceAppServicePlanSuffixes')[copyIndex('serviceAppServicePlanNames')], '-', parameters('utcValue'))]",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "copy": {
+          "name": "serviceAppServicePlanNames",
+          "count": "[length(parameters('backendServiceAppServicePlanSuffixes'))]"
+      },
+      "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+              "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
+              "contentVersion": "1.0.0.0"
+          },
+          "parameters": {
+              "appServicePlanName": {
+                  "value": "[toLower(concat('das-', parameters('resourceEnvironmentName'), '-', parameters('backendServiceAppServicePlanSuffixes')[copyIndex('serviceAppServicePlanNames')]))]"
+              },
+              "aspSize": {
+                  "value": "[parameters('backEndAppServicePlanSku').size]"
+              },
+              "aspInstances": {
+                  "value": "[parameters('backEndAppServicePlanSku').instances]"
+              },
+              "nonASETier": {
+                  "value": "[parameters('backEndAppServicePlanSku').tier]"
+              }
+          }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
       "name": "[concat('back-end-app-service-plan-', copyIndex(), '-', parameters('utcValue'))]",
       "resourceGroup": "[variables('resourceGroupName')]",
       "copy": {
@@ -934,7 +982,7 @@
           },
           "serviceBusSku": {
             "value": "Premium"
-          }, 
+          },
           "serviceBusQueues": {
             "value": [
               "deadletters"
