@@ -231,7 +231,8 @@
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "An array of suffixes to be used for backend service app service plans."
+        "description": "An array of suffixes to be used for backend service app service plans.",
+        "environmentVariable": "backendServiceAppServicePlanSuffixes"
       }
     },
     "backEndAppServicePlanSku": {
