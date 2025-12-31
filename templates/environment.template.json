@@ -317,7 +317,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-14291/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
