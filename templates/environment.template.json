@@ -866,7 +866,7 @@
           },
           "parameters": {
               "appServicePlanName": {
-                  "value": "[toLower(concat('das-', parameters('resourceEnvironmentName'), '-', parameters('backendServiceAppServicePlanSuffixes')[copyIndex('serviceAppServicePlanNames')]))]"
+                  "value": "[toLower(concat('das-', parameters('environment'), '-', parameters('backendServiceAppServicePlanSuffixes')[copyIndex('serviceAppServicePlanNames')]))]"
               },
               "aspSize": {
                   "value": "[parameters('backEndAppServicePlanSku').size]"

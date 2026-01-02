@@ -320,7 +320,7 @@
         "name": "backendServiceSubnetCopy",
         "count": "[length(parameters('backendServiceSubnetNames'))]",
         "input": {
-          "name": "[concat(parameters('backendServiceSubnetNamePrefix'), '-', copyIndex('backendServiceSubnetCopy'))]",
+          "name": "[parameters('backendServiceSubnetNames')[copyIndex('backendServiceSubnetCopy')]]",
           "properties": {
             "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 220, copyIndex('backendServiceSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
