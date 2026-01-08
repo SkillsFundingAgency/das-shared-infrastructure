@@ -302,6 +302,7 @@
     },
     "ciTestTags": {
       "type": "object",
+      "defaultValue": {},
       "metadata": {
         "description": "Tags for ci testing resources"
       }
