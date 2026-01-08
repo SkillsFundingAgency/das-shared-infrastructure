@@ -299,13 +299,6 @@
       "metadata": {
         "description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"
       }
-    },
-    "ciTestTags": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "description": "Tags for ci testing resources"
-      }
     }
   },
   "variables": {
@@ -364,7 +357,8 @@
     "amplsPrivateDnsZones": [ "privatelink.monitor.azure.com", "privatelink.oms.opinsights.azure.com", "privatelink.ods.opinsights.azure.com", "privatelink.agentsvc.azure-automation.net", "privatelink.blob.core.windows.net" ],
     "enableRouteTableAssociation": "[contains(createArray('dta', 'at', 'test', 'test2') , toLower(variables('environmentName')))]",
     "privateLinkScopeName": "[toLower(concat('das-', variables('environmentName'),'-shared-ampls'))]",
-    "ciTestResourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-ci-tests'))]"
+    "ciTestResourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-ci-tests'))]",
+    "ciTestTags": {"Environment":"Dev/Test","Product":"AS Shared component","Service Offering":"AS Shared component"}
   },
   "functions": [
     {
@@ -1389,7 +1383,7 @@
       "condition": "[equals(parameters('environmentName'), 'AT')]",
       "type": "Microsoft.Resources/resourceGroups",
       "location": "[variables('sqlServerLocationMap').primary.location]",
-      "tags": "[parameters('ciTestTags')]",
+      "tags": "[variables('ciTestTags')]",
       "properties": {}
     },
     {
