@@ -1377,136 +1377,148 @@
       }
     },
     {
-      "apiVersion": "2024-11-01",
-      "name": "ci-tests-storage-deployment",
-      "condition": "[equals(parameters('environmentName'), 'AT')]",
-      "resourceGroup": "[concat(variables('ciTestResourceNamePrefix'), '-rg')]",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'storage-account-arm.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "allowSharedKeyAccess": {
-            "value": true
-          },
-          "storageAccountLocation": {
-            "value": "[variables('sqlServerLocationMap').primary.location]"
-          },
-          "storageAccountName": {
-            "value": "[concat(replace(variables('ciTestResourceNamePrefix'), '-', ''), 'str')]"
-          }
-        }
-      },
-      "dependsOn": [
-        "[concat(variables('ciTestResourceNamePrefix'), '-rg')]"
-      ]
-    },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "sql-server-key-vault-secret-ci-tests",
-      "condition": "[equals(parameters('environmentName'), 'AT')]",
-      "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[parameters('sharedManagementResourceGroup')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'keyvault-secret.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "keyVaultName": {
-            "value": "[parameters('sharedKeyVaultName')]"
-          },
-          "secretName": {
-            "value": "[concat(variables('ciTestResourceNamePrefix'), '-sql')]"
-          },
-          "secretValue": {
-            "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat(variables('ciTestResourceNamePrefix'), '-sql')), uniqueString(parameters('environmentName')))]"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2024-11-01",
-      "name": "ci-tests-sql-server-deployment",
-      "condition": "[equals(parameters('environmentName'), 'AT')]",
-      "resourceGroup": "[concat(variables('ciTestResourceNamePrefix'), '-rg')]",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'sql-server.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "sqlServerActiveDirectoryAdminLogin": {
-            "value": "[parameters('sqlServerActiveDirectoryAdminLogin')]"
-          },
-          "sqlServerActiveDirectoryAdminObjectId": {
-            "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
-          },
-          "sqlServerAdminPassword": {
-            "reference": {
-              "keyVault": {
-                "id": "[resourceId(parameters('sharedManagementResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
+    "type": "Microsoft.Resources/deployments",
+    "apiVersion": "2024-11-01",
+    "name": "deployCiTestInfrastructure",
+    "condition": "[equals(parameters('environmentName'), 'AT')]",
+    "resourceGroup": "[concat(variables('ciTestResourceNamePrefix'), '-rg')]",
+    "properties": {
+      "mode": "Incremental",
+      "template": {
+        "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+        "contentVersion": "1.0.0.0",
+        "resources": [
+          {
+            "apiVersion": "2024-11-01",
+            "name": "ci-tests-storage-deployment",
+            "resourceGroup": "[concat(variables('ciTestResourceNamePrefix'), '-rg')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "[uri(variables('deploymentUrlBase'),'storage-account-arm.json')]",
+                "contentVersion": "1.0.0.0"
               },
-              "secretName": "[concat(variables('ciTestResourceNamePrefix'), '-sql')]"
+              "parameters": {
+                "allowSharedKeyAccess": {
+                  "value": true
+                },
+                "storageAccountLocation": {
+                  "value": "[variables('sqlServerLocationMap').primary.location]"
+                },
+                "storageAccountName": {
+                  "value": "[concat(replace(variables('ciTestResourceNamePrefix'), '-', ''), 'str')]"
+                }
+              }
+            },
+            "dependsOn": [
+              "[concat(variables('ciTestResourceNamePrefix'), '-rg')]"
+            ]
+          },
+          {
+            "apiVersion": "2022-09-01",
+            "name": "sql-server-key-vault-secret-ci-tests",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('sharedManagementResourceGroup')]",
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "[uri(variables('deploymentUrlBase'),'keyvault-secret.json')]",
+                "contentVersion": "1.0.0.0"
+              },
+              "parameters": {
+                "keyVaultName": {
+                  "value": "[parameters('sharedKeyVaultName')]"
+                },
+                "secretName": {
+                  "value": "[concat(variables('ciTestResourceNamePrefix'), '-sql')]"
+                },
+                "secretValue": {
+                  "value": "[blocks.getPasswordFromSeed(parameters('sqlAdminPasswordSeed'), toLower(concat(variables('ciTestResourceNamePrefix'), '-sql')), uniqueString(parameters('environmentName')))]"
+                }
+              }
             }
           },
-          "sqlServerAdminUserName": {
-            "value": "[concat('d', uniqueString(resourceGroup().id, guid(variables('ciTestResourceNamePrefix'))))]"
+          {
+            "apiVersion": "2024-11-01",
+            "name": "ci-tests-sql-server-deployment",
+            "resourceGroup": "[concat(variables('ciTestResourceNamePrefix'), '-rg')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "[uri(variables('deploymentUrlBase'),'sql-server.json')]",
+                "contentVersion": "1.0.0.0"
+              },
+              "parameters": {
+                "sqlServerActiveDirectoryAdminLogin": {
+                  "value": "[parameters('sqlServerActiveDirectoryAdminLogin')]"
+                },
+                "sqlServerActiveDirectoryAdminObjectId": {
+                  "value": "[parameters('sqlServerActiveDirectoryAdminObjectId')]"
+                },
+                "sqlServerAdminPassword": {
+                  "reference": {
+                    "keyVault": {
+                      "id": "[resourceId(parameters('sharedManagementResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('sharedKeyVaultName'))]"
+                    },
+                    "secretName": "[concat(variables('ciTestResourceNamePrefix'), '-sql')]"
+                  }
+                },
+                "sqlServerAdminUserName": {
+                  "value": "[concat('d', uniqueString(resourceGroup().id, guid(variables('ciTestResourceNamePrefix'))))]"
+                },
+                "sqlServerLocation": {
+                  "value": "[variables('sqlServerLocationMap').primary.location]"
+                },
+                "sqlServerMinimalTlsVersion": {
+                  "value": "[variables('sqlServerMinimalTlsVersion')]"
+                },
+                "sqlServerName": {
+                  "value": "[concat(variables('ciTestResourceNamePrefix'), '-sql')]"
+                },
+                "sqlStorageAccountName": {
+                  "value": "[concat(replace(variables('ciTestResourceNamePrefix'), '-', ''), 'str')]"
+                },
+                "threatDetectionEmailAddress": {
+                  "value": "[parameters('threatDetectionEmailAddress')]"
+                }
+              }
+            },
+            "dependsOn": [
+              "ci-tests-storage-deployment"
+            ]
           },
-          "sqlServerLocation": {
-            "value": "[variables('sqlServerLocationMap').primary.location]"
-          },
-          "sqlServerMinimalTlsVersion": {
-            "value": "[variables('sqlServerMinimalTlsVersion')]"
-          },
-          "sqlServerName": {
-            "value": "[concat(variables('ciTestResourceNamePrefix'), '-sql')]"
-          },
-          "sqlStorageAccountName": {
-            "value": "[concat(replace(variables('ciTestResourceNamePrefix'), '-', ''), 'str')]"
-          },
-          "threatDetectionEmailAddress": {
-            "value": "[parameters('threatDetectionEmailAddress')]"
+          {
+            "apiVersion": "2024-11-01",
+            "name": "ci-tests-sql-server-firewall-rule-deployment",
+            "resourceGroup": "[concat(variables('ciTestResourceNamePrefix'), '-rg')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "[uri(variables('deploymentUrlBase'),'sql-server-firewall-rules.json')]",
+                "contentVersion": "1.0.0.0"
+              },
+              "parameters": {
+                "firewallRuleNamePrefix": {
+                  "name": "AllowAzure"
+                },
+                "ipAddresses": {
+                  "value": ["0.0.0.0"]
+                },
+                "serverName": {
+                  "value": "[concat(variables('ciTestResourceNamePrefix'), '-sql')]"
+                }
+              }
+            },
+            "dependsOn": [
+              "ci-tests-sql-server-deployment"
+            ]
           }
-        }
-      },
-      "dependsOn": [
-        "ci-tests-storage-deployment"
-      ]
-    },
-    {
-      "apiVersion": "2024-11-01",
-      "name": "ci-tests-sql-server-firewall-rule-deployment",
-      "condition": "[equals(parameters('environmentName'), 'AT')]",
-      "resourceGroup": "[concat(variables('ciTestResourceNamePrefix'), '-rg')]",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'sql-server-firewall-rules.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "firewallRuleNamePrefix": {
-            "name": "AllowAzure"
-          },
-          "ipAddresses": {
-            "value": ["0.0.0.0"]
-          },
-          "serverName": {
-            "value": "[concat(variables('ciTestResourceNamePrefix'), '-sql')]"
-          }
-        }
-      },
-      "dependsOn": [
-        "ci-tests-sql-server-deployment"
-      ]
+        ]
+      }
+    }
     }
   ],
   "outputs": {
