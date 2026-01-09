@@ -102,6 +102,13 @@
         "description": "The number of management subnets to provision"
       }
     },
+    "frontendServiceSubnetNames": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "The names of frontend service subnets to be used."
+      }
+    },
     "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -188,6 +195,13 @@
       },
       "metadata": {
         "description": "An object representing the sku of the app service plan."
+      }
+    },
+    "frontendServiceAppServicePlanSuffixes": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "An array of suffixes to be used for frontend service app service plans."
       }
     },
     "backEndAppServicePlanSku": {
@@ -317,7 +331,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-14291/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-14271/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
@@ -428,6 +442,9 @@
           },
           "managementSubnetCount": {
             "value": "[parameters('managementSubnetCount')]"
+          },
+          "frontendServiceSubnetNames": {
+            "value": "[parameters('frontendServiceSubnetNames')]"
           },
           "frontendSubnetCount": {
             "value": "[parameters('frontendSubnetCount')]"
@@ -821,6 +838,37 @@
             "value": "[parameters('frontendAppServicePlanSkus')[copyIndex()].tier]"
           }
         }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[concat( parameters('frontendServiceAppServicePlanSuffixes')[copyIndex('serviceAppServicePlanNames')], '-', parameters('utcValue'))]",
+      "resourceGroup": "[variables('resourceGroupName')]",
+      "copy": {
+          "name": "serviceAppServicePlanNames",
+          "count": "[length(parameters('frontendServiceAppServicePlanSuffixes'))]"
+      },
+      "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+              "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
+              "contentVersion": "1.0.0.0"
+          },
+          "parameters": {
+              "appServicePlanName": {
+                  "value": "[toLower(concat('das-', parameters('environmentName'), '-', parameters('frontendServiceAppServicePlanSuffixes')[copyIndex('serviceAppServicePlanNames')]))]"
+              },
+              "aspSize": {
+                  "value": "[parameters('frontEndAppServicePlanSku').size]"
+              },
+              "aspInstances": {
+                  "value": "[parameters('frontEndAppServicePlanSku').instances]"
+              },
+              "nonASETier": {
+                  "value": "[parameters('frontEndAppServicePlanSku').tier]"
+              }
+          }
       }
     },
     {

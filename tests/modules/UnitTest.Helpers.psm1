@@ -21,6 +21,8 @@ function Set-MockEnvironment {
     $ENV:DatabaseConfiguration = "{}"
     $ENV:backendAppServicePlanSkus = "[]"
     $ENV:frontendAppServicePlanSkus = "[]"
+    $ENV:frontendServiceAppServicePlanSuffixes = "[]"
+    $ENV:frontendServiceSubnetNames = "[]"
     $ENV:backendServiceSubnetNames = "[]"
     $ENV:backendServiceAppServicePlanSuffixes = "[]"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
@@ -62,8 +64,10 @@ function Clear-MockEnvironment {
         "ENV:virtualNetworkDeploy",
         "ENV:backendServiceSubnetNames",
         "ENV:backendServiceAppServicePlanSuffixes",
+        "ENV:frontendServiceAppServicePlanSuffixes",
         "ENV:gatewaySubnetCount",
         "ENV:frontendSubnetCount",
+        "ENV:frontendServiceSubnetNames",
         "ENV:backendSubnetCount",
         "ENV:sharedWorkerSubnetCount",
         "ENV:sqlAdminPasswordSeed",

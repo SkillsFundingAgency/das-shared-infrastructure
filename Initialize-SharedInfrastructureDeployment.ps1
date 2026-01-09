@@ -81,8 +81,6 @@ try {
         $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
     }
 
-    # --- No script-level fallbacks needed; templates include defaultValue for optional parameters
-
     # --- Create parameters file
     $ParametersFileBuilder = [ParametersFileBuilder]::New()
     $ParametersFileConfig = $ParametersFileBuilder.CreateParametersFileConfig($TemplateFilePath)
