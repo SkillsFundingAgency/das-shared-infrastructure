@@ -23,7 +23,7 @@ function Set-MockEnvironment {
     $ENV:frontendAppServicePlanSkus = "[]"
     $ENV:frontendServiceAppServicePlanSuffixes = "[]"
     $ENV:frontendServiceSubnetNames = "[]"
-    $ENV:backendServiceSubnetNames = "[]"
+    $ENV:serviceSubnetNames = "[]"
     $ENV:backendServiceAppServicePlanSuffixes = "[]"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
     $ENV:keyVaultAllowedIpAddressesList = "['111.1.1.1/32']"
@@ -62,7 +62,7 @@ function Clear-MockEnvironment {
         "ENV:firewallsNsgName",
         "ENV:backupManagementServiceObjectId",
         "ENV:virtualNetworkDeploy",
-        "ENV:backendServiceSubnetNames",
+        "ENV:serviceSubnetNames",
         "ENV:backendServiceAppServicePlanSuffixes",
         "ENV:frontendServiceAppServicePlanSuffixes",
         "ENV:gatewaySubnetCount",

@@ -102,13 +102,6 @@
         "description": "The number of management subnets to provision"
       }
     },
-    "frontendServiceSubnetNames": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "The names of frontend service subnets to be used."
-      }
-    },
     "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -118,11 +111,11 @@
         "description": "The number of shared frontend app subnets to provision."
       }
     },
-    "backendServiceSubnetNames": {
+    "serviceSubnetNames": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "The names of backend service subnets to be used."
+        "description": "The names of service subnets to be used."
       }
     },
     "backendSubnetCount": {
@@ -443,14 +436,11 @@
           "managementSubnetCount": {
             "value": "[parameters('managementSubnetCount')]"
           },
-          "frontendServiceSubnetNames": {
-            "value": "[parameters('frontendServiceSubnetNames')]"
-          },
           "frontendSubnetCount": {
             "value": "[parameters('frontendSubnetCount')]"
           },
-          "backendServiceSubnetNames": {
-            "value": "[parameters('backendServiceSubnetNames')]"
+          "serviceSubnetNames": {
+            "value": "[parameters('serviceSubnetNames')]"
           },
           "backendSubnetCount": {
             "value": "[parameters('backendSubnetCount')]"

@@ -79,13 +79,6 @@
         "description": "The prefix used for naming new shared frontend app subnets."
       }
     },
-    "frontendServiceSubnetNames": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "The names of frontend service subnets to be used."
-      }
-    },
     "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 0,
@@ -102,11 +95,11 @@
         "description": "The prefix used for naming new shared backend app subnets."
       }
     },
-    "backendServiceSubnetNames": {
+    "serviceSubnetNames": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "The names of backend service subnets to be used."
+        "description": "The names of service subnets to be used."
       }
     },
     "backendSubnetCount": {
@@ -310,20 +303,6 @@
         }
       },
       {
-        "name": "frontendServiceSubnetCopy",
-        "count": "[length(parameters('frontendServiceSubnetNames'))]",
-        "input": {
-          "name": "[parameters('frontendServiceSubnetNames')[copyIndex('frontendServiceSubnetCopy')]]",
-          "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 15, copyIndex('frontendServiceSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
-            "serviceEndpointList": "[parameters('serviceEndpointList')]",
-            "delegations": "[variables('subnetDelegations')]",
-            "networkSecurityGroup": "[variables('emptyObject')]",
-            "routeTable": "[if(and(greater(length( parameters('routeTableName')),0), parameters('enableRouteTableAssociation')), variables('routeTableId'), variables('emptyObject'))]"
-          }
-        }
-      },
-      {
         "name": "backendSubnetCopy",
         "count": "[if(greater(parameters('backendSubnetCount'), 0), parameters('backendSubnetCount'), 1)]",
         "input": {
@@ -338,12 +317,12 @@
         }
       },
       {
-        "name": "backendServiceSubnetCopy",
-        "count": "[length(parameters('backendServiceSubnetNames'))]",
+        "name": "serviceSubnetCopy",
+        "count": "[length(parameters('serviceSubnetNames'))]",
         "input": {
-          "name": "[parameters('backendServiceSubnetNames')[copyIndex('backendServiceSubnetCopy')]]",
+          "name": "[parameters('serviceSubnetNames')[copyIndex('serviceSubnetCopy')]]",
           "properties": {
-            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 220, copyIndex('backendServiceSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
+            "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 220, copyIndex('serviceSubnetCopy'), parameters('subnetAddressSpaceCIDR'))]",
             "serviceEndpointList": "[parameters('serviceEndpointList')]",
             "delegations": "[variables('subnetDelegations')]",
             "networkSecurityGroup": "[variables('emptyObject')]",
@@ -408,15 +387,14 @@
     },
     "gatewaySubnet": "[if(greater(parameters('gatewaySubnetCount'), 0), variables('gatewaySubnetCopy'), variables('emptyArray'))]",
     "frontendSubnet": "[if(greater(parameters('frontendSubnetCount'), 0), variables('frontendSubnetCopy'), variables('emptyArray'))]",
-    "frontendServiceSubnet": "[if(greater(length(parameters('frontendServiceSubnetNames')), 0), variables('frontendServiceSubnetCopy'), variables('emptyArray'))]",
     "backendSubnet": "[if(greater(parameters('backendSubnetCount'), 0), variables('backendSubnetCopy'), variables('emptyArray'))]",
-    "backendServiceSubnet": "[if(greater(length(parameters('backendServiceSubnetNames')), 0), variables('backendServiceSubnetCopy'), variables('emptyArray'))]",
+    "serviceSubnet": "[if(greater(length(parameters('serviceSubnetNames')), 0), variables('serviceSubnetCopy'), variables('emptyArray'))]",
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
     "sharedAiSearchSubnet": "[if(greater(parameters('sharedAiSearchSubnetCount'), 0), array(variables('sharedAiSearchSubnetObject')), variables('emptyArray'))]",
     "sharedRedisSubnet": "[if(greater(parameters('sharedRedisSubnetCount'), 0), array(variables('sharedRedisSubnetObject')), variables('emptyArray'))]",
     "loggingRedisSubnet": "[if(greater(parameters('loggingRedisSubnetCount'), 0), array(variables('loggingRedisSubnetObject')), variables('emptyArray'))]",
     "amplsSubnet": "[if(greater(parameters('amplsSubnetCount'), 0), array(variables('amplsSubnetObject')), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('frontendServiceSubnet'), variables('backendSubnet'), variables('backendServiceSubnet'), variables('sharedWorkerSubnet'), variables('sharedAiSearchSubnet'), variables('sharedRedisSubnet'), variables('loggingRedisSubnet'), variables('amplsSubnet'))]",
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('serviceSubnet'), variables('sharedWorkerSubnet'), variables('sharedAiSearchSubnet'), variables('sharedRedisSubnet'), variables('loggingRedisSubnet'), variables('amplsSubnet'))]",
     "routeTableId": {
       "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTableName'))]"
     },

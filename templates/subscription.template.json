@@ -165,14 +165,6 @@
         "environmentVariable": "managementSubnetCount"
       }
     },
-    "frontendServiceSubnetNames": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "The names of frontend service subnets to be used.",
-        "environmentVariable": "frontendServiceSubnetNames"
-      }
-    },
     "frontendSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -183,12 +175,12 @@
         "environmentVariable": "frontendSubnetCount"
       }
     },
-    "backendServiceSubnetNames": {
+    "serviceSubnetNames": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
-        "description": "The names of backend service subnets to be used.",
-        "environmentVariable": "backendServiceSubnetNames"
+        "description": "The names of service subnets to be used.",
+        "environmentVariable": "serviceSubnetNames"
       }
     },
     "backendSubnetCount": {
@@ -731,14 +723,11 @@
           "managementSubnetCount": {
             "value": "[parameters('managementSubnetCount')]"
           },
-          "frontendServiceSubnetNames": {
-            "value": "[parameters('frontendServiceSubnetNames')]"
-          },
           "frontendSubnetCount": {
             "value": "[parameters('frontendSubnetCount')]"
           },
-          "backendServiceSubnetNames": {
-            "value": "[parameters('backendServiceSubnetNames')]"
+          "serviceSubnetNames": {
+            "value": "[parameters('serviceSubnetNames')]"
           },
           "backendSubnetCount": {
             "value": "[parameters('backendSubnetCount')]"
