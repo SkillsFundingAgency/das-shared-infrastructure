@@ -299,7 +299,7 @@
       "metadata": {
         "description": "Deploys the Private Linked Scoped Resource associated with the Shared Application Insights in Azure Monitor Private Link Scope"
       }
-    },
+    }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
@@ -921,7 +921,7 @@
       "apiVersion": "2022-09-01",
       "name": "service-bus-premium",
       "type": "Microsoft.Resources/deployments",
-      "condition": "[contains(createArray('test', 'mo'), toLower(variables('environmentName')))]",
+      "condition": "[contains(createArray('test', 'mo', 'prd'), toLower(variables('environmentName')))]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
