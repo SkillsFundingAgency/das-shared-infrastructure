@@ -405,7 +405,6 @@
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
-    "premiumServiceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-sbns')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "resourceGroupName": "[resourceGroup().name]",
@@ -806,34 +805,6 @@
           },
           "resourceName": {
             "value": "[variables('serviceBusNamespaceName')]"
-          }
-        }
-      },
-      "dependsOn": [
-        "azure-automation"
-      ]
-    },
-    {
-      "condition": "[and(equals(parameters('deployAutomationRole'), 'Enabled'), contains(createArray('test', 'mo', 'prd'), toLower(variables('environmentName'))))]",
-      "apiVersion": "2021-04-01",
-      "name": "service-bus-premium-role-assignment-azure-automation-account",
-      "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[variables('sharedEnvResourceGroup')]",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-service-bus.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "principalId": {
-            "value": "[reference('azure-automation').outputs.managedServiceIdentityId.value]"
-          },
-          "assignmentType": {
-            "value": "ServiceBusReader"
-          },
-          "resourceName": {
-            "value": "[variables('premiumServiceBusNamespaceName')]"
           }
         }
       },
