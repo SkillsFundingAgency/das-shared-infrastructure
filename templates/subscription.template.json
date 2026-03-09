@@ -814,7 +814,7 @@
       ]
     },
     {
-      "condition": "[and(equals(parameters('deployAutomationRole'), 'Enabled'), contains(createArray('test', 'mo', 'prd'), toLower(variables('environmentName'))))]",
+      "condition": "[and(equals(parameters('deployAutomationRole'), 'Enabled'), or(equals(parameters('resourceEnvironmentName'), 'MO'), equals(parameters('resourceEnvironmentName'), 'PRD')))]",
       "apiVersion": "2021-04-01",
       "name": "service-bus-premium-role-assignment-azure-automation-account",
       "type": "Microsoft.Resources/deployments",
