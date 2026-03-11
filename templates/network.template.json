@@ -531,6 +531,10 @@
       "type": "array",
       "value": "[variables('frontendSubnet')]"
     },
+    "serviceSubnetConfiguration": {
+      "type": "array",
+      "value": "[variables('serviceSubnet')]"
+    },
     "sharedAiSearchSubnetResourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('sharedAiSearchSubnetObject').name)]"

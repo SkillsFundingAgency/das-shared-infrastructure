@@ -493,7 +493,7 @@
             "value": "[variables('virtualNetworkName')]"
           },
           "subnetConfiguration": {
-            "value": "[concat(reference(variables('virtualNetworkDeploymentName')).outputs.backendSubnetConfiguration.value, reference(variables('virtualNetworkDeploymentName')).outputs.frontendSubnetConfiguration.value)]"
+            "value": "[concat(reference(variables('virtualNetworkDeploymentName')).outputs.backendSubnetConfiguration.value, reference(variables('virtualNetworkDeploymentName')).outputs.frontendSubnetConfiguration.value, reference(variables('virtualNetworkDeploymentName')).outputs.serviceSubnetConfiguration.value)]"
           }
         }
       }
