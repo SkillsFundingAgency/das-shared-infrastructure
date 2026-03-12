@@ -6,7 +6,7 @@
             "properties": {
                 "addressPrefix": "0.0.0.0/0",
                 "nextHopType": "VirtualAppliance",
-                "nextHopIpAddress": "10.0.1.4"
+                "nextHopIpAddress": "10.50.1.4"
             }
         },
         {
