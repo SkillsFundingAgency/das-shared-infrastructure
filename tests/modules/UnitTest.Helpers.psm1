@@ -21,6 +21,10 @@ function Set-MockEnvironment {
     $ENV:DatabaseConfiguration = "{}"
     $ENV:backendAppServicePlanSkus = "[]"
     $ENV:frontendAppServicePlanSkus = "[]"
+    $ENV:frontendServiceAppServicePlanSuffixes = "[]"
+    $ENV:frontendServiceSubnetNames = "[]"
+    $ENV:serviceSubnetNames = "[]"
+    $ENV:backendServiceAppServicePlanSuffixes = "[]"
     $ENV:sharedStorageAccountContainerArray = "['blob-container-name']"
     $ENV:keyVaultAllowedIpAddressesList = "['111.1.1.1/32']"
     $ENV:keyVaultAllowedSubnetsList = "[]"
@@ -57,9 +61,13 @@ function Clear-MockEnvironment {
         "ENV:microsoftAzureWebsitesRPObjectId",
         "ENV:firewallsNsgName",
         "ENV:backupManagementServiceObjectId",
-        "ENV:virtualNetworkDeploy"
+        "ENV:virtualNetworkDeploy",
+        "ENV:serviceSubnetNames",
+        "ENV:backendServiceAppServicePlanSuffixes",
+        "ENV:frontendServiceAppServicePlanSuffixes",
         "ENV:gatewaySubnetCount",
         "ENV:frontendSubnetCount",
+        "ENV:frontendServiceSubnetNames",
         "ENV:backendSubnetCount",
         "ENV:sharedWorkerSubnetCount",
         "ENV:sqlAdminPasswordSeed",
@@ -79,9 +87,9 @@ function Clear-MockEnvironment {
         "ENV:deploySqlAutomationRole",
         "ENV:routeTableRoutes",
         "ENV:actionGroupName",
-        "ENV:actionGroupResourceGroupName"
-        "ENV:databasesToExcludeFrom90PercentAlert"
-        "ENV:databasesToIncludeIn100PercentAlert"
+        "ENV:actionGroupResourceGroupName",
+        "ENV:databasesToExcludeFrom90PercentAlert",
+        "ENV:databasesToIncludeIn100PercentAlert",
         "ENV:gatewaySubnetName"
     ) -Force
 }
