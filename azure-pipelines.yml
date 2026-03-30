@@ -65,6 +65,7 @@ steps:
       azureSubscription: '${{ parameters.ServiceConnection }}'
       scriptType: pscore
       scriptLocation: inlineScript
+      useGlobalConfig: false
       inlineScript: |
         az deployment group create `
           --template-file "das-platform-building-blocks/templates-bicep/route-table.bicep" `
