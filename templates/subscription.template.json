@@ -777,7 +777,7 @@
           },
           "sqlAdminPasswordSeed": {
             "value": "[parameters('sqlAdminPasswordSeed')]"
-          },
+          }
         }
       },
       "copy": {
