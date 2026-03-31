@@ -59,18 +59,3 @@ steps:
     displayName: "Publish Artifact"
     inputs:
       PathtoPublish: "$(build.artifactstagingdirectory)/publish"
-  - task: AzureCLI@2
-    displayName: Deploy Route Table Bicep
-    inputs:
-      azureSubscription: '${{ parameters.ServiceConnection }}'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      useGlobalConfig: false
-      inlineScript: |
-        az deployment group create `
-          --template-file "das-platform-building-blocks/templates-bicep/route-table.bicep" `
-          --resource-group "das-${{ lower(parameters.Environment) }}-shared-rg" `
-          --parameters `
-            routeTableName="das-${{ lower(parameters.Environment) }}-shared-rt" ` 
-            disableBgpRoutePropagation=false `
-            routes="$(cat das-shared-infrastructure/config/routeTableRoutes/${{ lower(parameters.Environment) }}-routes.json)"
