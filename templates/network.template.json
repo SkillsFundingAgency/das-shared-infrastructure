@@ -226,13 +226,6 @@
         "description": "Indicates whether BGP route propagation is disabled"
       }
     },
-    "routeTableRoutes": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Array of routes to be added to route table"
-      }
-    },
     "enableRouteTableAssociation": {
       "type": "bool",
       "defaultValue": false,
@@ -470,9 +463,6 @@
           },
           "disableBgpRoutePropagation": {
             "value": "[parameters('disableBgpRoutePropagation')]"
-          },
-          "routeTableRoutes": {
-            "value": "[parameters('routeTableRoutes')]"
           }
         }
       }

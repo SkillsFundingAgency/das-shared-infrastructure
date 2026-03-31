@@ -309,12 +309,6 @@
         "environmentVariable": "sqlAdminPasswordSeed"
       }
     },
-    "routeTableRoutes": {
-      "type": "array",
-      "metadata": {
-        "description": "Array of routes to be added to route table"
-      }
-    },
     "deployPrivateLinkedScopedResource": {
       "type": "string",
       "metadata": {
@@ -468,9 +462,6 @@
           },
           "routeTableName": {
             "value": "[variables('routeTableName')]"
-          },
-          "routeTableRoutes": {
-            "value": "[parameters('routeTableRoutes')]"
           },
           "enableRouteTableAssociation": {
             "value": "[variables('enableRouteTableAssociation')]"
