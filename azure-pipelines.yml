@@ -56,7 +56,7 @@ stages:
   dependsOn: Build
   displayName: Deploy to PP
   variables:
-  - group: PP das-shared-infrastructure
+  - group: PREPROD das-shared-infrastructure
   jobs:
   - template: pipeline-templates/deploy.yml
     parameters:
@@ -67,7 +67,7 @@ stages:
   dependsOn: Build
   displayName: Deploy to PRD
   variables:
-  - group: PRD das-shared-infrastructure
+  - group: PROD das-shared-infrastructure
   jobs:
   - template: pipeline-templates/deploy.yml
     parameters:
