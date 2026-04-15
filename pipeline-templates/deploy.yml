@@ -30,6 +30,7 @@ jobs:
             azureSubscription: ${{ parameters.ServiceConnection }}
             ScriptPath: '$(Pipeline.Workspace)/drop/Initialize-SharedInfrastructureDeployment.ps1'
             ScriptArguments: '-EnvironmentNames ${{ join('','', parameters.EnvironmentNames) }} -SubscriptionAbbreviation ${{ parameters.Environment }}'
+            azurePowerShellVersion: LatestVersion
             pwsh: true
 
         - task: AzurePowerShell@5
