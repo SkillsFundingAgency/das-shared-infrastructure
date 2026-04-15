@@ -33,18 +33,6 @@ jobs:
             azurePowerShellVersion: LatestVersion
             pwsh: true
 
-        - task: AzureResourceManagerTemplateDeployment@3
-          displayName: 'Azure Deployment:Create Or Update Resource Group action on $(MgmtResourceGroupName)'
-          inputs:
-            deploymentScope: 'Resource Group'
-            azureResourceManagerConnection: ${{ parameters.ServiceConnection }}
-            resourceGroupName: '$(MgmtResourceGroupName)'
-            location: 'West Europe'
-            csmFile: '$(Pipeline.Workspace)/drop/templates/subscription.template.json'
-            csmParametersFile: '$(Pipeline.Workspace)/drop/templates/subscription.parameters.json'
-            overrideParameters: '-sqlAdminPasswordSeed $(SqlAdminPasswordSeed) -logAnalyticsWorkspaceName $(LogAnalyticsWorkspaceName)'
-            deploymentOutputs: ARMOutput
-
         - task: AzurePowerShell@5
           displayName: 'Azure PowerShell script: set routeTableRoutes'
           inputs:
@@ -66,6 +54,18 @@ jobs:
               Write-Host "##vso[task.setvariable variable=routeTableRoutes]$routeTableRoutes"
             azurePowerShellVersion: LatestVersion
             pwsh: true
+          
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: 'Azure Deployment:Create Or Update Resource Group action on $(MgmtResourceGroupName)'
+          inputs:
+            deploymentScope: 'Resource Group'
+            azureResourceManagerConnection: ${{ parameters.ServiceConnection }}
+            resourceGroupName: '$(MgmtResourceGroupName)'
+            location: 'West Europe'
+            csmFile: '$(Pipeline.Workspace)/drop/templates/subscription.template.json'
+            csmParametersFile: '$(Pipeline.Workspace)/drop/templates/subscription.parameters.json'
+            overrideParameters: '-sqlAdminPasswordSeed $(SqlAdminPasswordSeed) -logAnalyticsWorkspaceName $(LogAnalyticsWorkspaceName) -routeTableRoutes $(routeTableRoutes)'
+            deploymentOutputs: ARMOutput
 
         - template: azure-pipelines-templates/deploy/step/retain-on-success.yml@das-platform-building-blocks
           parameters:
