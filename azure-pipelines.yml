@@ -50,7 +50,11 @@ stages:
     parameters:
       ServiceConnection: SFA-DAS-DevTest-ARM
       Environment: DEV
-      EnvironmentNames: AT TEST TEST2 DEMO
+      EnvironmentNames:
+        - AT
+        - TEST
+        - TEST2
+        - DEMO
 
 - stage: Deploy_PP
   dependsOn: Build
