@@ -37,8 +37,7 @@ jobs:
           displayName: 'Azure Deployment:Create Or Update Resource Group action on $(MgmtResourceGroupName)'
           inputs:
             deploymentScope: 'Resource Group'
-            ConnectedServiceName: ${{ parameters.ServiceConnection }}
-            subscriptionId: $(SubscriptionId)
+            azureResourceManagerConnection: ${{ parameters.ServiceConnection }}
             resourceGroupName: '$(MgmtResourceGroupName)'
             location: 'West Europe'
             csmFile: '$(Pipeline.Workspace)/drop/templates/subscription.template.json'
