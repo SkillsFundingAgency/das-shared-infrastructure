@@ -2,11 +2,13 @@ parameters:
   ServiceConnection: ''
   Environment: ''
   EnvironmentNames: []
+  TimeoutInMinutes: 120
 
 jobs:
 - deployment: DeployInfrastructure
   pool:
     name: DAS - Continuous Deployment Agents
+  timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
   environment: ${{ parameters.Environment }}
   workspace:
     clean: all

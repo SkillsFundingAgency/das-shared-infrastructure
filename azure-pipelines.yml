@@ -50,6 +50,7 @@ stages:
     parameters:
       ServiceConnection: SFA-DAS-DevTest-ARM
       Environment: DEV
+      TimeoutInMinutes: 180
       EnvironmentNames:
         - AT
         - TEST
