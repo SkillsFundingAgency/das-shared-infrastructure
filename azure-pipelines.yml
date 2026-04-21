@@ -57,27 +57,27 @@ stages:
         - TEST2
         - DEMO
 
-- stage: Deploy_PP
+- stage: Deploy_PreProd
   dependsOn: Build
-  displayName: Deploy to PP
+  displayName: Deploy to PreProd
   variables:
   - group: PREPROD das-shared-infrastructure
   jobs:
   - template: pipeline-templates/deploy.yml
     parameters:
       ServiceConnection: SFA-DIG-PreProd-ARM
-      Environment: PP
+      Environment: PreProd
 
-- stage: Deploy_PRD
+- stage: Deploy_PROD
   dependsOn: Build
-  displayName: Deploy to PRD
+  displayName: Deploy to PROD
   variables:
   - group: PROD das-shared-infrastructure
   jobs:
   - template: pipeline-templates/deploy.yml
     parameters:
       ServiceConnection: SFA-DIG-Prod-ARM
-      Environment: PRD
+      Environment: PROD
 
 - stage: Deploy_MO
   dependsOn: Build
