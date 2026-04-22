@@ -42,10 +42,10 @@ Default: West Europe
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $false)]
-    [ValidateSet("DTA", "DEV", "MO", "PREPROD", "PROD")]
+    [ValidateSet("DTA", "DEV", "PP", "PRD", "MO")]
     [string]$SubscriptionAbbreviation = "DEV",
     [Parameter(Mandatory = $false)]
-    [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "MO", "PREPROD", "PROD")]
+    [ValidateSet("DTA", "AT", "TEST", "TEST2", "DEMO", "PP", "PRD", "MO")]
     [string[]]$EnvironmentNames,
     [Parameter(Mandatory = $false)]
     [ValidateSet("West Europe", "North Europe")]
@@ -76,7 +76,7 @@ try {
     $null = $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $ParsedEnvironmentNames, $Location, $Tags)
 
     # --- Create failover group configuration
-    if ( "DTA", "PREPROD", "PROD" -contains $ParsedEnvironmentNames ) {
+    if ( "DTA", "PP", "PRD" -contains $ParsedEnvironmentNames ) {
         $FailoverGroupBuilder = [FailoverGroupBuilder]::New()
         $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
     }
