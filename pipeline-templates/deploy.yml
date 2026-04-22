@@ -1,6 +1,7 @@
 parameters:
   ServiceConnection: ''
   Environment: ''
+  SubscriptionAbbreviation: ''
   EnvironmentNames: []
   TimeoutInMinutes: 120
 
@@ -24,7 +25,7 @@ jobs:
   workspace:
     clean: all
   variables:
-    MgmtResourceGroupName: 'das-${{ parameters.Environment }}-mgmt-rg'
+    MgmtResourceGroupName: 'das-${{ lower(parameters.SubscriptionAbbreviation) }}-mgmt-rg'
   strategy:
     runOnce:
       deploy:
@@ -42,7 +43,7 @@ jobs:
           inputs:
             azureSubscription: ${{ parameters.ServiceConnection }}
             ScriptPath: '$(Pipeline.Workspace)/drop/Initialize-SharedInfrastructureDeployment.ps1'
-            ScriptArguments: '-EnvironmentNames ${{ coalesce(join('','', parameters.EnvironmentNames), parameters.Environment) }} -SubscriptionAbbreviation ${{ parameters.Environment }}'
+            ScriptArguments: '-EnvironmentNames $(EnvironmentNames) -SubscriptionAbbreviation ${{ parameters.SubscriptionAbbreviation }}'
             azurePowerShellVersion: LatestVersion
             pwsh: true
 
@@ -52,7 +53,7 @@ jobs:
             azureSubscription: ${{ parameters.ServiceConnection }}
             ScriptType: InlineScript
             Inline: |
-              $JsonFilePath = "$(Pipeline.Workspace)/drop/config/routeTableRoutes/${{ lower(parameters.Environment) }}-config.json"
+              $JsonFilePath = "$(Pipeline.Workspace)/drop/config/routeTableRoutes/${{ lower(parameters.SubscriptionAbbreviation) }}-config.json"
 
               if (!(Test-Path $JsonFilePath)) {
                   Write-Host "##vso[task.logissue type=error]Configuration file not found: $JsonFilePath"

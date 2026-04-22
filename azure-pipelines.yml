@@ -39,6 +39,7 @@ stages:
     parameters:
       ServiceConnection: SFA-DAS-DevTest-ARM
       Environment: DTA
+      SubscriptionAbbreviation: DTA
 
 - stage: Deploy_DEV
   dependsOn: Build
@@ -50,6 +51,7 @@ stages:
     parameters:
       ServiceConnection: SFA-DAS-DevTest-ARM
       Environment: DEV
+      SubscriptionAbbreviation: DEV
       TimeoutInMinutes: 180
       EnvironmentNames:
         - AT
@@ -67,6 +69,8 @@ stages:
     parameters:
       ServiceConnection: SFA-DIG-PreProd-ARM
       Environment: PREPROD
+      SubscriptionAbbreviation: PP
+
 
 - stage: Deploy_PROD
   dependsOn: Build
@@ -78,6 +82,7 @@ stages:
     parameters:
       ServiceConnection: SFA-DIG-Prod-ARM
       Environment: PROD
+      SubscriptionAbbreviation: PRD
 
 - stage: Deploy_MO
   dependsOn: Build
@@ -89,3 +94,4 @@ stages:
     parameters:
       ServiceConnection: SFA-ASM-ModelOffice-ARM
       Environment: MO
+      SubscriptionAbbreviation: MO
