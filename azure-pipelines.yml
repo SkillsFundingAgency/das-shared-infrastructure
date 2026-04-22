@@ -71,7 +71,6 @@ stages:
       Environment: PREPROD
       SubscriptionAbbreviation: PP
 
-
 - stage: Deploy_PROD
   dependsOn: Build
   displayName: Deploy to PROD

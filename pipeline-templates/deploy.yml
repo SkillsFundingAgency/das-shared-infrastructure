@@ -78,7 +78,7 @@ jobs:
             location: 'West Europe'
             csmFile: '$(Pipeline.Workspace)/drop/templates/subscription.template.json'
             csmParametersFile: '$(Pipeline.Workspace)/drop/templates/subscription.parameters.json'
-            overrideParameters: '-sqlAdminPasswordSeed $(SqlAdminPasswordSeed) -logAnalyticsWorkspaceName $(LogAnalyticsWorkspaceName) -routeTableRoutes $(routeTableRoutes)'
+            overrideParameters: '-sqlAdminPasswordSeed $(SqlAdminPasswordSeed) -routeTableRoutes $(routeTableRoutes)'
             deploymentOutputs: ARMOutput
 
         - template: azure-pipelines-templates/deploy/step/retain-on-success.yml@das-platform-building-blocks
