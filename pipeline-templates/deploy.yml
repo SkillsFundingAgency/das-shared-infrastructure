@@ -39,15 +39,6 @@ jobs:
             RunId: $(Build.BuildId)
 
         - task: AzurePowerShell@5
-          displayName: 'PreDeployment Script'
-          inputs:
-            azureSubscription: ${{ parameters.ServiceConnection }}
-            ScriptPath: '$(Pipeline.Workspace)/drop/Initialize-SharedInfrastructureDeployment.ps1'
-            ScriptArguments: '-EnvironmentNames $(EnvironmentNames) -SubscriptionAbbreviation ${{ parameters.SubscriptionAbbreviation }}'
-            azurePowerShellVersion: LatestVersion
-            pwsh: true
-
-        - task: AzurePowerShell@5
           displayName: 'Azure PowerShell script: set routeTableRoutes'
           inputs:
             azureSubscription: ${{ parameters.ServiceConnection }}
@@ -68,6 +59,15 @@ jobs:
               Write-Host "##vso[task.setvariable variable=routeTableRoutes]$routeTableRoutes"
             azurePowerShellVersion: LatestVersion
             pwsh: true
+
+        - task: AzurePowerShell@5
+          displayName: 'PreDeployment Script'
+          inputs:
+            azureSubscription: ${{ parameters.ServiceConnection }}
+            ScriptPath: '$(Pipeline.Workspace)/drop/Initialize-SharedInfrastructureDeployment.ps1'
+            ScriptArguments: '-EnvironmentNames $(EnvironmentNames) -SubscriptionAbbreviation ${{ parameters.SubscriptionAbbreviation }}'
+            azurePowerShellVersion: LatestVersion
+            pwsh: true
           
         - task: AzureResourceManagerTemplateDeployment@3
           displayName: 'Azure Deployment:Create Or Update Resource Group action on $(MgmtResourceGroupName)'
@@ -78,7 +78,7 @@ jobs:
             location: 'West Europe'
             csmFile: '$(Pipeline.Workspace)/drop/templates/subscription.template.json'
             csmParametersFile: '$(Pipeline.Workspace)/drop/templates/subscription.parameters.json'
-            overrideParameters: "-sqlAdminPasswordSeed $(SqlAdminPasswordSeed) -routeTableRoutes '$(routeTableRoutes)'"
+            overrideParameters: "-sqlAdminPasswordSeed $(SqlAdminPasswordSeed)"
             deploymentOutputs: ARMOutput
 
         - template: azure-pipelines-templates/deploy/step/retain-on-success.yml@das-platform-building-blocks
