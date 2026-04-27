@@ -30,8 +30,6 @@ jobs:
     runOnce:
       deploy:
         steps:
-        - checkout: self
-
         - template: azure-pipelines-templates/deploy/step/wait-azure-devops-deployment.yml@das-platform-building-blocks
           parameters:
             EnvironmentId: $(Environment.Id)
@@ -80,7 +78,3 @@ jobs:
             csmParametersFile: '$(Pipeline.Workspace)/drop/templates/subscription.parameters.json'
             overrideParameters: "-sqlAdminPasswordSeed $(SqlAdminPasswordSeed)"
             deploymentOutputs: ARMOutput
-
-        - template: azure-pipelines-templates/deploy/step/retain-on-success.yml@das-platform-building-blocks
-          parameters:
-            Environment: ${{ parameters.Environment }}
