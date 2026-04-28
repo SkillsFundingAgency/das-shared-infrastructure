@@ -6,18 +6,7 @@ parameters:
   TimeoutInMinutes: 120
 
 jobs:
-- job: ApprovalGate
-  displayName: 'Manual Approval - ${{ parameters.Environment }}'
-  pool: server
-  steps:
-  - task: ManualValidation@0
-    timeoutInMinutes: 1440
-    inputs:
-      instructions: 'Please review and approve deployment to ${{ parameters.Environment }}'
-      onTimeout: reject
-
 - deployment: DeployInfrastructure
-  dependsOn: ApprovalGate
   pool:
     name: DAS - Continuous Deployment Agents
   timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
