@@ -76,7 +76,7 @@ try {
     $null = $ResourceGroupBuilder.CreateResourceGroups($SubscriptionAbbreviation, $ParsedEnvironmentNames, $Location, $Tags)
 
     # --- Create failover group configuration
-    if ( "DTA", "PP", "PRD" -contains $ParsedEnvironmentNames ) {
+    if ( @($ParsedEnvironmentNames) | Where-Object { "DTA", "PP", "PRD" -contains $_ } ) {
         $FailoverGroupBuilder = [FailoverGroupBuilder]::New()
         $ENV:DatabaseConfiguration = $FailoverGroupBuilder.CreateFailoverGroupConfig($ParsedEnvironmentNames)
     }

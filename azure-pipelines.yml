@@ -4,8 +4,11 @@ trigger:
     include:
       - "master"
 
-workspace:
-  clean: all
+pr: none
+
+variables:
+- group: Release Management Resources
+- group: RELEASE das-shared-infrastructure
 
 resources:
   repositories:
@@ -13,49 +16,81 @@ resources:
   - repository: das-platform-building-blocks
     type: github
     name: SkillsFundingAgency/das-platform-building-blocks
-    ref: refs/tags/2.1.15
+    ref: refs/tags/3.0.16
+    endpoint: SkillsFundingAgency
+  - repository: das-platform-automation
+    type: github
+    name: SkillsFundingAgency/das-platform-automation
+    ref: refs/tags/5.1.21
     endpoint: SkillsFundingAgency
 
-pool:
-  name: DAS - Continuous Integration
-  demands:
-    - npm
-    - node.js
-    - LATEST_DOTNET_VERSION -equals 3.1
-    - Agent.OS -equals Windows_NT
+stages:
+- stage: Build
+  jobs:
+  - template: pipeline-templates/code-build.yml
 
-steps:
-  - template: azure-pipelines-templates/build/step/gitversion.yml@das-platform-building-blocks
-  - script: |
-      npm install eclint
-      node ./node_modules/eclint/bin/eclint.js check
-    displayName: "Validate editorconfig"
-    workingDirectory: $(System.DefaultWorkingDirectory)
-  - task: PowerShell@2
-    displayName: "Execute unit tests"
-    inputs:
-      filePath: ./tests/Start-UnitTest.ps1
-      failOnStderr: true
-      pwsh: true
-      workingDirectory:  $(System.DefaultWorkingDirectory)
-  - task: PublishTestResults@2
-    inputs:
-      testResultsFormat: 'NUnit'
-      testResultsFiles: $(System.DefaultWorkingDirectory)\tests\Test-Pester.XML
-    condition: succeededOrFailed()
-  - task: CopyFiles@2
-    displayName: "Copy Files to: $(build.artifactstagingdirectory)"
-    inputs:
-      Contents: |
-        modules/**
-        templates/**
-        utilities/**
-        config/**
-        tests/Remove-Environment.ps1
-        Initialize-SharedInfrastructureDeployment.ps1
-      TargetFolder: "$(build.artifactstagingdirectory)/publish"
-      OverWrite: true
-  - task: PublishBuildArtifacts@1
-    displayName: "Publish Artifact"
-    inputs:
-      PathtoPublish: "$(build.artifactstagingdirectory)/publish"
+- stage: Deploy_DTA
+  dependsOn: Build
+  displayName: Deploy to DTA
+  variables:
+  - group: DTA das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      Environment: DTA
+      SubscriptionAbbreviation: DTA
+
+- stage: Deploy_DEV
+  dependsOn: Build
+  displayName: Deploy to DEV
+  variables:
+  - group: DEV das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      Environment: DEV
+      SubscriptionAbbreviation: DEV
+      TimeoutInMinutes: 180
+      EnvironmentNames:
+        - AT
+        - TEST
+        - TEST2
+        - DEMO
+
+- stage: Deploy_PREPROD
+  dependsOn: Build
+  displayName: Deploy to PREPROD
+  variables:
+  - group: PREPROD das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-DIG-PreProd-ARM
+      Environment: PREPROD
+      SubscriptionAbbreviation: PP
+
+- stage: Deploy_PROD
+  dependsOn: Build
+  displayName: Deploy to PROD
+  variables:
+  - group: PROD das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-DIG-Prod-ARM
+      Environment: PROD
+      SubscriptionAbbreviation: PRD
+
+- stage: Deploy_MO
+  dependsOn: Build
+  displayName: Deploy to MO
+  variables:
+  - group: MO das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-ASM-ModelOffice-ARM
+      Environment: MO
+      SubscriptionAbbreviation: MO
