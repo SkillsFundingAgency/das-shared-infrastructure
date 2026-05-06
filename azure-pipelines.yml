@@ -53,11 +53,62 @@ stages:
       Environment: DEV
       SubscriptionAbbreviation: DEV
       TimeoutInMinutes: 180
-      EnvironmentNames:
-        - AT
-        - TEST
-        - TEST2
-        - DEMO
+
+- stage: Deploy_AT
+  dependsOn: Deploy_DEV
+  condition: not(succeededOrFailed())
+  displayName: Deploy to AT
+  variables:
+  - group: DEV das-shared-infrastructure
+  - group: AT das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      Environment: DEV
+      SubscriptionAbbreviation: DEV
+
+- stage: Deploy_TEST
+  dependsOn: Deploy_DEV
+  condition: not(succeededOrFailed())
+  displayName: Deploy to TEST
+  variables:
+  - group: DEV das-shared-infrastructure
+  - group: TEST das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      Environment: DEV
+      SubscriptionAbbreviation: DEV
+
+- stage: Deploy_TEST2
+  dependsOn: Deploy_DEV
+  condition: not(succeededOrFailed())
+  displayName: Deploy to TEST2
+  variables:
+  - group: DEV das-shared-infrastructure
+  - group: TEST2 das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      Environment: DEV
+      SubscriptionAbbreviation: DEV
+
+- stage: Deploy_DEMO
+  dependsOn: Deploy_DEV
+  condition: not(succeededOrFailed())
+  displayName: Deploy to DEMO
+  variables:
+  - group: DEV das-shared-infrastructure
+  - group: DEMO das-shared-infrastructure
+  jobs:
+  - template: pipeline-templates/deploy.yml
+    parameters:
+      ServiceConnection: SFA-DAS-DevTest-ARM
+      Environment: DEV
+      SubscriptionAbbreviation: DEV
 
 - stage: Deploy_PREPROD
   dependsOn: Build
