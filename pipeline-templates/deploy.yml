@@ -48,23 +48,24 @@ jobs:
             azurePowerShellVersion: LatestVersion
             pwsh: true
 
-        - task: AzurePowerShell@5
-          displayName: 'PreDeployment Script'
-          inputs:
-            azureSubscription: ${{ parameters.ServiceConnection }}
-            ScriptPath: '$(Pipeline.Workspace)/drop/Initialize-SharedInfrastructureDeployment.ps1'
-            ScriptArguments: '-EnvironmentNames $(EnvironmentNames) -SubscriptionAbbreviation ${{ parameters.SubscriptionAbbreviation }}'
-            azurePowerShellVersion: LatestVersion
-            pwsh: true
+#        - task: AzurePowerShell@5
+#          displayName: 'PreDeployment Script'
+#          inputs:
+#            azureSubscription: ${{ parameters.ServiceConnection }}
+#            ScriptPath: '$(Pipeline.Workspace)/drop/Initialize-SharedInfrastructureDeployment.ps1'
+#            ScriptArguments: '-EnvironmentNames $(EnvironmentNames) -SubscriptionAbbreviation ${{ parameters.SubscriptionAbbreviation }}'
+#            azurePowerShellVersion: LatestVersion
+#            pwsh: true
           
-        - task: AzureResourceManagerTemplateDeployment@3
-          displayName: 'Azure Deployment:Create Or Update Resource Group action on $(MgmtResourceGroupName)'
-          inputs:
-            deploymentScope: 'Resource Group'
-            azureResourceManagerConnection: ${{ parameters.ServiceConnection }}
-            resourceGroupName: '$(MgmtResourceGroupName)'
-            location: 'West Europe'
-            csmFile: '$(Pipeline.Workspace)/drop/templates/subscription.template.json'
-            csmParametersFile: '$(Pipeline.Workspace)/drop/templates/subscription.parameters.json'
-            overrideParameters: "-sqlAdminPasswordSeed $(SqlAdminPasswordSeed)"
-            deploymentOutputs: ARMOutput
+#        - task: AzureResourceManagerTemplateDeployment@3
+#          displayName: 'Azure Deployment:Create Or Update Resource Group action on $(MgmtResourceGroupName)'
+#          inputs:
+#            deploymentScope: 'Resource Group'
+#            azureResourceManagerConnection: ${{ parameters.ServiceConnection }}
+#            resourceGroupName: '$(MgmtResourceGroupName)'
+#            location: 'West Europe'
+#            csmFile: '$(Pipeline.Workspace)/drop/templates/subscription.template.json'
+#            csmParametersFile: '$(Pipeline.Workspace)/drop/templates/subscription.parameters.json'
+#            overrideParameters: "-sqlAdminPasswordSeed $(SqlAdminPasswordSeed)"
+#            deploymentOutputs: ARMOutput
+#
