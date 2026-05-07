@@ -55,7 +55,6 @@ stages:
       TimeoutInMinutes: 180
 
 - stage: Deploy_AT
-  dependsOn: Deploy_DEV
   condition: and(eq(dependencies.Deploy_DEV.result, 'Skipped'), not(canceled()))
   displayName: Deploy to AT
   variables:
