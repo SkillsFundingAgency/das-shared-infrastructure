@@ -55,8 +55,7 @@ stages:
       TimeoutInMinutes: 180
 
 - stage: Deploy_AT
-  dependsOn: Deploy_DEV
-  condition: and(not(succeededOrFailed()), not(canceled()))
+  condition: not(succeededOrFailed('Deploy_DEV'))
   displayName: Deploy to AT
   variables:
   - group: DEV das-shared-infrastructure
