@@ -55,7 +55,7 @@ stages:
       TimeoutInMinutes: 180
 
 - stage: Deploy_AT
-  condition: and(not(succeededOrFailed('Deploy_DEV')), not(cancelled()))
+  condition: and(not(succeededOrFailed('Deploy_DEV')), not(canceled()))
   displayName: Deploy to AT
   variables:
   - group: DEV das-shared-infrastructure
@@ -68,7 +68,7 @@ stages:
       SubscriptionAbbreviation: DEV
 
 - stage: Deploy_TEST
-  condition: and(not(succeededOrFailed('Deploy_DEV')), not(cancelled()))
+  condition: and(not(succeededOrFailed('Deploy_DEV')), not(canceled()))
   displayName: Deploy to TEST
   variables:
   - group: DEV das-shared-infrastructure
@@ -81,7 +81,7 @@ stages:
       SubscriptionAbbreviation: DEV
 
 - stage: Deploy_TEST2
-  condition: and(not(succeededOrFailed('Deploy_DEV')), not(cancelled()))
+  condition: and(not(succeededOrFailed('Deploy_DEV')), not(canceled()))
   displayName: Deploy to TEST2
   variables:
   - group: DEV das-shared-infrastructure
@@ -94,7 +94,7 @@ stages:
       SubscriptionAbbreviation: DEV
 
 - stage: Deploy_DEMO
-  condition: and(not(succeededOrFailed('Deploy_DEV')), not(cancelled()))
+  condition: and(not(succeededOrFailed('Deploy_DEV')), not(canceled()))
   displayName: Deploy to DEMO
   variables:
   - group: DEV das-shared-infrastructure
