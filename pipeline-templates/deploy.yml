@@ -2,7 +2,6 @@ parameters:
   ServiceConnection: ''
   Environment: ''
   SubscriptionAbbreviation: ''
-  EnvironmentNames: []
   TimeoutInMinutes: 120
 
 jobs:
