@@ -720,7 +720,7 @@
             "value": "[parameters('amplsIngestionAccessMode')]"
           },
           "virtualNetworkAddressSpacePrefix": {
-            "value": "[if(equals(parameters('resourceEnvironmentName'), 'DEV'), concat('10.', copyIndex(1)), parameters('virtualNetworkAddressSpacePrefix'))]"
+            "value": "[if(greater(length(parameters('environments')), 1), concat('10.', copyIndex(1)), parameters('virtualNetworkAddressSpacePrefix'))]"
           },
           "virtualNetworkDeploy": {
             "value": "[parameters('virtualNetworkDeploy')]"
