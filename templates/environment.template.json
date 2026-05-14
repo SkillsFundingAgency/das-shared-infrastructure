@@ -535,6 +535,9 @@
           "storageAccountName": {
             "value": "[variables('sharedARMStorageName')]"
           },
+          "storageKind": {
+            "value": "StorageV2"
+          },
           "allowSharedKeyAccess": {
             "value": true
           }
