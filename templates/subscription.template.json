@@ -46,10 +46,10 @@
       }
     },
     "virtualNetworkAddressSpacePrefix": {
-      "type": "string",
-      "defaultValue": "10.1",
+      "type": "object",
+      "defaultValue": {},
       "metadata": {
-        "description": "The address space prefix of the shared virtual network in the environment",
+        "description": "Object of the environment and its address space prefix of the shared virtual network",
         "environmentVariable": "virtualNetworkAddressSpacePrefix"
       }
     },
@@ -720,7 +720,7 @@
             "value": "[parameters('amplsIngestionAccessMode')]"
           },
           "virtualNetworkAddressSpacePrefix": {
-            "value": "[if(greater(length(parameters('environments')), 1), concat('10.', copyIndex(1)), parameters('virtualNetworkAddressSpacePrefix'))]"
+            "value": "[parameters('virtualNetworkAddressSpacePrefix')[toUpper(parameters('environments')[copyIndex()])]]"
           },
           "virtualNetworkDeploy": {
             "value": "[parameters('virtualNetworkDeploy')]"
