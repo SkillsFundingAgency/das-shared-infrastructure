@@ -45,6 +45,14 @@
         "environmentVariable": "amplsIngestionAccessMode"
       }
     },
+    "virtualNetworkAddressSpacePrefix": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Object of the environment and its address space prefix of the shared virtual network",
+        "environmentVariable": "virtualNetworkAddressSpacePrefix"
+      }
+    },
     "serviceName": {
       "type": "string",
       "defaultValue": "shared",
@@ -712,7 +720,7 @@
             "value": "[parameters('amplsIngestionAccessMode')]"
           },
           "virtualNetworkAddressSpacePrefix": {
-            "value": "[concat('10.', copyIndex(1))]"
+            "value": "[parameters('virtualNetworkAddressSpacePrefix')[toUpper(parameters('environments')[copyIndex()])]]"
           },
           "virtualNetworkDeploy": {
             "value": "[parameters('virtualNetworkDeploy')]"
