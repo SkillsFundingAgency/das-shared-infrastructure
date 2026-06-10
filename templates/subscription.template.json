@@ -344,27 +344,6 @@
         "environmentVariable": "logAnalyticsWorkspaceDataRetentionDays"
       }
     },
-    "loggingRedisCacheSKU": {
-      "type": "string",
-      "defaultValue": "Standard",
-      "metadata": {
-        "environmentVariable": "loggingRedisCacheSKU"
-      }
-    },
-    "loggingRedisCacheFamily": {
-      "type": "string",
-      "defaultValue": "C",
-      "metadata": {
-        "environmentVariable": "loggingRedisCacheFamily"
-      }
-    },
-    "loggingRedisCacheCapacity": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "environmentVariable": "loggingRedisCacheCapacity"
-      }
-    },
     "gatewaySubnetName": {
       "type": "string",
       "metadata": {
@@ -433,7 +412,6 @@
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
-    "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
@@ -907,103 +885,6 @@
       },
       "dependsOn": [
         "azure-automation"
-      ]
-    },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "logging-redis-cache",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'redis.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "redisCacheName": {
-            "value": "[variables('loggingRedisCacheName')]"
-          },
-          "redisCacheSKU": {
-            "value": "[parameters('loggingRedisCacheSKU')]"
-          },
-          "redisCacheFamily": {
-            "value": "[parameters('loggingRedisCacheFamily')]"
-          },
-          "redisCacheCapacity": {
-            "value": "[parameters('loggingRedisCacheCapacity')]"
-          },
-          "enableNonSslPort": {
-            "value": false
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "[toLower(concat(parameters('environments')[copyIndex()], '-logging-redis-private-endpoint'))]",
-      "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
-      "comments": "Private endpoint added here instead of environment template to reduce time publicNetworkAccess is set to Disabled",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'private-endpoint.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "privateEndpointName": {
-            "value": "[concat(variables('loggingRedisCacheName'), if(equals(toLower(parameters('resourceEnvironmentName')), 'dev'), concat( '-', toLower(parameters('environments')[copyIndex()])), ''), '-pe')]"
-          },
-          "subnetId": {
-            "value": "[reference(toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))).outputs.loggingRedisSubnetResourceId.value]"
-          },
-          "privateLinkGroupIds": {
-            "value": [ "redisCache" ]
-          },
-          "privateLinkServiceId": {
-            "value": "[resourceId(variables('resourceGroupName'), 'Microsoft.Cache/Redis', variables('loggingRedisCacheName'))]"
-          },
-          "privateDnsZoneId": {
-            "value": "[reference(toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))).outputs.redisPrivateDnsZoneId.value]"
-          }
-        }
-      },
-      "copy": {
-        "name": "loggingRedisPrivateEndpointCopy",
-        "count": "[length(parameters('environments'))]"
-      }
-    },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "logging-redis-cache-reset-public-access",
-      "type": "Microsoft.Resources/deployments",
-      "comments": "Toggles public access to it's original value as soon as the private endpoint deployment succeeds",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'redis.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "redisCacheName": {
-            "value": "[variables('loggingRedisCacheName')]"
-          },
-          "redisCacheSKU": {
-            "value": "[parameters('loggingRedisCacheSKU')]"
-          },
-          "redisCacheFamily": {
-            "value": "[parameters('loggingRedisCacheFamily')]"
-          },
-          "redisCacheCapacity": {
-            "value": "[parameters('loggingRedisCacheCapacity')]"
-          },
-          "enableNonSslPort": {
-            "value": false
-          }
-        }
-      },
-      "dependsOn": [
-        "loggingRedisPrivateEndpointCopy"
       ]
     }
   ],

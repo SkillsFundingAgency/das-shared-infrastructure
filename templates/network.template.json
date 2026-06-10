@@ -159,22 +159,6 @@
         "description": "The number of shared redis cache subnets to provision."
       }
     },
-    "loggingRedisSubnetNamePrefix": {
-      "type": "string",
-      "defaultValue": "loggingrds-sn",
-      "metadata": {
-        "description": "The prefix used for naming new logging redis cache subnets."
-      }
-    },
-    "loggingRedisSubnetCount": {
-      "type": "int",
-      "defaultValue": 0,
-      "minValue": 0,
-      "maxValue": 1,
-      "metadata": {
-        "description": "The number of logging redis cache subnets to provision."
-      }
-    },
     "amplsSubnetNamePrefix": {
       "type": "string",
       "defaultValue": "ampls-sn",
@@ -365,16 +349,6 @@
         "routeTable": "[if(and(greater(length( parameters('routeTableName')),0), parameters('enableRouteTableAssociation')), variables('routeTableId'), variables('emptyObject'))]"
       }
     },
-    "loggingRedisSubnetObject": {
-      "name": "[parameters('loggingRedisSubnetNamePrefix')]",
-      "properties": {
-        "addressPrefix": "[blocks.getNextAddressRange(parameters('virtualNetworkAddressSpacePrefix'), 39, 0, parameters('subnetAddressSpaceCIDR'))]",
-        "serviceEndpointList": "[variables('emptyArray')]",
-        "delegations": "[variables('emptyArray')]",
-        "networkSecurityGroup": "[variables('emptyObject')]",
-        "routeTable": "[if(and(greater(length( parameters('routeTableName')),0), parameters('enableRouteTableAssociation')), variables('routeTableId'), variables('emptyObject'))]"
-      }
-    },
     "amplsSubnetObject": {
       "name": "[parameters('amplsSubnetNamePrefix')]",
       "properties": {
@@ -392,9 +366,8 @@
     "sharedWorkerSubnet": "[if(greater(parameters('sharedWorkerSubnetCount'), 0), variables('sharedWorkerSubnetCopy'), variables('emptyArray'))]",
     "sharedAiSearchSubnet": "[if(greater(parameters('sharedAiSearchSubnetCount'), 0), array(variables('sharedAiSearchSubnetObject')), variables('emptyArray'))]",
     "sharedRedisSubnet": "[if(greater(parameters('sharedRedisSubnetCount'), 0), array(variables('sharedRedisSubnetObject')), variables('emptyArray'))]",
-    "loggingRedisSubnet": "[if(greater(parameters('loggingRedisSubnetCount'), 0), array(variables('loggingRedisSubnetObject')), variables('emptyArray'))]",
     "amplsSubnet": "[if(greater(parameters('amplsSubnetCount'), 0), array(variables('amplsSubnetObject')), variables('emptyArray'))]",
-    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('serviceSubnet'), variables('sharedWorkerSubnet'), variables('sharedAiSearchSubnet'), variables('sharedRedisSubnet'), variables('loggingRedisSubnet'), variables('amplsSubnet'))]",
+    "subnetConfiguration": "[concat(variables('managementSubnetCopy'), variables('gatewaySubnet'), variables('frontendSubnet'), variables('backendSubnet'), variables('serviceSubnet'), variables('sharedWorkerSubnet'), variables('sharedAiSearchSubnet'), variables('sharedRedisSubnet'), variables('amplsSubnet'))]",
     "routeTableId": {
       "id": "[resourceId('Microsoft.Network/routeTables', parameters('routeTableName'))]"
     },
@@ -542,10 +515,6 @@
     "sharedRedisSubnetResourceId": {
       "type": "string",
       "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('sharedRedisSubnetObject').name)]"
-    },
-    "loggingRedisSubnetResourceId": {
-      "type": "string",
-      "value": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),variables('loggingRedisSubnetObject').name)]"
     },
     "amplsSubnetResourceId": {
       "type": "string",

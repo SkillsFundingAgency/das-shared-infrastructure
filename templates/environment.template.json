@@ -154,15 +154,6 @@
         "description": "Whether to deploy the shared redis subnet."
       }
     },
-    "loggingRedisSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 0,
-      "maxValue": 1,
-      "metadata": {
-        "description": "Whether to deploy the shared redis subnet."
-      }
-    },
     "amplsSubnetCount": {
       "type": "int",
       "defaultValue": 1,
@@ -453,9 +444,6 @@
           },
           "sharedRedisSubnetCount": {
             "value": "[parameters('sharedRedisSubnetCount')]"
-          },
-          "loggingRedisSubnetCount": {
-            "value": "[parameters('loggingRedisSubnetCount')]"
           },
           "amplsSubnetCount": {
             "value": "[parameters('amplsSubnetCount')]"
@@ -1472,10 +1460,6 @@
     "sharedResourceGroupName": {
       "type": "string",
       "value": "[variables('resourceGroupName')]"
-    },
-    "loggingRedisSubnetResourceId": {
-      "type": "string",
-      "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.loggingRedisSubnetResourceId.value]"
     },
     "redisPrivateDnsZoneId": {
       "type": "string",
