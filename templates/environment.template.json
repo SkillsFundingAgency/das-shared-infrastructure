@@ -465,7 +465,7 @@
             "value": "[variables('virtualNetworkName')]"
           },
           "subnetConfiguration": {
-            "value": "[(reference(variables('virtualNetworkDeploymentName')).outputs.serviceSubnetConfiguration.value]"
+            "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.serviceSubnetConfiguration.value]"
           }
         }
       }
