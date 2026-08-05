@@ -14,8 +14,6 @@ function Set-MockEnvironment {
     $ENV:backupManagementServiceObjectId = "fb0eac10-bda1-4410-9f8f-f4d381268d13"
     $ENV:virtualNetworkDeploy = "Disabled"
     $ENV:gatewaySubnetCount = 1
-    $ENV:frontendSubnetCount = 1
-    $ENV:backendSubnetCount = 1
     $ENV:sharedWorkerSubnetCount = 1
     $ENV:sqlAdminPasswordSeed = "test seed"
     $ENV:DatabaseConfiguration = "{}"
@@ -63,12 +61,8 @@ function Clear-MockEnvironment {
         "ENV:backupManagementServiceObjectId",
         "ENV:virtualNetworkDeploy",
         "ENV:serviceSubnetNames",
-        "ENV:backendServiceAppServicePlanSuffixes",
-        "ENV:frontendServiceAppServicePlanSuffixes",
         "ENV:gatewaySubnetCount",
-        "ENV:frontendSubnetCount",
         "ENV:frontendServiceSubnetNames",
-        "ENV:backendSubnetCount",
         "ENV:sharedWorkerSubnetCount",
         "ENV:sqlAdminPasswordSeed",
         "ENV:backendAppServicePlanSkus",

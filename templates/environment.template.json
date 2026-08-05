@@ -102,29 +102,11 @@
         "description": "The number of management subnets to provision"
       }
     },
-    "frontendSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 0,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of shared frontend app subnets to provision."
-      }
-    },
     "serviceSubnetNames": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
         "description": "The names of service subnets to be used."
-      }
-    },
-    "backendSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 0,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of shared backend app subnets to provision."
       }
     },
     "sharedWorkerSubnetCount": {
@@ -324,15 +306,11 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-15688/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
     "sharedEnvResourceGroup": "[concat(variables('resourceNamePrefix'),'-rg')]",
-    "sharedFrontEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'fe-asp')]",
-    "sharedBackEndAppServicePlanName": "[concat(variables('resourceNamePrefix'),'be-asp')]",
-    "backEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'be-asp-')]",
-    "frontEndAppServicePlanNamePrefix": "[concat(variables('resourceNamePrefix'), 'fe-asp-')]",
     "sharedWorkerAppServicePlanName": "[concat(variables('resourceNamePrefix'),'wkr-asp')]",
     "firewallsResourceGroup": "[toLower(concat('das-', variables('environmentName'),'-firewall-rg'))]",
     "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
@@ -436,14 +414,8 @@
           "managementSubnetCount": {
             "value": "[parameters('managementSubnetCount')]"
           },
-          "frontendSubnetCount": {
-            "value": "[parameters('frontendSubnetCount')]"
-          },
           "serviceSubnetNames": {
             "value": "[parameters('serviceSubnetNames')]"
-          },
-          "backendSubnetCount": {
-            "value": "[parameters('backendSubnetCount')]"
           },
           "sharedWorkerSubnetCount": {
             "value": "[parameters('sharedWorkerSubnetCount')]"
@@ -493,7 +465,7 @@
             "value": "[variables('virtualNetworkName')]"
           },
           "subnetConfiguration": {
-            "value": "[concat(reference(variables('virtualNetworkDeploymentName')).outputs.backendSubnetConfiguration.value, reference(variables('virtualNetworkDeploymentName')).outputs.frontendSubnetConfiguration.value, reference(variables('virtualNetworkDeploymentName')).outputs.serviceSubnetConfiguration.value)]"
+            "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.serviceSubnetConfiguration.value]"
           }
         }
       }
@@ -780,63 +752,6 @@
       ]
     },
     {
-      "apiVersion": "2022-09-01",
-      "name": "front-end-app-service-plan",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "appServicePlanName": {
-            "value": "[variables('sharedFrontEndAppServicePlanName')]"
-          },
-          "aspSize": {
-            "value": "[parameters('frontEndAppServicePlanSku').size]"
-          },
-          "aspInstances": {
-            "value": "[parameters('frontEndAppServicePlanSku').instances]"
-          },
-          "nonASETier": {
-            "value": "[parameters('frontEndAppServicePlanSku').tier]"
-          }
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "[concat('front-end-app-service-plan-', copyIndex(), '-', parameters('utcValue'))]",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "copy": {
-        "name": "frontendAppServicePlanLoop",
-        "count": "[length(parameters('frontendAppServicePlanSkus'))]"
-      },
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "appServicePlanName": {
-            "value": "[concat(variables('frontEndAppServicePlanNamePrefix'), copyIndex())]"
-          },
-          "aspSize": {
-            "value": "[parameters('frontendAppServicePlanSkus')[copyIndex()].size]"
-          },
-          "aspInstances": {
-            "value": "[parameters('frontendAppServicePlanSkus')[copyIndex()].instances]"
-          },
-          "nonASETier": {
-            "value": "[parameters('frontendAppServicePlanSkus')[copyIndex()].tier]"
-          }
-        }
-      }
-    },
-    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[concat( parameters('frontendServiceAppServicePlanSuffixes')[copyIndex('serviceAppServicePlanNames')], '-', parameters('utcValue'))]",
@@ -868,32 +783,6 @@
       }
     },
     {
-      "apiVersion": "2022-09-01",
-      "name": "back-end-app-service-plan",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "appServicePlanName": {
-            "value": "[variables('sharedBackEndAppServicePlanName')]"
-          },
-          "aspSize": {
-            "value": "[parameters('backEndAppServicePlanSku').size]"
-          },
-          "aspInstances": {
-            "value": "[parameters('backEndAppServicePlanSku').instances]"
-          },
-          "nonASETier": {
-            "value": "[parameters('backEndAppServicePlanSku').tier]"
-          }
-        }
-      }
-    },
-    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2022-09-01",
       "name": "[concat( parameters('backendServiceAppServicePlanSuffixes')[copyIndex('serviceAppServicePlanNames')], '-', parameters('utcValue'))]",
@@ -922,37 +811,6 @@
                   "value": "[parameters('backEndAppServicePlanSku').tier]"
               }
           }
-      }
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "[concat('back-end-app-service-plan-', copyIndex(), '-', parameters('utcValue'))]",
-      "resourceGroup": "[variables('resourceGroupName')]",
-      "copy": {
-        "name": "backendAppServicePlanLoop",
-        "count": "[length(parameters('backendAppServicePlanSkus'))]"
-      },
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'app-service-plan.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "appServicePlanName": {
-            "value": "[concat(variables('backEndAppServicePlanNamePrefix'), copyIndex())]"
-          },
-          "aspSize": {
-            "value": "[parameters('backendAppServicePlanSkus')[copyIndex()].size]"
-          },
-          "aspInstances": {
-            "value": "[parameters('backendAppServicePlanSkus')[copyIndex()].instances]"
-          },
-          "nonASETier": {
-            "value": "[parameters('backendAppServicePlanSkus')[copyIndex()].tier]"
-          }
-        }
       }
     },
     {
