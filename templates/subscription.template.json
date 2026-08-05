@@ -173,32 +173,12 @@
         "environmentVariable": "managementSubnetCount"
       }
     },
-    "frontendSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 0,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of shared frontend app subnets to provision.",
-        "environmentVariable": "frontendSubnetCount"
-      }
-    },
     "serviceSubnetNames": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
         "description": "The names of service subnets to be used.",
         "environmentVariable": "serviceSubnetNames"
-      }
-    },
-    "backendSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 0,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of shared backend app subnets to provision.",
-        "environmentVariable": "backendSubnetCount"
       }
     },
     "sharedWorkerSubnetCount": {
@@ -731,14 +711,8 @@
           "managementSubnetCount": {
             "value": "[parameters('managementSubnetCount')]"
           },
-          "frontendSubnetCount": {
-            "value": "[parameters('frontendSubnetCount')]"
-          },
           "serviceSubnetNames": {
             "value": "[parameters('serviceSubnetNames')]"
-          },
-          "backendSubnetCount": {
-            "value": "[parameters('backendSubnetCount')]"
           },
           "sharedWorkerSubnetCount": {
             "value": "[parameters('sharedWorkerSubnetCount')]"
