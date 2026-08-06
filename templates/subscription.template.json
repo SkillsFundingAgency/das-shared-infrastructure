@@ -914,41 +914,6 @@
     },
     {
       "apiVersion": "2022-09-01",
-      "name": "[toLower(concat(parameters('environments')[copyIndex()], '-logging-redis-private-endpoint'))]",
-      "type": "Microsoft.Resources/deployments",
-      "resourceGroup": "[toLower(concat('das-', parameters('environments')[copyIndex()], '-shared-rg'))]",
-      "comments": "Private endpoint added here instead of environment template to reduce time publicNetworkAccess is set to Disabled",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'private-endpoint.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "privateEndpointName": {
-            "value": "[concat(variables('loggingRedisCacheName'), if(equals(toLower(parameters('resourceEnvironmentName')), 'dev'), concat( '-', toLower(parameters('environments')[copyIndex()])), ''), '-pe')]"
-          },
-          "subnetId": {
-            "value": "[reference(toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))).outputs.loggingRedisSubnetResourceId.value]"
-          },
-          "privateLinkGroupIds": {
-            "value": [ "redisCache" ]
-          },
-          "privateLinkServiceId": {
-            "value": "[resourceId(variables('resourceGroupName'), 'Microsoft.Cache/Redis', variables('loggingRedisCacheName'))]"
-          },
-          "privateDnsZoneId": {
-            "value": "[reference(toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))).outputs.redisPrivateDnsZoneId.value]"
-          }
-        }
-      },
-      "copy": {
-        "name": "loggingRedisPrivateEndpointCopy",
-        "count": "[length(parameters('environments'))]"
-      }
-    },
-    {
-      "apiVersion": "2022-09-01",
       "name": "logging-redis-cache-reset-public-access",
       "type": "Microsoft.Resources/deployments",
       "comments": "Toggles public access to it's original value as soon as the private endpoint deployment succeeds",
