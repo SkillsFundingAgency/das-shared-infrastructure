@@ -911,39 +911,6 @@
           }
         }
       }
-    },
-    {
-      "apiVersion": "2022-09-01",
-      "name": "logging-redis-cache-reset-public-access",
-      "type": "Microsoft.Resources/deployments",
-      "comments": "Toggles public access to it's original value as soon as the private endpoint deployment succeeds",
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": {
-          "uri": "[uri(variables('deploymentUrlBase'),'redis.json')]",
-          "contentVersion": "1.0.0.0"
-        },
-        "parameters": {
-          "redisCacheName": {
-            "value": "[variables('loggingRedisCacheName')]"
-          },
-          "redisCacheSKU": {
-            "value": "[parameters('loggingRedisCacheSKU')]"
-          },
-          "redisCacheFamily": {
-            "value": "[parameters('loggingRedisCacheFamily')]"
-          },
-          "redisCacheCapacity": {
-            "value": "[parameters('loggingRedisCacheCapacity')]"
-          },
-          "enableNonSslPort": {
-            "value": false
-          }
-        }
-      },
-      "dependsOn": [
-        "loggingRedisPrivateEndpointCopy"
-      ]
     }
   ],
   "outputs": {}
