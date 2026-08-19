@@ -407,16 +407,22 @@
         "description": "Toggle to deploy Azure Automation Secondary SQL Server Role assignment",
         "environmentVariable": "deploySqlAutomationRole"
       }
+    },
+    "serviceBusNamespaceName":{
+      "type": "string",
+      "metadata": {
+        "description": "Name of the service bus namespace used for the Automation account role assignment",
+        "environmentVariable": "serviceBusNamespaceName"
+      }
     }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-15907/",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
-    "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "resourceGroupName": "[resourceGroup().name]",
@@ -819,7 +825,7 @@
             "value": "ServiceBusReader"
           },
           "resourceName": {
-            "value": "[variables('serviceBusNamespaceName')]"
+            "value": "[parameters('serviceBusNamespaceName')]"
           }
         }
       },
