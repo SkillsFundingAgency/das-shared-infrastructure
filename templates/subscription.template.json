@@ -407,6 +407,13 @@
         "description": "Toggle to deploy Azure Automation Secondary SQL Server Role assignment",
         "environmentVariable": "deploySqlAutomationRole"
       }
+    },
+    "serviceBusNamespaceName":{
+      "type": "string",
+      "metadata": {
+        "description": "Name of the service bus namespace used for the Automation account role assignment",
+        "environmentVariable": "serviceBusNamespaceName"
+      }
     }
   },
   "variables": {
@@ -416,7 +423,6 @@
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
     "automationAccountName": "[concat(variables('resourceNamePrefix'),'-aa')]",
-    "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-ns')]",
     "mgmtManagementSubnetCount": 1,
     "virtualNetworkName": "[concat(variables('resourceNamePrefix'),'-vnet')]",
     "resourceGroupName": "[resourceGroup().name]",
@@ -819,7 +825,7 @@
             "value": "ServiceBusReader"
           },
           "resourceName": {
-            "value": "[variables('serviceBusNamespaceName')]"
+            "value": "[parameters('serviceBusNamespaceName')]"
           }
         }
       },
