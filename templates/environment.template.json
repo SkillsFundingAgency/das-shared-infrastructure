@@ -843,6 +843,7 @@
       "apiVersion": "2022-09-01",
       "name": "service-bus",
       "type": "Microsoft.Resources/deployments",
+      "condition": "[not(contains(createArray('test', 'mo', 'prd'), toLower(variables('environmentName'))))]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
