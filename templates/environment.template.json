@@ -306,7 +306,7 @@
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
-    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/DASD-15907-2/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
     "resourceGroupName": "[resourceGroup().name]",
@@ -843,6 +843,7 @@
       "apiVersion": "2022-09-01",
       "name": "service-bus",
       "type": "Microsoft.Resources/deployments",
+      "condition": "[not(contains(createArray('test', 'mo', 'prd'), toLower(variables('environmentName'))))]",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
