@@ -70,6 +70,7 @@ try {
         'Service'          = $ENV:ServiceTag
         'Service Line'     = $ENV:ServiceLineTag
         'Service Offering' = $ENV:ServiceOffering
+        'Team'             = $ENV:TeamTag
         'Version'          = [InitializationHelper]::GetBuildNumber()
     }
     $ResourceGroupBuilder = [ResourceGroupBuilder]::New()
