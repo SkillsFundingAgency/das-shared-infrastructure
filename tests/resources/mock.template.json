@@ -136,24 +136,6 @@
         "environmentVariable": "managementSubnetCount"
       }
     },
-    "frontendSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of shared frontend app subnets to provision.",
-        "environmentVariable": "frontendSubnetCount"
-      }
-    },
-    "backendSubnetCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "maxValue": 5,
-      "metadata": {
-        "description": "The number of shared backend app subnets to provision.",
-        "environmentVariable": "backendSubnetCount"
-      }
-    },
     "sharedWorkerSubnetCount": {
       "type": "int",
       "defaultValue": 1,
