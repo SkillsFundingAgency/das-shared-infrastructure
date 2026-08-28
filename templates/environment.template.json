@@ -197,20 +197,6 @@
         "description": "An array of suffixes to be used for backend service app service plans."
       }
     },
-    "backendAppServicePlanSkus": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Takes an array of objects: '[{\"identifier\": 0,\"tier\": \"Basic\",\"size\": \"1\",\"instances\": 1}]. Removing the backslash. The identifier helps map the values to the deployed ASP."
-      }
-    },
-    "frontendAppServicePlanSkus": {
-      "type": "array",
-      "defaultValue": [],
-      "metadata": {
-        "description": "Takes an array of objects: '[{\"identifier\": 0,\"tier\": \"Basic\",\"size\": \"1\",\"instances\": 1}]. Removing the backslash. The identifier helps map the values to the deployed ASP."
-      }
-    },
     "sharedWorkerAppServicePlanSku": {
       "type": "object",
       "defaultValue": {
