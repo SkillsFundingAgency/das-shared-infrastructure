@@ -291,7 +291,7 @@
     }
   },
   "variables": {
-    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
+    "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/DASD-15360/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
     "environmentName": "[toLower(parameters('environmentName'))]",
     "resourceNamePrefix": "[toLower(concat('das-', variables('environmentName'),'-shared'))]",
@@ -303,6 +303,14 @@
     "premiumServiceBusNamespaceName": "[concat(variables('resourceNamePrefix'),'-sbns')]",
     "sharedRedisCacheName": "[concat(variables('resourceNamePrefix'),'-rds')]",
     "sharedRedisPrivateEndpointName": "[concat(variables('sharedRedisCacheName'),'-pe')]",
+    "managedRedisName": "[concat(variables('resourceNamePrefix'),'-amr')]",
+    "managedRedisPrivateEndpointName": "[concat(variables('managedRedisName'),'-pe')]",
+    "managedRedisPrivateDnsZoneName": "privatelink.redis.azure.net",
+    "managedRedisPrivateDnsZoneId": "[resourceId(variables('resourceGroupName'),'Microsoft.Network/privateDnsZones',variables('managedRedisPrivateDnsZoneName'))]",
+    "managedRedisIsProduction": "[equals(variables('environmentName'), 'prd')]",
+    "managedRedisSku": "[if(variables('managedRedisIsProduction'), 'Balanced_B5', 'Balanced_B3')]",
+    "managedRedisHighAvailability": "[if(variables('managedRedisIsProduction'), 'Enabled', 'Disabled')]",
+    "managedRedisZones": "[if(variables('managedRedisIsProduction'), createArray('1','2','3'), createArray())]",
     "afdProfileName": "[concat(variables('resourceNamePrefix'),'-afd')]",
     "eventHubNamespaceName": "[concat(variables('resourceNamePrefix'),'-eh')]",
     "aiSearchName": "[concat(variables('resourceNamePrefix'),'-srch')]",
@@ -1139,6 +1147,98 @@
       },
       "dependsOn": [
         "shared-redis-private-endpoint"
+      ]
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "managed-redis-private-dns-zone",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'private-dns-zone.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[variables('managedRedisPrivateDnsZoneName')]"
+          },
+          "vnetId": {
+            "value": "[resourceId(variables('resourceGroupName'), 'Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[variables('virtualNetworkDeploymentName')]"
+      ]
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "managed-redis",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'managed-redis.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "managedRedisName": {
+            "value": "[variables('managedRedisName')]"
+          },
+          "managedRedisSku": {
+            "value": "[variables('managedRedisSku')]"
+          },
+          "highAvailability": {
+            "value": "[variables('managedRedisHighAvailability')]"
+          },
+          "zones": {
+            "value": "[variables('managedRedisZones')]"
+          },
+          "publicNetworkAccess": {
+            "value": "Disabled"
+          },
+          "logAnalyticsWorkspaceName": {
+            "value": "[parameters('logAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceResourceGroupName": {
+            "value": "[parameters('logAnalyticsWorkspaceResourceGroupName')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2022-09-01",
+      "name": "managed-redis-private-endpoint",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'private-endpoint.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "privateEndpointName": {
+            "value": "[variables('managedRedisPrivateEndpointName')]"
+          },
+          "subnetId": {
+            "value": "[reference(variables('virtualNetworkDeploymentName')).outputs.sharedRedisSubnetResourceId.value]"
+          },
+          "privateLinkGroupIds": {
+            "value": [ "redisEnterprise" ]
+          },
+          "privateLinkServiceId": {
+            "value": "[resourceId(variables('resourceGroupName'),'Microsoft.Cache/redisEnterprise',variables('managedRedisName'))]"
+          },
+          "privateDnsZoneId": {
+            "value": "[variables('managedRedisPrivateDnsZoneId')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[variables('virtualNetworkDeploymentName')]",
+        "managed-redis-private-dns-zone",
+        "managed-redis"
       ]
     },
     {
