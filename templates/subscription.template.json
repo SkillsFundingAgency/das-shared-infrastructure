@@ -398,6 +398,150 @@
         "description": "Name of the service bus namespace used for the Automation account role assignment",
         "environmentVariable": "serviceBusNamespaceName"
       }
+    },
+    "sharedLogAnalyticsWorkspaceSku": {
+      "type": "string",
+      "defaultValue": "PerGB2018",
+      "metadata": {
+        "description": "SKU of the per environment shared operational and security Log Analytics workspaces.",
+        "environmentVariable": "sharedLogAnalyticsWorkspaceSku"
+      }
+    },
+    "operationalLogAnalyticsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 90,
+      "metadata": {
+        "description": "Analytics retention in days for the shared operational workspace.",
+        "environmentVariable": "operationalLogAnalyticsRetentionInDays"
+      }
+    },
+    "securityLogAnalyticsRetentionInDays": {
+      "type": "int",
+      "defaultValue": 90,
+      "metadata": {
+        "description": "Analytics (instantly searchable) retention in days for the shared security workspace.",
+        "environmentVariable": "securityLogAnalyticsRetentionInDays"
+      }
+    },
+    "securityLogAnalyticsTotalRetentionInDays": {
+      "type": "int",
+      "defaultValue": 365,
+      "metadata": {
+        "description": "Total retention in days for the shared security workspace. The period beyond the analytics retention is held in low cost long term retention.",
+        "environmentVariable": "securityLogAnalyticsTotalRetentionInDays"
+      }
+    },
+    "securityLogAnalyticsResourceLockLevel": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Applies a CanNotDelete lock to the security workspace. LLD 18 requires this on every environment.",
+        "environmentVariable": "securityLogAnalyticsResourceLockLevel"
+      }
+    },
+    "operationalLogAnalyticsResourceLockLevel": {
+      "type": "string",
+      "defaultValue": "None",
+      "allowedValues": [
+        "None",
+        "CanNotDelete"
+      ],
+      "metadata": {
+        "description": "Applies a CanNotDelete lock to the operational workspace. LLD 18 requires this on PP, Prod and MO only.",
+        "environmentVariable": "operationalLogAnalyticsResourceLockLevel"
+      }
+    },
+    "securityLogAnalyticsTableNames": {
+      "type": "string",
+      "defaultValue": "AzureDiagnostics,AZKVAuditLogs,AzureActivity",
+      "metadata": {
+        "description": "Comma separated security workspace tables to apply long term retention to. Defaults to the tables that Key Vault and subscription activity logs land in, covering both the legacy AzureDiagnostics route and the resource specific AZKVAuditLogs route so that whichever the onboarding ticket chooses is already retained. Built in tables are pre registered in a workspace, so this applies from deployment rather than waiting for data. Retention on an empty table costs nothing. 'none' applies long term retention to no tables."
+      }
+    },
+    "securityLogArchiveTableNames": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Comma separated security workspace tables exported to the immutable storage archive. 'none' deploys no archive export rule.",
+        "environmentVariable": "securityLogArchiveTableNames"
+      }
+    },
+    "securityLogSplunkTableNames": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Comma separated security workspace tables streamed to Splunk. Data export cannot filter rows, so targeting is expressed as a short table list. 'none' deploys no Splunk export rule.",
+        "environmentVariable": "securityLogSplunkTableNames"
+      }
+    },
+    "securityLogAnalyticsImmutabilityPolicyState": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Disabled",
+        "Unlocked",
+        "Locked"
+      ],
+      "metadata": {
+        "description": "WORM immutability state of the security log archive storage account. Locked is irreversible. Must remain Disabled for DTA.",
+        "environmentVariable": "securityLogAnalyticsImmutabilityPolicyState"
+      }
+    },
+    "deploySecurityLogArchive": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Toggle to deploy the immutable storage account holding the tamper protected copy of the security logs.",
+        "environmentVariable": "deploySecurityLogArchive"
+      }
+    },
+    "deploySecurityLogSplunkExport": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Toggle to deploy the data export rule that streams targeted security tables to Splunk.",
+        "environmentVariable": "deploySecurityLogSplunkExport"
+      }
+    },
+    "deploySecurityLogSplunkEventHubNamespace": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Deploys a dedicated Event Hubs namespace for the Splunk export instead of reusing an existing one. When Enabled the export targets it automatically.",
+        "environmentVariable": "deploySecurityLogSplunkEventHubNamespace"
+      }
+    },
+    "securityLogSplunkEventHubNamespaceResourceId": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Resource id of the Event Hubs namespace Splunk consumes.",
+        "environmentVariable": "securityLogSplunkEventHubNamespaceResourceId"
+      }
+    },
+    "securityLogSplunkEventHubName": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Optional Event Hub name within the namespace Splunk consumes.",
+        "environmentVariable": "securityLogSplunkEventHubName"
+      }
     }
   },
   "variables": {
@@ -754,6 +898,51 @@
           },
           "routeTableRoutes": {
             "value": "[parameters('routeTableRoutes')[toLower(parameters('environments')[copyIndex()])]]"
+          },
+          "sharedLogAnalyticsWorkspaceSku": {
+            "value": "[parameters('sharedLogAnalyticsWorkspaceSku')]"
+          },
+          "operationalLogAnalyticsRetentionInDays": {
+            "value": "[parameters('operationalLogAnalyticsRetentionInDays')]"
+          },
+          "securityLogAnalyticsRetentionInDays": {
+            "value": "[parameters('securityLogAnalyticsRetentionInDays')]"
+          },
+          "securityLogAnalyticsTotalRetentionInDays": {
+            "value": "[parameters('securityLogAnalyticsTotalRetentionInDays')]"
+          },
+          "securityLogAnalyticsResourceLockLevel": {
+            "value": "[parameters('securityLogAnalyticsResourceLockLevel')]"
+          },
+          "operationalLogAnalyticsResourceLockLevel": {
+            "value": "[parameters('operationalLogAnalyticsResourceLockLevel')]"
+          },
+          "securityLogAnalyticsTableNames": {
+            "value": "[parameters('securityLogAnalyticsTableNames')]"
+          },
+          "securityLogArchiveTableNames": {
+            "value": "[parameters('securityLogArchiveTableNames')]"
+          },
+          "securityLogSplunkTableNames": {
+            "value": "[parameters('securityLogSplunkTableNames')]"
+          },
+          "securityLogAnalyticsImmutabilityPolicyState": {
+            "value": "[parameters('securityLogAnalyticsImmutabilityPolicyState')]"
+          },
+          "deploySecurityLogArchive": {
+            "value": "[parameters('deploySecurityLogArchive')]"
+          },
+          "deploySecurityLogSplunkExport": {
+            "value": "[parameters('deploySecurityLogSplunkExport')]"
+          },
+          "deploySecurityLogSplunkEventHubNamespace": {
+            "value": "[parameters('deploySecurityLogSplunkEventHubNamespace')]"
+          },
+          "securityLogSplunkEventHubNamespaceResourceId": {
+            "value": "[parameters('securityLogSplunkEventHubNamespaceResourceId')]"
+          },
+          "securityLogSplunkEventHubName": {
+            "value": "[parameters('securityLogSplunkEventHubName')]"
           }
         }
       },

@@ -38,6 +38,22 @@ function Set-MockEnvironment {
     $ENV:sqlServerName = "das-foo-shared-sql"
     $ENV:secondarySqlServerName = "das-foo-shared-sql-ne"
     $ENV:deploySqlAutomationRole = "Disabled"
+    $ENV:serviceBusNamespaceName = "das-foo-shared-ns"
+    $ENV:sharedLogAnalyticsWorkspaceSku = "PerGB2018"
+    $ENV:operationalLogAnalyticsRetentionInDays = 90
+    $ENV:securityLogAnalyticsRetentionInDays = 90
+    $ENV:securityLogAnalyticsTotalRetentionInDays = 365
+    $ENV:securityLogAnalyticsImmutabilityPolicyState = "Disabled"
+    $ENV:deploySecurityLogArchive = "Disabled"
+    $ENV:deploySecurityLogSplunkExport = "Disabled"
+    $ENV:securityLogSplunkEventHubNamespaceResourceId = "none"
+    $ENV:securityLogSplunkEventHubName = "none"
+    $ENV:securityLogAnalyticsResourceLockLevel = "None"
+    $ENV:operationalLogAnalyticsResourceLockLevel = "None"
+    $ENV:securityLogAnalyticsTableNames = "AzureDiagnostics,AZKVAuditLogs,AzureActivity"
+    $ENV:securityLogArchiveTableNames = "none"
+    $ENV:securityLogSplunkTableNames = "none"
+    $ENV:deploySecurityLogSplunkEventHubNamespace = "Disabled"
 }
 
 function Clear-MockEnvironment {
@@ -78,7 +94,23 @@ function Clear-MockEnvironment {
         "ENV:actionGroupResourceGroupName",
         "ENV:databasesToExcludeFrom90PercentAlert",
         "ENV:databasesToIncludeIn100PercentAlert",
-        "ENV:gatewaySubnetName"
+        "ENV:gatewaySubnetName",
+        "ENV:serviceBusNamespaceName",
+        "ENV:sharedLogAnalyticsWorkspaceSku",
+        "ENV:operationalLogAnalyticsRetentionInDays",
+        "ENV:securityLogAnalyticsRetentionInDays",
+        "ENV:securityLogAnalyticsTotalRetentionInDays",
+        "ENV:securityLogAnalyticsImmutabilityPolicyState",
+        "ENV:deploySecurityLogArchive",
+        "ENV:deploySecurityLogSplunkExport",
+        "ENV:securityLogSplunkEventHubNamespaceResourceId",
+        "ENV:securityLogSplunkEventHubName",
+        "ENV:securityLogAnalyticsResourceLockLevel",
+        "ENV:operationalLogAnalyticsResourceLockLevel",
+        "ENV:securityLogAnalyticsTableNames",
+        "ENV:securityLogArchiveTableNames",
+        "ENV:securityLogSplunkTableNames",
+        "ENV:deploySecurityLogSplunkEventHubNamespace"
     ) -Force
 }
 
