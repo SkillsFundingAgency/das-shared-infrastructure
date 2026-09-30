@@ -567,6 +567,34 @@
         "description": "Optional Event Hub name within the namespace Splunk consumes.",
         "environmentVariable": "securityLogSplunkEventHubName"
       }
+    },
+    "deployKeyVaultSecurityLogging": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Toggle to add the security workspace diagnostic setting to the vaults listed in keyVaultSecurityLoggingVaults. Requires deploySecurityLogAnalyticsWorkspace to be Enabled, because the setting targets that workspace.",
+        "environmentVariable": "deployKeyVaultSecurityLogging"
+      }
+    },
+    "keyVaultSecurityLoggingVaults": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Comma separated list of vaults in this subscription to send Key Vault audit logs to the security workspace, each entry in the form resourceGroupName/keyVaultName. 'none' deploys no diagnostic settings.",
+        "environmentVariable": "keyVaultSecurityLoggingVaults"
+      }
+    },
+    "keyVaultSecurityLoggingWorkspaceEnvironment": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Environment whose security workspace receives the audit logs, for example at. The vaults are subscription scoped and have no environment of their own, so the destination is chosen here. Must be one of the environments in this subscription.",
+        "environmentVariable": "keyVaultSecurityLoggingWorkspaceEnvironment"
+      }
     }
   },
   "variables": {
@@ -984,6 +1012,30 @@
       "dependsOn": [
         "key-vault",
         "log-analytics-workspace"
+      ]
+    },
+    {
+      "condition": "[and(equals(parameters('deployKeyVaultSecurityLogging'), 'Enabled'), equals(parameters('deploySecurityLogAnalyticsWorkspace'), 'Enabled'), not(equals(parameters('keyVaultSecurityLoggingVaults'), 'none')), contains(json(toLower(string(parameters('environments')))), toLower(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'))))]",
+      "apiVersion": "2022-09-01",
+      "name": "key-vault-security-logging",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('sharedDeploymentUrlBase'),'templates/keyvault-security-logging.template.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "keyVaults": {
+            "value": "[parameters('keyVaultSecurityLoggingVaults')]"
+          },
+          "securityLogAnalyticsWorkspaceResourceId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', toLower(concat(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-environment-infrastructure'))), '2022-09-01').outputs.securityLogAnalyticsWorkspaceResourceId.value]"
+          }
+        }
+      },
+      "dependsOn": [
+        "environmentCopy"
       ]
     },
     {
