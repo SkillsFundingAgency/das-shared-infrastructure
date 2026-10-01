@@ -1030,7 +1030,7 @@
             "value": "[parameters('keyVaultSecurityLoggingVaults')]"
           },
           "securityLogAnalyticsWorkspaceResourceId": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', toLower(concat(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-environment-infrastructure'))), '2022-09-01').outputs.securityLogAnalyticsWorkspaceResourceId.value]"
+            "value": "[reference(resourceId(toLower(concat('das-', parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-rg')), 'Microsoft.Resources/deployments', toLower(concat(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-environment-infrastructure'))), '2022-09-01').outputs.securityLogAnalyticsWorkspaceResourceId.value]"
           }
         }
       },
