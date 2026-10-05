@@ -127,6 +127,47 @@ The Listen key is deliberately not an ARM output, because deployment outputs are
 
 Data export cannot filter rows - it exports whole tables from the point the rule is created - so targeting is expressed as a short list of tables in `securityLogSplunkTableNames`. `securityLogSplunkEventHubNamespaceResourceId` is supplied by configuration so an existing namespace can be reused. Both Splunk string parameters use `none` rather than an empty string as their unset value, because the parameters file builder treats empty values as missing.
 
+### Key Vault audit logging
+
+`deployKeyVaultSecurityLogging` adds a diagnostic setting named `security-la` to each vault listed in `keyVaultSecurityLoggingVaults`, sending Key Vault audit logs to the security workspace. The vault deployment loop is defined directly in [subscription.template.json](templates/subscription.template.json) and calls the reusable [diagnostic-settings.json](https://github.com/SkillsFundingAgency/das-platform-building-blocks/blob/master/templates/diagnostic-settings.json) building block in each vault's resource group, with `logCategoryGroups` set to `audit`, no metrics, and `logAnalyticsDestinationType` set to `Dedicated`.
+
+`Dedicated` is what lands the data in `AZKVAuditLogs` rather than the shared `AzureDiagnostics` table, which is why `AZKVAuditLogs` is in the default `securityLogAnalyticsTableNames` list above and why long term retention and the Splunk export can target Key Vault precisely.
+
+The setting is additive. A diagnostic setting is a named resource, so the new `security-la` name leaves the existing settings on each vault untouched and still delivering to their current destinations. The vaults in scope currently carry at most two settings each - some combination of `service`, `Splunk_Diagnostic_Profile` and `KeyVaultLogging` - so adding one takes the busiest of them to three against a limit of five.
+
+The existing `service` setting sends `AuditEvent` to the legacy per subscription workspace with `logAnalyticsDestinationType` of `AzureDiagnostics`. The new setting sends the same category to the security workspace as `Dedicated`. Two settings may carry the same category as long as they deliver to different workspaces, which these do, so the vaults keep their current logging unchanged while the audit log starts landing in `AZKVAuditLogs` as well.
+
+`keyVaultSecurityLoggingVaults` is a comma separated list of `resourceGroupName/keyVaultName` pairs, matching the order those two appear in an Azure resource id. It is a string rather than an array for the same reason the table lists are - the parameters file builder treats an empty array as a missing value and throws. `none` deploys nothing. The resource group is part of each entry because the vaults are spread across many resource groups and the diagnostic setting has to be deployed into the one holding the vault.
+
+### Which workspace the vaults log to
+
+Each environment's vaults log to that environment's own workspace, so the configuration lives on the per environment variable groups rather than the subscription wide one. `AT das-shared-infrastructure` lists the `das-at-` vaults with `keyVaultSecurityLoggingWorkspaceEnvironment` set to `at`, `TEST das-shared-infrastructure` lists the `das-test-` vaults with `test`, and so on for TEST2 and DEMO. Each of those variable groups is already layered after `DEV das-shared-infrastructure` on its stage, so the environment specific value wins.
+
+`AT das-shared-infrastructure`, as an example of the shape:
+
+```
+deployKeyVaultSecurityLogging               = Enabled
+keyVaultSecurityLoggingWorkspaceEnvironment = at
+keyVaultSecurityLoggingVaults               = das-at-apprapp-rg/das-at-apprapp-kv,das-at-crswkr-rg/das-at-crswkr-kv,...
+```
+
+The list is configuration rather than code because these are application vaults owned by the teams that deploy them, so vaults come and go without this repository changing. Check the current set with `az keyvault list` against the subscription before editing a group.
+
+**The non environment vaults are not in scope yet.** `das-dev-shared-kv`, `das-dev-eclog-kv` and `das-dev-ecsrch-kv` in `das-dev-mgmt-rg`, `das-poc-empinc-kv` in `das-poc-empinc-rg`, and `das-dta-shared-kv` in `das-dta-mgmt-rg` all belong to the subscription rather than to an environment, and whether their audit logs are collected at all is still to be decided. They are reachable - all five sit in the same subscription as the environments, and a nested deployment crosses resource groups freely within a subscription - so whichever environment workspace is chosen, adding them is a variable group change and needs no code change. Until then `deployKeyVaultSecurityLogging` stays off on `DEV das-shared-infrastructure` and `DTA das-shared-infrastructure`, which is its default.
+
+### Enabling it
+
+The deployment is skipped unless all of the following hold, so merging changes nothing anywhere:
+
+| Condition | Why |
+| --- | --- |
+| `deployKeyVaultSecurityLogging` is `Enabled` | The switch itself, off by default |
+| `deploySecurityLogAnalyticsWorkspace` is `Enabled` | The setting targets that workspace, so it has to exist |
+| `keyVaultSecurityLoggingVaults` is not `none` | Nothing to configure otherwise |
+| `keyVaultSecurityLoggingWorkspaceEnvironment` is one of this run's environments | The destination resource id comes from that environment's deployment |
+
+The last condition matters because every stage deploys the whole subscription template, and the five stages in the DEV subscription share the `DEV das-shared-infrastructure` variable group on top of their own. It means a value set subscription wide cannot be picked up by a stage that does not hold the environment owning the destination workspace - that stage skips the resource rather than failing on a deployment output that is not there. When any condition is false, the vault deployment loop has zero iterations and an `if` expression guards the workspace output reference so it is not evaluated.
+
 ## External dependencies
 There is a third layer that is not deployed by these templates. This is the application layer. Deployment templates for applications within this layer are typically stored with the [application code](https://github.com/SkillsFundingAgency/das-reservations/tree/master/azure) as they will share the same lifecycle. These applications will often depend on infrastructure deployed by templates in this repository.
 
@@ -191,4 +232,6 @@ The DTA stage deploys and tears down the infrastructure to provide a method for 
 
 The templates above live in [das-platform-building-blocks](https://github.com/SkillsFundingAgency/das-platform-building-blocks) and are resolved from that repository's `master` branch at deployment time, not from the pinned tag in [azure-pipelines.yml](azure-pipelines.yml). The tag governs the pipeline YAML step templates only, so a building blocks change is live for every consumer on merge.
 
-They are all **new files**. The pre-existing `log-analytics-workspace.json` is untouched and stays on apiVersion `2020-08-01`, so nothing that already consumes it is affected. `log-analytics-workspace-v2.json` is a second template following the same `-v2` convention as `app-service-v2.json` and `app-gateway-v2.json`.
+The workspace, data export and immutable storage templates are all **new files**. The pre-existing `log-analytics-workspace.json` is untouched and stays on apiVersion `2020-08-01`, so nothing that already consumes it is affected. `log-analytics-workspace-v2.json` is a second template following the same `-v2` convention as `app-service-v2.json` and `app-gateway-v2.json`.
+
+`diagnostic-settings.json` is the exception. It already exists and is already consumed elsewhere, so the Key Vault audit logging above uses it as it stands and adds nothing to it.

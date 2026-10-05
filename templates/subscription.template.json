@@ -567,11 +567,41 @@
         "description": "Optional Event Hub name within the namespace Splunk consumes.",
         "environmentVariable": "securityLogSplunkEventHubName"
       }
+    },
+    "deployKeyVaultSecurityLogging": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Toggle to add the security workspace diagnostic setting to the vaults listed in keyVaultSecurityLoggingVaults. Requires deploySecurityLogAnalyticsWorkspace to be Enabled, because the setting targets that workspace.",
+        "environmentVariable": "deployKeyVaultSecurityLogging"
+      }
+    },
+    "keyVaultSecurityLoggingVaults": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Comma separated list of vaults in this subscription to send Key Vault audit logs to the security workspace, each entry in the form resourceGroupName/keyVaultName. 'none' deploys no diagnostic settings.",
+        "environmentVariable": "keyVaultSecurityLoggingVaults"
+      }
+    },
+    "keyVaultSecurityLoggingWorkspaceEnvironment": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Environment whose security workspace receives the audit logs, for example at. The vaults are subscription scoped and have no environment of their own, so the destination is chosen here. Must be one of the environments in this subscription.",
+        "environmentVariable": "keyVaultSecurityLoggingWorkspaceEnvironment"
+      }
     }
   },
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "deployKeyVaultSecurityLogging": "[and(equals(parameters('deployKeyVaultSecurityLogging'), 'Enabled'), equals(parameters('deploySecurityLogAnalyticsWorkspace'), 'Enabled'), not(equals(parameters('keyVaultSecurityLoggingVaults'), 'none')), contains(json(toLower(string(parameters('environments')))), toLower(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'))))]",
+    "keyVaultSecurityLoggingVaultList": "[if(variables('deployKeyVaultSecurityLogging'), split(replace(parameters('keyVaultSecurityLoggingVaults'), ' ', ''), ','), json('[]'))]",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -984,6 +1014,55 @@
       "dependsOn": [
         "key-vault",
         "log-analytics-workspace"
+      ]
+    },
+    {
+      "condition": "[variables('deployKeyVaultSecurityLogging')]",
+      "apiVersion": "2022-09-01",
+      "name": "[concat('key-vault-security-logging-', split(variables('keyVaultSecurityLoggingVaultList')[copyIndex('keyVaultSecurityDiagnosticSettingCopy')], '/')[1])]",
+      "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[split(variables('keyVaultSecurityLoggingVaultList')[copyIndex('keyVaultSecurityDiagnosticSettingCopy')], '/')[0]]",
+      "copy": {
+        "name": "keyVaultSecurityDiagnosticSettingCopy",
+        "count": "[length(variables('keyVaultSecurityLoggingVaultList'))]"
+      },
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'diagnostic-settings.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "resourceType": {
+            "value": "Microsoft.KeyVault/vaults"
+          },
+          "resourceName": {
+            "value": "[split(variables('keyVaultSecurityLoggingVaultList')[copyIndex('keyVaultSecurityDiagnosticSettingCopy')], '/')[1]]"
+          },
+          "diagnosticSettingName": {
+            "value": "security-la"
+          },
+          "logAnalyticsWorkspaceResourceId": {
+            "value": "[if(variables('deployKeyVaultSecurityLogging'), reference(resourceId(toLower(concat('das-', parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-rg')), 'Microsoft.Resources/deployments', toLower(concat(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-environment-infrastructure'))), '2022-09-01').outputs.securityLogAnalyticsWorkspaceResourceId.value, '')]"
+          },
+          "logAnalyticsDestinationType": {
+            "value": "Dedicated"
+          },
+          "logCategoryGroups": {
+            "value": [
+              "audit"
+            ]
+          },
+          "logCategories": {
+            "value": []
+          },
+          "metricCategories": {
+            "value": []
+          }
+        }
+      },
+      "dependsOn": [
+        "environmentCopy"
       ]
     },
     {
