@@ -600,6 +600,8 @@
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
+    "deployKeyVaultSecurityLogging": "[and(equals(parameters('deployKeyVaultSecurityLogging'), 'Enabled'), equals(parameters('deploySecurityLogAnalyticsWorkspace'), 'Enabled'), not(equals(parameters('keyVaultSecurityLoggingVaults'), 'none')), contains(json(toLower(string(parameters('environments')))), toLower(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'))))]",
+    "keyVaultSecurityLoggingVaultList": "[if(variables('deployKeyVaultSecurityLogging'), split(replace(parameters('keyVaultSecurityLoggingVaults'), ' ', ''), ','), json('[]'))]",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
     "keyVaultName": "[concat(variables('resourceNamePrefix'),'-kv')]",
@@ -1015,22 +1017,47 @@
       ]
     },
     {
-      "condition": "[and(equals(parameters('deployKeyVaultSecurityLogging'), 'Enabled'), equals(parameters('deploySecurityLogAnalyticsWorkspace'), 'Enabled'), not(equals(parameters('keyVaultSecurityLoggingVaults'), 'none')), contains(json(toLower(string(parameters('environments')))), toLower(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'))))]",
+      "condition": "[variables('deployKeyVaultSecurityLogging')]",
       "apiVersion": "2022-09-01",
-      "name": "key-vault-security-logging",
+      "name": "[concat('key-vault-security-logging-', split(variables('keyVaultSecurityLoggingVaultList')[copyIndex('keyVaultSecurityDiagnosticSettingCopy')], '/')[1])]",
       "type": "Microsoft.Resources/deployments",
+      "resourceGroup": "[split(variables('keyVaultSecurityLoggingVaultList')[copyIndex('keyVaultSecurityDiagnosticSettingCopy')], '/')[0]]",
+      "copy": {
+        "name": "keyVaultSecurityDiagnosticSettingCopy",
+        "count": "[length(variables('keyVaultSecurityLoggingVaultList'))]"
+      },
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(variables('sharedDeploymentUrlBase'),'templates/keyvault-security-logging.template.json')]",
+          "uri": "[uri(variables('deploymentUrlBase'),'diagnostic-settings.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "keyVaults": {
-            "value": "[parameters('keyVaultSecurityLoggingVaults')]"
+          "resourceType": {
+            "value": "Microsoft.KeyVault/vaults"
           },
-          "securityLogAnalyticsWorkspaceResourceId": {
-            "value": "[reference(resourceId(toLower(concat('das-', parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-rg')), 'Microsoft.Resources/deployments', toLower(concat(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-environment-infrastructure'))), '2022-09-01').outputs.securityLogAnalyticsWorkspaceResourceId.value]"
+          "resourceName": {
+            "value": "[split(variables('keyVaultSecurityLoggingVaultList')[copyIndex('keyVaultSecurityDiagnosticSettingCopy')], '/')[1]]"
+          },
+          "diagnosticSettingName": {
+            "value": "security-la"
+          },
+          "logAnalyticsWorkspaceResourceId": {
+            "value": "[if(variables('deployKeyVaultSecurityLogging'), reference(resourceId(toLower(concat('das-', parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-rg')), 'Microsoft.Resources/deployments', toLower(concat(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-environment-infrastructure'))), '2022-09-01').outputs.securityLogAnalyticsWorkspaceResourceId.value, '')]"
+          },
+          "logAnalyticsDestinationType": {
+            "value": "Dedicated"
+          },
+          "logCategoryGroups": {
+            "value": [
+              "audit"
+            ]
+          },
+          "logCategories": {
+            "value": []
+          },
+          "metricCategories": {
+            "value": []
           }
         }
       },

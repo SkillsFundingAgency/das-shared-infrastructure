@@ -129,7 +129,7 @@ Data export cannot filter rows - it exports whole tables from the point the rule
 
 ### Key Vault audit logging
 
-`deployKeyVaultSecurityLogging` adds a diagnostic setting named `security-la` to each vault listed in `keyVaultSecurityLoggingVaults`, sending Key Vault audit logs to the security workspace. It is deployed by [keyvault-security-logging.template.json](templates/keyvault-security-logging.template.json) from the reusable [diagnostic-settings.json](https://github.com/SkillsFundingAgency/das-platform-building-blocks/blob/master/templates/diagnostic-settings.json) building block, with `logCategoryGroups` set to `audit`, no metrics, and `logAnalyticsDestinationType` set to `Dedicated`.
+`deployKeyVaultSecurityLogging` adds a diagnostic setting named `security-la` to each vault listed in `keyVaultSecurityLoggingVaults`, sending Key Vault audit logs to the security workspace. The vault deployment loop is defined directly in [subscription.template.json](templates/subscription.template.json) and calls the reusable [diagnostic-settings.json](https://github.com/SkillsFundingAgency/das-platform-building-blocks/blob/master/templates/diagnostic-settings.json) building block in each vault's resource group, with `logCategoryGroups` set to `audit`, no metrics, and `logAnalyticsDestinationType` set to `Dedicated`.
 
 `Dedicated` is what lands the data in `AZKVAuditLogs` rather than the shared `AzureDiagnostics` table, which is why `AZKVAuditLogs` is in the default `securityLogAnalyticsTableNames` list above and why long term retention and the Splunk export can target Key Vault precisely.
 
@@ -166,7 +166,7 @@ The deployment is skipped unless all of the following hold, so merging changes n
 | `keyVaultSecurityLoggingVaults` is not `none` | Nothing to configure otherwise |
 | `keyVaultSecurityLoggingWorkspaceEnvironment` is one of this run's environments | The destination resource id comes from that environment's deployment |
 
-The last condition matters because every stage deploys the whole subscription template, and the five stages in the DEV subscription share the `DEV das-shared-infrastructure` variable group on top of their own. It means a value set subscription wide cannot be picked up by a stage that does not hold the environment owning the destination workspace - that stage skips the resource rather than failing on a deployment output that is not there.
+The last condition matters because every stage deploys the whole subscription template, and the five stages in the DEV subscription share the `DEV das-shared-infrastructure` variable group on top of their own. It means a value set subscription wide cannot be picked up by a stage that does not hold the environment owning the destination workspace - that stage skips the resource rather than failing on a deployment output that is not there. When any condition is false, the vault deployment loop has zero iterations and an `if` expression guards the workspace output reference so it is not evaluated.
 
 ## External dependencies
 There is a third layer that is not deployed by these templates. This is the application layer. Deployment templates for applications within this layer are typically stored with the [application code](https://github.com/SkillsFundingAgency/das-reservations/tree/master/azure) as they will share the same lifecycle. These applications will often depend on infrastructure deployed by templates in this repository.
