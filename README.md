@@ -153,7 +153,24 @@ keyVaultSecurityLoggingVaults               = das-at-apprapp-rg/das-at-apprapp-k
 
 The list is configuration rather than code because these are application vaults owned by the teams that deploy them, so vaults come and go without this repository changing. Check the current set with `az keyvault list` against the subscription before editing a group.
 
-**The non environment vaults are not in scope yet.** `das-dev-shared-kv`, `das-dev-eclog-kv` and `das-dev-ecsrch-kv` in `das-dev-mgmt-rg`, `das-poc-empinc-kv` in `das-poc-empinc-rg`, and `das-dta-shared-kv` in `das-dta-mgmt-rg` all belong to the subscription rather than to an environment, and whether their audit logs are collected at all is still to be decided. They are reachable - all five sit in the same subscription as the environments, and a nested deployment crosses resource groups freely within a subscription - so whichever environment workspace is chosen, adding them is a variable group change and needs no code change. Until then `deployKeyVaultSecurityLogging` stays off on `DEV das-shared-infrastructure` and `DTA das-shared-infrastructure`, which is its default.
+### The DEV subscription
+
+`das-dev-shared-kv`, `das-dev-eclog-kv` and `das-dev-ecsrch-kv` sit in `das-dev-mgmt-rg` and belong to the subscription rather than to an environment, so there is no `das-{env}-security-la` for them to log to. DEV is a subscription in this model, not an environment - it is not in the `EnvironmentNames` validation set, there is no `das-dev-shared-rg`, and making it an environment would deploy the whole 38 resource environment stack to get one workspace.
+
+`deploySubscriptionSecurityLogAnalyticsWorkspace` solves that by deploying a security workspace into the management resource group instead, alongside the pre-existing `das-{sub}-oms-ws`. It is the same `log-analytics-workspace-v2.json` building block with the same retention, table list, lock and `disableLocalAuth` settings as the environment ones, so the workspace is identical in configuration to `das-at-security-la` and the rest.
+
+On `DEV das-shared-infrastructure`:
+
+```
+deploySubscriptionSecurityLogAnalyticsWorkspace = Enabled
+deployKeyVaultSecurityLogging                   = Enabled
+keyVaultSecurityLoggingWorkspaceEnvironment     = dev
+keyVaultSecurityLoggingVaults                   = das-dev-mgmt-rg/das-dev-shared-kv,das-dev-mgmt-rg/das-dev-eclog-kv,das-dev-mgmt-rg/das-dev-ecsrch-kv
+```
+
+Setting `keyVaultSecurityLoggingWorkspaceEnvironment` to the subscription's own name is what selects the management resource group workspace. Any other value still means an environment, resolved through that environment's deployment output as before. The switch has to be `Enabled` as well, which is what stops PP, PRD and MO quietly changing behaviour - their subscription name is also an environment name, so the name test alone would match and send their vaults to a second workspace in the management resource group instead of the real one.
+
+`das-poc-empinc-kv` in `das-poc-empinc-rg` and `das-dta-shared-kv` in `das-dta-mgmt-rg` are still undecided. Both are reachable from the same subscription, so adding them is a variable group change with no code change once a destination is agreed. DTA is torn down and rebuilt by its stage, so a setting on its vault would be reapplied by the next run rather than surviving the teardown.
 
 ### Enabling it
 

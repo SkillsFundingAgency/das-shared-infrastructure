@@ -423,6 +423,18 @@
         "environmentVariable": "deploySecurityLogAnalyticsWorkspace"
       }
     },
+    "deploySubscriptionSecurityLogAnalyticsWorkspace": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Deploys a security Log Analytics workspace into the management resource group, for subscriptions whose resources do not belong to an environment. Intended for DEV, which has no environment of its own and so no das-dev-security-la. Leave Disabled on subscriptions named after an environment, which already get one from the environment template.",
+        "environmentVariable": "deploySubscriptionSecurityLogAnalyticsWorkspace"
+      }
+    },
     "sharedLogAnalyticsWorkspaceSku": {
       "type": "string",
       "defaultValue": "PerGB2018",
@@ -600,7 +612,10 @@
   "variables": {
     "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
     "sharedDeploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-shared-infrastructure/master/",
-    "deployKeyVaultSecurityLogging": "[and(equals(parameters('deployKeyVaultSecurityLogging'), 'Enabled'), equals(parameters('deploySecurityLogAnalyticsWorkspace'), 'Enabled'), not(equals(parameters('keyVaultSecurityLoggingVaults'), 'none')), contains(json(toLower(string(parameters('environments')))), toLower(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'))))]",
+    "subscriptionSecurityLogAnalyticsWorkspaceName": "[toLower(concat('das-', parameters('resourceEnvironmentName'), '-security-la'))]",
+    "useSubscriptionSecurityLogAnalyticsWorkspace": "[and(equals(parameters('deploySubscriptionSecurityLogAnalyticsWorkspace'), 'Enabled'), equals(toLower(parameters('keyVaultSecurityLoggingWorkspaceEnvironment')), toLower(parameters('resourceEnvironmentName'))))]",
+    "securityLogAnalyticsWorkspaceAvailable": "[if(variables('useSubscriptionSecurityLogAnalyticsWorkspace'), true(), and(equals(parameters('deploySecurityLogAnalyticsWorkspace'), 'Enabled'), contains(json(toLower(string(parameters('environments')))), toLower(parameters('keyVaultSecurityLoggingWorkspaceEnvironment')))))]",
+    "deployKeyVaultSecurityLogging": "[and(equals(parameters('deployKeyVaultSecurityLogging'), 'Enabled'), not(equals(parameters('keyVaultSecurityLoggingVaults'), 'none')), variables('securityLogAnalyticsWorkspaceAvailable'))]",
     "keyVaultSecurityLoggingVaultList": "[if(variables('deployKeyVaultSecurityLogging'), split(replace(parameters('keyVaultSecurityLoggingVaults'), ' ', ''), ','), json('[]'))]",
     "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
     "loggingRedisCacheName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-log-rds'))]",
@@ -841,6 +856,45 @@
       }
     },
     {
+      "condition": "[equals(parameters('deploySubscriptionSecurityLogAnalyticsWorkspace'), 'Enabled')]",
+      "apiVersion": "2022-09-01",
+      "name": "subscription-security-log-analytics-workspace",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(variables('deploymentUrlBase'),'log-analytics-workspace-v2.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "logAnalyticsWorkspaceName": {
+            "value": "[variables('subscriptionSecurityLogAnalyticsWorkspaceName')]"
+          },
+          "logAnalyticsWorkspaceSku": {
+            "value": "[parameters('sharedLogAnalyticsWorkspaceSku')]"
+          },
+          "dataRetentionDays": {
+            "value": "[parameters('securityLogAnalyticsRetentionInDays')]"
+          },
+          "totalRetentionInDays": {
+            "value": "[parameters('securityLogAnalyticsTotalRetentionInDays')]"
+          },
+          "tableNames": {
+            "value": "[if(equals(parameters('securityLogAnalyticsTableNames'), 'none'), createArray(), split(replace(parameters('securityLogAnalyticsTableNames'), ' ', ''), ','))]"
+          },
+          "enableDataExport": {
+            "value": true
+          },
+          "disableLocalAuth": {
+            "value": true
+          },
+          "resourceLockLevel": {
+            "value": "[parameters('securityLogAnalyticsResourceLockLevel')]"
+          }
+        }
+      }
+    },
+    {
       "apiVersion": "2022-09-01",
       "name": "[toLower(concat(parameters('environments')[copyIndex()], '-shared-environment-infrastructure'))]",
       "type": "Microsoft.Resources/deployments",
@@ -1043,7 +1097,7 @@
             "value": "security-la"
           },
           "logAnalyticsWorkspaceResourceId": {
-            "value": "[if(variables('deployKeyVaultSecurityLogging'), reference(resourceId(toLower(concat('das-', parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-rg')), 'Microsoft.Resources/deployments', toLower(concat(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-environment-infrastructure'))), '2022-09-01').outputs.securityLogAnalyticsWorkspaceResourceId.value, '')]"
+            "value": "[if(variables('useSubscriptionSecurityLogAnalyticsWorkspace'), resourceId('Microsoft.OperationalInsights/workspaces', variables('subscriptionSecurityLogAnalyticsWorkspaceName')), if(variables('deployKeyVaultSecurityLogging'), reference(resourceId(toLower(concat('das-', parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-rg')), 'Microsoft.Resources/deployments', toLower(concat(parameters('keyVaultSecurityLoggingWorkspaceEnvironment'), '-shared-environment-infrastructure'))), '2022-09-01').outputs.securityLogAnalyticsWorkspaceResourceId.value, ''))]"
           },
           "logAnalyticsDestinationType": {
             "value": "Dedicated"
@@ -1062,7 +1116,8 @@
         }
       },
       "dependsOn": [
-        "environmentCopy"
+        "environmentCopy",
+        "subscription-security-log-analytics-workspace"
       ]
     },
     {
