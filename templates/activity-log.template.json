@@ -40,7 +40,7 @@
     },
     "activityLogCategories": {
       "type": "string",
-      "defaultValue": "Administrative,Security,Policy,Alert,ResourceHealth",
+      "defaultValue": "Administrative,Security,Policy,Alert,ServiceHealth,ResourceHealth",
       "metadata": {
         "description": "Comma separated Activity Log categories exported to the security workspace. Supported values are Administrative, Security, ServiceHealth, Alert, Recommendation, Policy, Autoscale and ResourceHealth.",
         "environmentVariable": "activityLogCategories"

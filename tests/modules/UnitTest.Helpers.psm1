@@ -60,7 +60,7 @@ function Set-MockEnvironment {
     $ENV:activityLogDiagnosticSettingName = "security-la"
     $ENV:activityLogWorkspaceName = "none"
     $ENV:activityLogWorkspaceResourceGroupName = "none"
-    $ENV:activityLogCategories = "Administrative,Security,Policy,Alert,ResourceHealth"
+    $ENV:activityLogCategories = "Administrative,Security,Policy,Alert,ServiceHealth,ResourceHealth"
     $ENV:deployKeyVaultSecurityLogging = "Disabled"
     $ENV:keyVaultSecurityLoggingVaults = "none"
     $ENV:keyVaultSecurityLoggingWorkspaceEnvironment = "none"
