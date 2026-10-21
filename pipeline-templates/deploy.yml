@@ -68,3 +68,12 @@ jobs:
             csmParametersFile: '$(Pipeline.Workspace)/drop/templates/subscription.parameters.json'
             overrideParameters: "-sqlAdminPasswordSeed $(SqlAdminPasswordSeed)"
             deploymentOutputs: ARMOutput
+
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: 'Azure Deployment:Subscription Activity Log export'
+          inputs:
+            deploymentScope: 'Subscription'
+            azureResourceManagerConnection: ${{ parameters.ServiceConnection }}
+            location: 'West Europe'
+            csmFile: '$(Pipeline.Workspace)/drop/templates/activity-log.template.json'
+            csmParametersFile: '$(Pipeline.Workspace)/drop/templates/activity-log.parameters.json'

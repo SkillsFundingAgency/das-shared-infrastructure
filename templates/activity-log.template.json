@@ -1,0 +1,77 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "deployActivityLogSecurityLogging": {
+      "type": "string",
+      "defaultValue": "Disabled",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "Toggle to export the subscription Activity Log to the security Log Analytics workspace.",
+        "environmentVariable": "deployActivityLogSecurityLogging"
+      }
+    },
+    "activityLogDiagnosticSettingName": {
+      "type": "string",
+      "defaultValue": "security-la",
+      "metadata": {
+        "description": "Name of the subscription diagnostic setting. A new name leaves any existing Activity Log exports untouched.",
+        "environmentVariable": "activityLogDiagnosticSettingName"
+      }
+    },
+    "activityLogWorkspaceName": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Name of the security Log Analytics workspace the Activity Log is exported to. The Activity Log is per subscription, not per environment, so a subscription holding several environments sends one copy to one workspace.",
+        "environmentVariable": "activityLogWorkspaceName"
+      }
+    },
+    "activityLogWorkspaceResourceGroupName": {
+      "type": "string",
+      "defaultValue": "none",
+      "metadata": {
+        "description": "Resource group holding the security Log Analytics workspace named in activityLogWorkspaceName.",
+        "environmentVariable": "activityLogWorkspaceResourceGroupName"
+      }
+    },
+    "activityLogCategories": {
+      "type": "string",
+      "defaultValue": "Administrative,Security,Policy,Alert,ResourceHealth",
+      "metadata": {
+        "description": "Comma separated Activity Log categories exported to the security workspace. Supported values are Administrative, Security, ServiceHealth, Alert, Recommendation, Policy, Autoscale and ResourceHealth.",
+        "environmentVariable": "activityLogCategories"
+      }
+    }
+  },
+  "variables": {
+    "deployActivityLogSecurityLogging": "[and(equals(parameters('deployActivityLogSecurityLogging'), 'Enabled'), not(equals(parameters('activityLogWorkspaceName'), 'none')), not(equals(parameters('activityLogWorkspaceResourceGroupName'), 'none')))]",
+    "copy": [
+      {
+        "name": "activityLogCategoryObjects",
+        "count": "[length(split(replace(parameters('activityLogCategories'), ' ', ''), ','))]",
+        "input": {
+          "category": "[split(replace(parameters('activityLogCategories'), ' ', ''), ',')[copyIndex('activityLogCategoryObjects')]]",
+          "enabled": true
+        }
+      }
+    ]
+  },
+  "resources": [
+    {
+      "condition": "[variables('deployActivityLogSecurityLogging')]",
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "name": "[parameters('activityLogDiagnosticSettingName')]",
+      "location": "global",
+      "properties": {
+        "workspaceId": "[resourceId(parameters('activityLogWorkspaceResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('activityLogWorkspaceName'))]",
+        "logs": "[variables('activityLogCategoryObjects')]"
+      }
+    }
+  ],
+  "outputs": {}
+}

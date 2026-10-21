@@ -56,6 +56,11 @@ function Set-MockEnvironment {
     $ENV:securityLogArchiveTableNames = "none"
     $ENV:securityLogSplunkTableNames = "none"
     $ENV:deploySecurityLogSplunkEventHubNamespace = "Disabled"
+    $ENV:deployActivityLogSecurityLogging = "Disabled"
+    $ENV:activityLogDiagnosticSettingName = "security-la"
+    $ENV:activityLogWorkspaceName = "none"
+    $ENV:activityLogWorkspaceResourceGroupName = "none"
+    $ENV:activityLogCategories = "Administrative,Security,Policy,Alert,ResourceHealth"
     $ENV:deployKeyVaultSecurityLogging = "Disabled"
     $ENV:keyVaultSecurityLoggingVaults = "none"
     $ENV:keyVaultSecurityLoggingWorkspaceEnvironment = "none"
@@ -118,6 +123,11 @@ function Clear-MockEnvironment {
         "ENV:securityLogArchiveTableNames",
         "ENV:securityLogSplunkTableNames",
         "ENV:deploySecurityLogSplunkEventHubNamespace",
+        "ENV:deployActivityLogSecurityLogging",
+        "ENV:activityLogDiagnosticSettingName",
+        "ENV:activityLogWorkspaceName",
+        "ENV:activityLogWorkspaceResourceGroupName",
+        "ENV:activityLogCategories",
         "ENV:deployKeyVaultSecurityLogging",
         "ENV:keyVaultSecurityLoggingVaults",
         "ENV:keyVaultSecurityLoggingWorkspaceEnvironment"
