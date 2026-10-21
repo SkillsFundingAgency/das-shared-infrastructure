@@ -68,7 +68,7 @@
       "name": "[parameters('activityLogDiagnosticSettingName')]",
       "location": "global",
       "properties": {
-        "workspaceId": "[resourceId(parameters('activityLogWorkspaceResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('activityLogWorkspaceName'))]",
+        "workspaceId": "[resourceId(subscription().subscriptionId, parameters('activityLogWorkspaceResourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('activityLogWorkspaceName'))]",
         "logs": "[variables('activityLogCategoryObjects')]"
       }
     }
