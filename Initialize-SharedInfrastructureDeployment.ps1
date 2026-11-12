@@ -54,6 +54,8 @@ param(
 
 $TemplateFilePath = "$PSScriptRoot/templates/subscription.template.json"
 $TemplateParametersFilePath = "$PSScriptRoot/templates/subscription.parameters.json"
+$ActivityLogTemplateFilePath = "$PSScriptRoot/templates/activity-log.template.json"
+$ActivityLogTemplateParametersFilePath = "$PSScriptRoot/templates/activity-log.parameters.json"
 
 try {
     # --- Are We Logged in?
@@ -86,6 +88,8 @@ try {
     $ParametersFileBuilder = [ParametersFileBuilder]::New()
     $ParametersFileConfig = $ParametersFileBuilder.CreateParametersFileConfig($TemplateFilePath)
     $ParametersFileBuilder.Save($ParametersFileConfig, $TemplateParametersFilePath)
+    $ActivityLogParametersFileConfig = $ParametersFileBuilder.CreateParametersFileConfig($ActivityLogTemplateFilePath)
+    $ParametersFileBuilder.Save($ActivityLogParametersFileConfig, $ActivityLogTemplateParametersFilePath)
 
     # --- Deploy if local and !testing
     [InitializationHelper]::DeployTemplate($ManagementResourceGroupName, $TemplateFilePath, $TemplateParametersFilePath)

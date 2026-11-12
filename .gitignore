@@ -3,3 +3,4 @@ node_modules/
 package-lock.json
 tests/Test-Pester.XML
 templates/subscription.parameters.json
+templates/activity-log.parameters.json
